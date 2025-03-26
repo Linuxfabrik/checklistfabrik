@@ -5,7 +5,7 @@ import jinja2.exceptions
 import checklistfabrik.core.utils
 
 TEMPLATE_FORMAT_STRING = '''\
-<fieldset>
+<fieldset class="form-group">
     <legend>{title}</legend>
     {data}
 </fieldset>

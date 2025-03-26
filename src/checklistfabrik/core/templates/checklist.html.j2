@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
+    <link rel="stylesheet" href="/assets/spectre.min.css"/>
+    <link rel="stylesheet" href="/assets/spectre-icons.min.css"/>
 </head>
 <body>
-<h1>ChecklistFabrik - {{ title }}</h1>
-<form method="post">
-    {% block form_content %}
-    {% endblock %}
-    <a {%- if prev_task_name %} href="{{ prev_task_name }}" {% endif -%} role="button">Previous</a>
-    <input type="submit" value="Save"/>
-    <a {%- if next_task_name %} href="{{ next_task_name }}" {% endif -%} role="button">Next</a>
-</form>
-<a href="/exit">Exit</a>
+<div class="container grid-lg mt-2">
+    <div class="columns col-oneline">
+        <div class="column col-auto">
+            <h2>ChecklistFabrik - {{ title }}</h2>
+        </div>
+        <div class="column col-2 col-ml-auto">
+            <a class="btn btn-error float-right" href="/exit">Exit</a>
+        </div>
+    </div>
+
+    <form id="checklist_form" class="mx-2" method="post">
+        {% block form_content %}
+        {% endblock %}
+    </form>
+
+    <div class="columns">
+        <div class="column col-auto col-mx-auto">
+            <a class="btn ml-1 {%- if not prev_task_name %} disabled {%- endif %}" {%- if prev_task_name %} href="{{ prev_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Previous</a>
+            <input class="btn btn-primary ml-1" type="submit" value="Save" form="checklist_form"/>
+            <a class="btn ml-1 {%- if not next_task_name %} disabled {%- endif %}" {%- if next_task_name %} href="{{ next_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Next</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

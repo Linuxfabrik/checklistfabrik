@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.9"
+name = "checklistfabrik"
+authors = [
+    { name = "Linuxfabrik GmbH" }
+]
+dynamic = [
+    "dependencies",
+    "version",
+]
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
+version = { attr = "checklistfabrik.core.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+clf-play = "checklistfabrik.core.cli.play:main"

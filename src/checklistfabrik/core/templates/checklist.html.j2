@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+<h1>ChecklistFabrik - {{ title }}</h1>
+<form method="post">
+    {% block form_content %}
+    {% endblock %}
+    <a {%- if prev_task_name %} href="{{ prev_task_name }}" {% endif -%} role="button">Previous</a>
+    <input type="submit" value="Save"/>
+    <a {%- if next_task_name %} href="{{ next_task_name }}" {% endif -%} role="button">Next</a>
+</form>
+<a href="/exit">Exit</a>
+</body>
+</html>

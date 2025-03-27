@@ -3,7 +3,8 @@ ChecklistFabrik import module stub
 
 This module is a stub as it represents core functionality.
 
-EXAMPLE:
+EXAMPLE::
+
     - linuxfabrik.clf.import: 'file-to-import.yml'
 """
 

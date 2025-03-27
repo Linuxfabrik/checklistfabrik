@@ -3,7 +3,8 @@ ChecklistFabrik select_input module
 
 This module renders a simple HTML select (multi-selection as well as optgroup and hr elements are not supported).
 
-EXAMPLE:
+EXAMPLE::
+
     - linuxfabrik.clf.select_input:
         label: 'Backup datacenter location for {{ host }}?'
         values:

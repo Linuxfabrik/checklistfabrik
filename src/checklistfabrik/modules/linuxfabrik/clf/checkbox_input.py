@@ -3,7 +3,8 @@ ChecklistFabrik checkbox_input module
 
 This module renders an HTML checkbox input field.
 
-EXAMPLE:
+EXAMPLE::
+
     - linuxfabrik.clf.checkbox_input:
         label: 'Are backups tested for host {{ host }}?'
         required: true

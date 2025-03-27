@@ -3,7 +3,8 @@ ChecklistFabrik radio_input module
 
 This module renders an HTML radio group.
 
-EXAMPLE:
+EXAMPLE::
+
     - linuxfabrik.clf.radio_input:
         label: 'Backup strategy for host {{ host }}?'
         values:

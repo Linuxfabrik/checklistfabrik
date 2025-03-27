@@ -43,8 +43,8 @@ class Page:
         if self.when is None:
             return True
 
-        single_condition = isinstance(self.when, str) and not checklistfabrik.core.utils.eval_conditional(facts, self.when)
-        multi_conditions = isinstance(self.when, list) and not checklistfabrik.core.utils.eval_all_conditionals(facts, self.when)
+        single_condition = isinstance(self.when, str) and checklistfabrik.core.utils.eval_conditional(facts, self.when)
+        multi_conditions = isinstance(self.when, list) and checklistfabrik.core.utils.eval_all_conditionals(facts, self.when)
 
         return single_condition or multi_conditions
 

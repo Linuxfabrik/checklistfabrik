@@ -33,8 +33,8 @@ class Task:
         try:
             loaded_module = importlib.import_module(f'{MODULE_NAMESPACE}.{self.module}')
         except ModuleNotFoundError:
-            logger.error('Cannot find module "%s"', self.module)
-            return f'<p>Cannot find module <em>{self.module}</em>. Is it installed?</p>'
+            logger.error('Task rendering error: Cannot find module "%s"', self.module)
+            return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{self.module}</em>. Is it installed?</div>'
 
         render_context = facts.copy()
         render_context['fact_name'] = self.fact_name

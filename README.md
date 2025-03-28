@@ -1,32 +1,38 @@
 # ChecklistFabrik
 
-ChecklistFabrik (clf-play) is a Python 3 tool to simplify and automate process management using HTML checklists backed by YAML files.
+ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring checklists and procedures using HTML forms created from simple yet powerful templatable YAML files, including variables and logic based on Jinja.
 
 
 ## Features
 
-* **Stores checklists as YAML:**
-  Changes can therefore easily be tracked using version control systems such as Git.
+* **Presents checklists as HTML using a built-in local web server:**  
+  The HTML interface provides a user-friendly checklist workflow.
 
-* **Presents checklists rendered as HTML using a built-in local webserver:**
-  User-friendly workflow with checklists thanks to the HTML interface.
+* **Saves checklist results as YAML:**  
+  If output is stored in version control systems such as Git, changes can be easily tracked.
 
-* **Supports checklist templates:**
-  Checklist templates can be used to quickly generate multiple checklists from a single file and avoid creating checklists multiple times from scratch.
+* **Supports includes:**  
+  Checklist templates can be used to quickly generate multiple checklists from a single file, avoiding the need to create multiple checklists from scratch.
 
-* **Jinja support:**
-  Create checklists with dynamic text using Jinja.
+* **Jinja support:**  
+  Create dynamic checklists using variables and boolean expressions based on Jinja.
 
-* **Dynamically exclude non-applicable parts:**
-  ChecklistFabrik supports 'when' expressions for pages such that pages can automatically be marked as non-applicable based on previous input.
+* **Dynamically exclude inapplicable items:**  
+  ChecklistFabrik supports 'when' expressions for pages, so pages can be automatically marked as inapplicable based on previous input.
+
+
+## Wording
+
+* Checklist: TODO describe
+* Page: TODO describe
+* Task: TODO describe
+* Template: TODO describe
+* Module: TODO describe
 
 
 ## Installation
 
-
-### From the Git Repository
-
-Clone this repository and run `pip install .` at the root of the repo to build and install the ChecklistFabrik package.
+Clone this repository and run `pip install --user .` at the root of the repo to build and install the ChecklistFabrik package.
 
 
 ## Usage
@@ -41,7 +47,7 @@ clf-play --template path/to/template.yml path/to/checklist_to_create.yml
 ```
 
 
-### Editing an Existing Checklist
+### Re-Running an Existing Checklist
 
 ```shell
 clf-play path/to/existing_checklist.yml

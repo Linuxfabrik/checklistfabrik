@@ -10,11 +10,17 @@ from .. import checklist_wsgi_app
 from .. import checklist_wsgi_server
 from .. import templates
 
-DESCRIPTION = 'ChecklistFabrik Play'
+DESCRIPTION = (
+    'Interactive CLI for launching dynamic, web-based checklists. '
+    'Leverage YAML templates with Jinja logic to create, run, and track recurring procedures.'
+)
 HOST = 'localhost'
 PORT = 9309
 
 logger = logging.getLogger(__name__)
+
+__author__ = 'Linuxfabrik GmbH, Zurich/Switzerland'
+__version__ = '2025032801'
 
 
 class PlayCli(BaseCli):
@@ -34,12 +40,29 @@ class PlayCli(BaseCli):
 
     def init_args(self):
         self.arg_parser.add_argument(
+            '-V', '--version',
+            help='Display the program\'s version information and exit.',
+            action='version',
+            version=f'%(prog)s: v{__version__} by {__author__}'
+        )
+
+        self.arg_parser.add_argument(
             'file',
+            help=(
+                'Path to the checklist file. If the file exists, it will be loaded for re-running. '
+                'If you want to create a new checklist, provide a non-existent file path and use '
+                'the `--template` option.'
+            ),
             type=pathlib.Path,
         )
 
         self.arg_parser.add_argument(
             '--template',
+            help=(
+                'Optional: Path to a YAML template file for creating a new checklist. '
+                'This option must be used only when the target checklist file (the `--file` '
+                'argument) does not already exist.'
+            ),
             type=pathlib.Path,
         )
 

@@ -158,7 +158,7 @@ Controls the `required` attribute of the HTML input element.
 Setting this key to `true` has the effect that an option other than `--- Please Select ---` must be selected to pass validation.
 
 
-# Task Module *linuxfabrik.clf.text*
+# Task Module *linuxfabrik.clf.text_output*
 
 A task module that renders an HTML paragraph.
 

@@ -1,6 +1,6 @@
 # ChecklistFabrik
 
-ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring checklists and procedures using HTML forms created from simple yet powerful templatable YAML files, including variables and logic based on Jinja.
+ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring checklists and procedures using HTML forms created from simple yet powerful YAML templates, including variables and logic based on Jinja.
 
 
 ## Features
@@ -35,19 +35,19 @@ ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring
 Clone this repository and run `pip install --user .` at the root of the repo to build and install the ChecklistFabrik package.
 
 
-## Usage
+## Creating a Checklist Template
 
-For the documentation of the YAML format used by ChecklistFabrik please refer to the [Checklist Syntax](docs/checklist_syntax.md).
+For documentation on the YAML format used by ChecklistFabrik, see the [checklist template syntax documentation](docs/checklist_syntax.md). Example checklist templates can be found in the `examples` folder of this project.
 
 
-### Creating a New Checklist From a Template
+## Creating a New Checklist From a Template
 
 ```shell
 clf-play --template path/to/template.yml path/to/checklist_to_create.yml
 ```
 
 
-### Re-Running an Existing Checklist
+## Re-Running an Existing Checklist
 
 ```shell
 clf-play path/to/existing_checklist.yml

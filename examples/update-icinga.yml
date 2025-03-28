@@ -1,0 +1,31 @@
+title: 'Update Icinga'
+pages:
+
+  - title: 'Questionnaire'
+    tasks:
+      - linuxfabrik.clf.text_input:
+          label: 'Hostname (FQDN)?'
+          required: false
+          register: 'hostname_fqdn'
+
+      - linuxfabrik.clf.select_input:
+          label: 'Which components should be updated?'
+          required: true
+          values:
+            - 'Icinga2 Core'
+            - 'IcingaWeb2'
+            - 'Module: Icinga Director'
+            - 'Linuxfabrik Monitoring Plugins'
+          register: 'components'
+
+
+  - title: 'Update Icinga'
+    tasks:
+      - linuxfabrik.clf.text_output:
+          content: |
+              Run this:
+              `dnf -y update icinga*`
+
+    when:
+      - '(components | lower) in ["icinga2 core", "IcingaWeb2"]'
+

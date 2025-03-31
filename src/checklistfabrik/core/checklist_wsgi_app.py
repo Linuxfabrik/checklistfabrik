@@ -106,7 +106,7 @@ class ChecklistWsgiApp:
         )
 
     def on_exit(self, request, **kwargs):
-        if self.server_exit_callback is None or not hasattr(self.server_exit_callback, '__call__'):
+        if self.server_exit_callback is None or not callable(self.server_exit_callback):
             raise werkzeug.exceptions.NotImplemented()
 
         self.server_exit_callback()

@@ -71,6 +71,7 @@ A task module that renders a group of HTML checkbox inputs.
 
 The text to be used for the HTML label element of the group fieldset.
 Supports Jinja templating.
+Supports Markdown formatting.
 May be left empty.
 
 
@@ -92,6 +93,19 @@ Controls the `required` attribute of the HTML input element.
 Setting this key to `true` has the effect that *all checkboxes of the same group must be checked* to pass validation.
 
 
+# Task Module *linuxfabrik.clf.markdown*
+
+A task module that renders markdown content as HTML.
+
+
+## `content`
+
+* Type: string
+
+The Markdown formatted text to render as an HTML paragraph.
+Supports Jinja templating.
+
+
 # Task Module *linuxfabrik.clf.radio_input*
 
 A task module that renders a group of HTML radio inputs (also named radio buttons).
@@ -103,6 +117,7 @@ A task module that renders a group of HTML radio inputs (also named radio button
 
 The text to be used for the HTML label element of the radio button group.
 Supports Jinja templating.
+Supports Markdown formatting.
 
 
 ## `values`
@@ -132,6 +147,7 @@ A task module that renders an HTML select.
 
 The text to be used for the HTML label element of the rendered select element.
 Supports Jinja templating.
+Supports Markdown formatting.
 
 
 ## `values`
@@ -150,6 +166,28 @@ Controls the `required` attribute of the HTML input element.
 Setting this key to `true` has the effect that an option other than `--- Please Select ---` must be selected to pass validation.
 
 
+# Task Module *linuxfabrik.clf.text_input*
+
+A task module that renders an HTML text input.
+
+
+## `label`
+
+* Type: string
+
+The text to be used for the HTML label element of the rendered text input.
+Supports Jinja templating.
+Supports Markdown formatting.
+
+
+## `required`
+
+* Type: boolean
+
+Controls the `required` attribute of the HTML input element.
+Setting this key to `true` has the effect that the text input *must be non-empty* to pass validation.
+
+
 # Task Module *linuxfabrik.clf.text_output*
 
 A task module that renders an HTML paragraph.
@@ -162,24 +200,3 @@ A task module that renders an HTML paragraph.
 The text to render as an HTML paragraph.
 May include HTML tags.
 Supports Jinja templating.
-
-
-# Task Module *linuxfabrik.clf.text_input*
-
-A task module that renders an HTML text input.
-
-
-## `label`
-
-* Type: string
-
-The text to be used for the HTML label element of the rendered text input.
-Supports Jinja templating.
-
-
-## `required`
-
-* Type: boolean
-
-Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that the text input *must be non-empty* to pass validation.

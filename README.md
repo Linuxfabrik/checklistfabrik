@@ -23,11 +23,22 @@ ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring
 
 ## Definitions and Terms
 
-* Checklist: TODO describe
-* Page: TODO describe
-* Task: TODO describe
-* Template: TODO describe
-* Module: TODO describe
+* **Checklist:**  
+  A list of tasks that describe a procedure to be done, grouped by pages.
+
+* **Page:**  
+  A group of tasks that is simultaneously displayed to the user.
+
+* **Task:**  
+  A description of a piece of work that has to be done.
+  May be presented in different forms such as text fields, checkboxes, radio buttons or non-interactive text blocks etc... (see Task Module below)
+
+* **(Checklist) Template:**  
+  A checklist YAML file that is used to create other checklists instead of being run itself.
+
+* **(Task) Module:**  
+  To support an extensible architecture, ChecklistFabrik moves the task rendering into separate, pluggable Python modules such that new task variants can be added easily.
+  A valid task module is any Python module under the `checklistfabrik.modules` namespace package that has a main method that returns a dictionary containing the key `html` and as the value the rendered HTML.
 
 
 ## Installation

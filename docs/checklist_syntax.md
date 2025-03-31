@@ -44,7 +44,7 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       *The mapping is passed to the respective module for rendering.
       Check the syntax documentation of the respective module for its format.*  
       There exists a special module `linuxfabrik.clf.import` that can be used to import a sequence of tasks from a different file.
-      For this special module, and the value should be a string containing the path to the file to load (instead of a mapping).
+      For this special module the value must be a string of the path to the file to load (instead of a mapping).
 
     - **`fact_name`**  
       *Type*: string  
@@ -57,20 +57,31 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       *Type*: any  
       The saved value for the fact registered by this task of a previous run of this      checklist.
       Usually this field is edited by `clf-play` and does not need to be edited manually.  
-       This field is optional.
+      This field is optional.
 
 
 # Task Module *linuxfabrik.clf.checkbox_input*
 
-A task module that renders an HTML checkbox input.
+A task module that renders a group of HTML checkbox inputs.
 
 
 ## `label`
 
 * Type: string
 
-The text to be used for the HTML label element of the rendered checkbox input element.
+The text to be used for the HTML label element of the group fieldset.
 Supports Jinja templating.
+May be left empty.
+
+
+## `values`
+
+* Type: sequence
+
+Each list element will be rendered as a separate checkbox *of the same group*.
+Use multiple tasks with a single value each if you want independent checkboxes.
+Multiple checkboxes may be checked at any time.
+Support Jinja templating.
 
 
 ## `required`
@@ -78,7 +89,7 @@ Supports Jinja templating.
 * Type: boolean
 
 Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that the checkbox *must be checked* to pass validation.
+Setting this key to `true` has the effect that *all checkboxes of the same group must be checked* to pass validation.
 
 
 # Task Module *linuxfabrik.clf.radio_input*

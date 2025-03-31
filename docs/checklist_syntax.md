@@ -19,64 +19,45 @@ Additionally, the title will be displayed as a heading at the top of the HTML pa
 A checklist is built up from one or more pages.
 Each page will be rendered as a separate HTML page with a form containing a fieldset where the tasks will be rendered.
 
+### Fields
 
-## `pages[*].'linuxfabrik.clf.import'`
+- **`linuxfabrik.clf.import`**  
+  *Type*: string  
+  Special directive that can be used to import a list of pages from a separate file.  
+  If used *must be the first and only* field in the mapping.
 
-* Type: string
+- **`title`**  
+  *Type*: string  
+  Title of the checklist page.  
+  The title will be used as the label for the page's form primary fieldset.
 
-Special directive that can be used to import a list of pages from a separate file.
-If used *must be the first and only* entry in the mapping.
+- **`tasks`**  
+  *Type*: sequence of mappings  
+  A checklist page is built up from one or more tasks.  
+  The rendering of each task is delegated to separate modules.  
+  *Fields*:
 
+    - **`<module>`**  
+      *Type*: mapping (or string; see below)  
+      The very first key in the mapping. 
+      Specifies the module, to which to delegate the task rendering.  
+      *The mapping is passed to the respective module for rendering.
+      Check the syntax documentation of the respective module for its format.*  
+      There exists a special module `linuxfabrik.clf.import` that can be used to import a sequence of tasks from a different file.
+      For this special module, and the value should be a string containing the path to the file to load (instead of a mapping).
 
-## `pages[*].title`
+    - **`fact_name`**  
+      *Type*: string  
+      The name under which this module should register its output.  
+      Task modules should use this as the name for their inputs in the HTML form.
+      After filling out the corresponding input the provided input is available under     this name as a Jinja variable.  
+      This field is optional (yet it would be nonsensical to not use it for input modules).
 
-* Type: string
-
-Title of the checklist page.
-The title will be used as the label for the page's form primary fieldset.
-
-
-## `pages[*].tasks`
-
-* Type: sequence of mappings
-
-A checklist page is built up from one or more tasks.
-The rendering of each task is delegated to separate modules.
-
-
-## `pages[*].tasks[*].<module>`
-
-* Type: mapping (or string; see below)
-
-The very first key in the mapping.
-Specifies the module, to which to delegate the task rendering.
-
-The mapping is passed to the respective module for rendering.
-Check the syntax documentation of the respective module for its format.
-
-There exists a special module `linuxfabrik.clf.import` that can be used to import a sequence of tasks from a different file.
-The type string must be used for this special module, and the value should be the path to the file to load.
-
-
-## `pages[*].tasks[*].fact_name`
-
-* Type: string
-
-The name under which this module should register its output.
-Task modules should use this as the name for their inputs in the HTML form.
-After filling out the corresponding input the provided input is available under this name as a Jinja variable.
-
-This field is optional (yet it would be nonsensical to not use it for input modules).
-
-
-## `pages[*].tasks[*].value`
-
-* Type: any
-
-The saved value for the fact registered by this task of a previous run of this checklist.
-Usually this field is edited by `clf-play` and does not need to be edited manually.
-
-This field is optional.
+    - **`value`**  
+      *Type*: any  
+      The saved value for the fact registered by this task of a previous run of this      checklist.
+      Usually this field is edited by `clf-play` and does not need to be edited manually.  
+       This field is optional.
 
 
 # Task Module *linuxfabrik.clf.checkbox_input*

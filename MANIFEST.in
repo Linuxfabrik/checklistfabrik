@@ -1,0 +1,1 @@
+recursive-include src/checklistfabrik/core/templates *.css *.html *.j2 *.js

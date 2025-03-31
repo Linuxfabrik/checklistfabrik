@@ -89,8 +89,9 @@ class ChecklistWsgiApp:
             raise werkzeug.exceptions.NotFound()
 
         if request.method == 'POST':
-            for key, value in request.form.items():
-                self.checklist.facts[key] = value
+            for key in request.form.keys():
+                values = request.form.getlist(key)
+                self.checklist.facts[key] = values if len(values) > 1 else values[0]
 
         page_data = current_page.render(self.checklist.facts)
 

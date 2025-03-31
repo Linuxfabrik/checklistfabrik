@@ -8,7 +8,7 @@ pages:
           required: false
           register: 'hostname_fqdn'
 
-      - linuxfabrik.clf.select_input:
+      - linuxfabrik.clf.checkbox_input:
           label: 'Which components should be updated?'
           required: true
           values:
@@ -18,12 +18,11 @@ pages:
             - 'Linuxfabrik Monitoring Plugins'
           register: 'components'
 
-
   - title: 'Update Icinga'
     tasks:
       - linuxfabrik.clf.text_output:
           content: |
-              Run this:
+              On host {{ hostname_fqdn }}, run this:
               `dnf -y update icinga*`
 
     when:

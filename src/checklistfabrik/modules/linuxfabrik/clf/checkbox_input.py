@@ -16,6 +16,7 @@ EXAMPLE::
 """
 
 import jinja2
+import mistune
 
 TEMPLATE_STRING = '''\
 <fieldset>
@@ -38,7 +39,7 @@ TEMPLATE_STRING = '''\
 
 
 def main(**kwargs):
-    templated_label = jinja2.Template(kwargs.get('label', '')).render(**kwargs)
+    templated_label = mistune.html(jinja2.Template(kwargs.get('label', '')).render(**kwargs))
 
     templated_values = [jinja2.Template(value).render(**kwargs) for value in kwargs.get('values', [''])]
 

@@ -16,6 +16,7 @@ EXAMPLE::
 """
 
 import jinja2
+import mistune
 
 TEMPLATE_STRING = '''
 <div class="form-group">
@@ -32,7 +33,7 @@ TEMPLATE_STRING = '''
 
 
 def main(**kwargs):
-    templated_label = jinja2.Template(kwargs.get('label', '')).render(**kwargs)
+    templated_label = mistune.html(jinja2.Template(kwargs.get('label', '')).render(**kwargs))
 
     return {
         'html': jinja2.Template(

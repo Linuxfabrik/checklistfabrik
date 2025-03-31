@@ -21,7 +21,7 @@ ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring
   ChecklistFabrik supports 'when' expressions for pages, so pages can be automatically marked as inapplicable based on previous input.
 
 
-## Wording
+## Definitions and Terms
 
 * Checklist: TODO describe
 * Page: TODO describe

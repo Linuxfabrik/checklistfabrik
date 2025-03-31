@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import logging
 
 MODULE_NAMESPACE = 'checklistfabrik.modules'
@@ -40,7 +41,32 @@ class Task:
         render_context['fact_name'] = self.fact_name
         render_context.update(self.context)
 
+        if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):
+            logger.error(
+                'Task rendering error: Module "%s" is not a valid ChecklistFabrik module as it has no callable "main"',
+                self.module,
+            )
+            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> is not a valid ChecklistFabrik module.</div>'
+
+        main_signature = inspect.signature(loaded_module.main)
+
+        if not inspect.Parameter.VAR_KEYWORD in [param.kind for param in main_signature.parameters.values()]:
+            logger.error(
+                'Task rendering error: Module "%s" looks like a ChecklistFabrik module but is malformed as its signature does not allow variadic keyword arguments',
+                self.module,
+            )
+            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> looks like a ChecklistFabrik module but is malformed.</div>'
+
         result = loaded_module.main(**render_context)
+
+        if not isinstance(result, dict):
+            logger.error(
+                'Task rendering error: Module "%s" returned a value of type "%s" but expected "%s"',
+                self.module,
+                type(result),
+                type({}),
+            )
+            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> returned an invalid output.</div>'
 
         if 'facts' in result:
             facts.update(result['facts'])

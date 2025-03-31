@@ -40,14 +40,14 @@ TEMPLATE_STRING = '''\
 def main(**kwargs):
     templated_label = jinja2.Template(kwargs.get('label', '')).render(**kwargs)
 
-    templated_values = [jinja2.Template(value).render(**kwargs) for value in kwargs.get('values', [])]
+    templated_values = [jinja2.Template(value).render(**kwargs) for value in kwargs.get('values', [''])]
 
     return {
         'html': jinja2.Template(
             TEMPLATE_STRING,
         ).render(
             **kwargs,
-            fact_value=kwargs.get(kwargs.get('fact_name')),
+            fact_value=kwargs.get(kwargs.get('fact_name'), []),
             templated_label=templated_label,
             templated_values=templated_values,
         ),

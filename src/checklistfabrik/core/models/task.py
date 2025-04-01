@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import logging
+import uuid
 
 MODULE_NAMESPACE = 'checklistfabrik.modules'
 
@@ -38,7 +39,12 @@ class Task:
             return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{self.module}</em>. Is it installed?</div>'
 
         render_context = facts.copy()
-        render_context['fact_name'] = self.fact_name
+        if self.fact_name:
+            render_context['fact_name'] = self.fact_name
+        else:
+            # Provide an automatic fact name that the module can use.
+            # The module needs to report this back as fact_name if it uses the suggested name.
+            render_context['auto_fact_name'] = uuid.uuid4().hex
         render_context.update(self.context)
 
         if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):
@@ -68,7 +74,10 @@ class Task:
             )
             return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> returned an invalid output.</div>'
 
-        if 'facts' in result:
-            facts.update(result['facts'])
+        if 'fact_name' in result:
+            if not self.fact_name:
+                self.fact_name = result['fact_name']
+            elif self.fact_name != result['fact_name']:
+                logger.warning('Task module reports a different fact name than originally specified. This is most likely a bug in the task module')
 
         return result.get('html', '')

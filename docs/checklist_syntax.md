@@ -50,12 +50,13 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       *Type*: string  
       The name under which this module should register its output.  
       Task modules should use this as the name for their inputs in the HTML form.
-      After filling out the corresponding input the provided input is available under     this name as a Jinja variable.  
-      This field is optional (yet it would be nonsensical to not use it for input modules).
+      After filling out the corresponding input the provided input is available under this name as a Jinja variable.  
+      This field is optional (yet you most likely want to set it if you want to use its output as a Jinja variable).  
+      ChecklistFabrik will auto-generate names for missing fact names that *input modules* may use. All built-in input modules support auto-generated fact names.
 
     - **`value`**  
       *Type*: any  
-      The saved value for the fact registered by this task of a previous run of this      checklist.
+      The saved value for the fact registered by this task of a previous run of this checklist.
       Usually this field is edited by `clf-play` and does not need to be edited manually.  
       This field is optional.
 

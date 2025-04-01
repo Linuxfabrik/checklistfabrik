@@ -24,6 +24,7 @@ TEMPLATE_STRING = '''
 
 
 def main(**kwargs):
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
     templated_label = mistune.html(jinja2.Template(kwargs.get('label', '')).render(**kwargs))
 
     return {
@@ -31,7 +32,8 @@ def main(**kwargs):
             TEMPLATE_STRING,
         ).render(
             **kwargs,
-            fact_value=kwargs.get(kwargs.get('fact_name')),
+            fact_value=kwargs.get(fact_name),
             templated_label=templated_label,
         ),
+        'fact_name': fact_name,
     }

@@ -63,7 +63,7 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
 
 # Task Module *linuxfabrik.clf.checkbox_input*
 
-A task module that renders a group of HTML checkbox inputs.
+A task module that renders either a single HTML checkbox input field or a group of them.
 
 
 ## `label`
@@ -84,6 +84,7 @@ Each list element will be rendered as a separate checkbox *of the same group*.
 Use multiple tasks with a single value each if you want independent checkboxes.
 Multiple checkboxes may be checked at any time.
 Support Jinja templating.
+May be omitted if one only wants a single checkbox. In that case the (group) label would be the label of the checkbox.
 
 
 ## `required`
@@ -159,12 +160,21 @@ Each list item will be rendered as a select option.
 The special option `--- Please Select ---` will always be present to denote an "empty" state.
 
 
+## `multiple`
+
+* Type: boolean
+
+If set to true renders the HTML select with the multiple attribute so that multiple options may be selected.
+
 ## `required`
 
 * Type: boolean
 
-Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that an option other than `--- Please Select ---` must be selected to pass validation.
+Controls the `required` attribute of the HTML select element.
+Setting this key to `true` has the following effects:
+
+- for single-select: any option other than `--- Please Select ---` must be selected to pass validation.
+- for multi-select: at least one option must be selected to pass validation.
 
 
 # Task Module *linuxfabrik.clf.text_input*

@@ -1,5 +1,8 @@
 import argparse
 import logging
+import os
+import pathlib
+import platform
 import sys
 
 
@@ -28,17 +31,40 @@ class BaseCli:
         self.logger = logging.getLogger(root_module_name)
         self.logger.setLevel(min(console_log_level, file_log_level))
 
-        file_handler = logging.FileHandler(f'{root_module_name}.log')
-        file_handler.setLevel(file_log_level)
-        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-
-        self.logger.addHandler(file_handler)
-
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(console_log_level)
         console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 
         self.logger.addHandler(console_handler)
+
+        instance_module_name = type(self).__module__.rsplit(".", maxsplit=1)[-1]
+        log_file_name = f'{root_module_name}-{instance_module_name}.log'
+        os_name = platform.system()
+
+        if os_name == 'Darwin':
+            log_path = pathlib.Path.home() / 'Library' / 'Logs' / root_module_name / log_file_name
+        elif os_name == 'Linux':
+            log_path = pathlib.Path(os.getenv('XDG_DATA_HOME', pathlib.Path.home() / '.local' / 'share')) / log_file_name
+        elif os_name == 'Windows' and 'APPDATA' in os.environ:
+            log_path = pathlib.Path(os.environ['APPDATA']) / root_module_name / log_file_name
+        else:
+            log_path = pathlib.Path.cwd() / log_file_name
+
+        try:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            log_path.touch(mode=0o644, exist_ok=True)
+        except FileExistsError:
+            self.logger.error('Cannot create/open log file in "%s" as it is not a directory', log_path.parent)
+        except PermissionError:
+            self.logger.error('Cannot write to log file "%s"', log_path)
+        else:
+            self.logger.info('Writing log to file "%s"', log_path)
+
+            file_handler = logging.FileHandler(log_path, mode='w')
+            file_handler.setLevel(file_log_level)
+            file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
+            self.logger.addHandler(file_handler)
 
     @classmethod
     def main(cls, args=None):

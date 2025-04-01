@@ -12,23 +12,36 @@ EXAMPLE::
           - 'Mars'
           - 'Earth'
         required: true
+        multiple: false
       fact_name: 'backup_datacenter_location'
 """
 
 import jinja2
 import mistune
 
-TEMPLATE_STRING = '''
+TEMPLATE_MULTI_SELECT_STRING = '''\
+<div class="form-group">
+    <label class="form-label" for={{ fact_name }}>{{ templated_label }}</label>
+    <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}[]" multiple="multiple"
+        {%- if required %} required="required" {%- endif %}/>
+        {% for value in templated_values %}
+        <option {%- if value in fact_value %} selected="selected" {%- endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+</div>
+    
+{# Hidden input to allow selecting no option, since a HTML form does not send empty selections. #}
+<input type="hidden" name="{{ fact_name }}[]" value=""/>
+'''
+
+TEMPLATE_SINGLE_SELECT_STRING = '''\
 <div class="form-group">
     <label class="form-label" for={{ fact_name }}>{{ templated_label }}</label>
     <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}"
-        {%- if required %} required="required" {%- endif %}
-        {%- if multiple %} multiple="multiple" {%- endif %}>
-        {% if not multiple %}
+        {%- if required %} required="required" {%- endif %}/>
         <option value="">--- Please select ---</option>
-        {% endif %}
         {% for value in templated_values %}
-        <option {%- if value == fact_value or (not fact_value is string and value in fact_value) %} selected="selected" {%- endif %}>{{ value }}</option>
+        <option {%- if value == fact_value %} selected="selected" {%- endif %}>{{ value }}</option>
         {% endfor %}
     </select>
 </div>
@@ -41,14 +54,26 @@ def main(**kwargs):
 
     templated_values = [jinja2.Template(value).render(**kwargs) for value in kwargs.get('values', [''])]
 
-    return {
-        'html': jinja2.Template(
-            TEMPLATE_STRING,
+    if kwargs.get('multiple'):
+        html = jinja2.Template(
+            TEMPLATE_MULTI_SELECT_STRING,
         ).render(
             **kwargs,
             fact_value=kwargs.get(fact_name, []),
             templated_label=templated_label,
             templated_values=templated_values,
-        ),
+        )
+    else:
+        html = jinja2.Template(
+            TEMPLATE_SINGLE_SELECT_STRING,
+        ).render(
+            **kwargs,
+            fact_value=kwargs.get(fact_name),
+            templated_label=templated_label,
+            templated_values=templated_values,
+        )
+
+    return {
+        'html': html,
         'fact_name': fact_name,
     }

@@ -90,8 +90,12 @@ class ChecklistWsgiApp:
 
         if request.method == 'POST':
             for key in request.form.keys():
-                values = request.form.getlist(key)
-                self.checklist.facts[key] = values if len(values) > 1 else values[0]
+                if key.endswith('[]'):
+                    # List keys are marked with '[]' to differentiate them from single value keys,
+                    # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
+                    self.checklist.facts[key[:-2]] = request.form.getlist(key)
+                else:
+                    self.checklist.facts[key] = request.form.get(key)
 
         page_data = current_page.render(self.checklist.facts)
 

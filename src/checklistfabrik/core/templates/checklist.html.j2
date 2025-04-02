@@ -9,16 +9,16 @@
 </head>
 <body>
 <div class="container grid-lg mt-2">
-    <div class="columns col-oneline">
+    <div class="columns">
         <div class="column col-auto">
-            <h2>ChecklistFabrik - {{ title }}</h2>
+            <h2>{{ title }}</h2>
         </div>
         <div class="column col-2 col-ml-auto">
             <a class="btn btn-error float-right" href="/exit">Exit</a>
         </div>
     </div>
 
-    <form id="checklist_form" class="mx-2" method="post">
+    <form id="checklist_form" class="mx-2" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
         {% block form_content %}
         {% endblock %}
     </form>
@@ -26,10 +26,82 @@
     <div class="columns">
         <div class="column col-auto col-mx-auto">
             <a class="btn ml-1 {%- if not prev_task_name %} disabled {%- endif %}" {%- if prev_task_name %} href="{{ prev_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Previous</a>
-            <input class="btn btn-primary ml-1" type="submit" value="Save" form="checklist_form"/>
-            <a class="btn ml-1 {%- if not next_task_name %} disabled {%- endif %}" {%- if next_task_name %} href="{{ next_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Next</a>
+            <input class="btn btn-primary ml-1" type="submit" name="submit_action" value="{% if next_task_name %}Next{% else %}Save{% endif %}" form="checklist_form"/>
         </div>
     </div>
 </div>
+<script>
+    async function checkHeartBeat(url, server_id) {
+        try {
+            const request = new Request(
+                url + '/heartbeat',
+                {
+                    method: 'POST',
+                    headers: {'Accept': 'application/json'},
+                    mode: 'same-origin',
+                },
+            );
+
+            const response = await fetch(request);
+
+            if (!response.ok) {
+                return false;
+            }
+
+            const data = response.json()
+
+            return data.server_id === server_id;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function saveFormValues(form) {
+        Array.from(form).forEach(element => {
+            if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
+                element.dataset.clfValue = element.value;
+            }
+        });
+    }
+
+    function formChanged(form) {
+        return Array.from(form).some((element) => {
+            return ['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName) && 'clfValue' in element.dataset && element.dataset.clfValue !== element.value;
+        });
+    }
+
+    function handleBeforeUnload(event) {
+        if (formChanged(form)) {
+            event.preventDefault();
+        }
+    }
+
+    const form = document.getElementById('checklist_form');
+    const server_id = '{{ server_id }}';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        saveFormValues(form);
+    });
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    const heartbeatInterval = setInterval(
+        () => {
+            checkHeartBeat(window.location.origin).then(
+                (server_alive) => {
+                    if (!server_alive) {
+                        const warning_toast = document.createElement('div');
+                        warning_toast.classList.add('my-2', 'toast', 'toast-error');
+                        warning_toast.textContent = 'The server has shut down. Some of your changes might not have been saved.';
+
+                        form.parentNode.prepend(warning_toast);
+                        clearInterval(heartbeatInterval);
+                    }
+                }
+            );
+        },
+        1000,
+    )
+</script>
 </body>
 </html>

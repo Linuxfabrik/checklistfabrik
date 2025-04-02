@@ -1,4 +1,6 @@
+import json
 import logging
+import uuid
 
 import jinja2
 import werkzeug
@@ -26,14 +28,16 @@ class ChecklistWsgiApp:
         self.checklist_template = checklist_template
         self.server_exit_callback = None
 
+        self.server_id = uuid.uuid4().hex
         self.templ_env = jinja2.Environment(loader=template_loader)
 
         self.url_map = werkzeug.routing.Map(
             [
                 werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('page/')),
+                werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
+                werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
                 werkzeug.routing.Rule('/page/', endpoint=self.on_first_page),
                 werkzeug.routing.Rule('/page/<name>', endpoint=self.on_page),
-                werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
             ],
         )
 
@@ -89,13 +93,22 @@ class ChecklistWsgiApp:
             raise werkzeug.exceptions.NotFound()
 
         if request.method == 'POST':
+            redirect_next = False
+
             for key in request.form.keys():
+                if key == 'submit_action' and request.form.get(key, '').lower() == 'next':
+                    redirect_next = True
+                    continue
+
                 if key.endswith('[]'):
                     # List keys are marked with '[]' to differentiate them from single value keys,
                     # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
                     self.checklist.facts[key[:-2]] = request.form.getlist(key)
                 else:
                     self.checklist.facts[key] = request.form.get(key)
+
+            if redirect_next:
+                return werkzeug.utils.redirect(f'/page/{next_page_name}')
 
         page_data = current_page.render(self.checklist.facts)
 
@@ -105,6 +118,7 @@ class ChecklistWsgiApp:
                 next_task_name=next_page_name,
                 prev_task_name=prev_page_name,
                 data=page_data,
+                server_id=self.server_id,
             ),
             mimetype='text/html',
         )
@@ -116,3 +130,6 @@ class ChecklistWsgiApp:
         self.server_exit_callback()
 
         return werkzeug.Response('<h1>Shutting down server</h1><p>You can now close this page.</p>', mimetype='text/html')
+
+    def on_heartbeat(self, request, **kwargs):
+        return werkzeug.Response(json.dumps({'server_id': self.server_id}), mimetype='application/json')

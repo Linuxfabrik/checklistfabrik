@@ -1,3 +1,13 @@
 label :last-child {
   margin-bottom: 0;
 }
+
+form > fieldset {
+  border: 0.05rem solid rgb(188, 195, 206);
+  border-radius: .1rem;
+  padding: 0.4rem;
+}
+
+form > fieldset > legend {
+  padding-inline: 0.4rem;
+}

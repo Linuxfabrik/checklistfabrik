@@ -13,7 +13,10 @@
 <div class="container grid-lg py-2">
     <h2>{{ title }}</h2>
 
-    <form id="checklist_form" class="mx-2" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
+    {% if version %}
+    <p>Version: {{ version }}</p>
+    {% endif %}
+
     <form id="checklist_form" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
         {% block form_content %}
         {% endblock %}

@@ -48,7 +48,7 @@ class ChecklistDataMapper:
         if checklist is None:
             raise ValueError('Cannot load an empty checklist.')
 
-        valid, message = utils.validate_dict_keys(checklist, {'title', 'pages'}, disallow_extra_keys=True)
+        valid, message = utils.validate_dict_keys(checklist, {'title', 'pages'}, {'version'}, disallow_extra_keys=True)
 
         if not valid:
             logger.error(message)
@@ -58,6 +58,7 @@ class ChecklistDataMapper:
             checklist['title'],
             self.process_page_list(checklist['pages'], facts),
             facts,
+            checklist.get('version'),
         )
 
     def process_page_list(self, page_list, facts):

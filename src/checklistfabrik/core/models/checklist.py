@@ -1,16 +1,22 @@
 class Checklist:
     """Models a ChecklistFabrik checklist."""
 
-    def __init__(self, title, pages, facts):
+    def __init__(self, title, pages, facts, version=None):
         self.title = title
         self.pages = {page.title: page for page in pages}
         self.facts = facts
+        self.version = version
 
     def to_dict(self):
-        return {
+        result = {
             'title': self.title,
             'pages': [page.to_dict(self.facts) for page in self.pages.values()],
         }
+
+        if self.version is not None:
+            result['version'] = self.version
+
+        return result
 
     def first_page_name(self):
         key_list = list(self.pages.keys())

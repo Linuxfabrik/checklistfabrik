@@ -61,6 +61,19 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       This field is optional.
 
 
+## `version`
+
+* Type: string
+
+A freeform text identifier that gets displayed on the HTML form if present.
+Does not have any ChecklistFabrik specific meaning.
+Users may freely decide over its content and/or format.
+
+The version field from a template will be copied to a new checklist unchanged.
+
+This field could be used, for example, to track from which iteration of a template the checklist was originally generated.
+
+
 # Task Module *linuxfabrik.clf.checkbox_input*
 
 A task module that renders either a single HTML checkbox input field or a group of them.

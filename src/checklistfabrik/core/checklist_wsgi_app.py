@@ -115,6 +115,7 @@ class ChecklistWsgiApp:
         return werkzeug.Response(
             self.templ_env.from_string(TEMPLATE_STRING).render(
                 title=self.checklist.title,
+                version=self.checklist.version,
                 next_task_name=next_page_name,
                 prev_task_name=prev_page_name,
                 data=page_data,

@@ -8,7 +8,8 @@ class ChecklistWsgiRequestHandler(wsgiref.simple_server.WSGIRequestHandler):
     """A variant of the WSGIRequestHandler that logs messages using the logging package."""
 
     def log_message(self, format, *args):
-        logger.debug(format, *args)
+        if not 'GET /heartbeat HTTP/1.1' in args:
+            logger.debug(format, *args)
 
 
 class ChecklistWsgiServer(wsgiref.simple_server.WSGIServer):

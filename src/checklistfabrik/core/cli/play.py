@@ -88,9 +88,9 @@ class PlayCli(BaseCli):
             checklist_template=self.args.template,
         )
 
-        webbrowser.open(f'http://{HOST}:{PORT}')
-
         checklist_server = checklist_wsgi_server.ChecklistWsgiServer(HOST, PORT, checklist_app)
+
+        webbrowser.open(f'http://{HOST}:{PORT}')
 
         checklist_server.serve()
 

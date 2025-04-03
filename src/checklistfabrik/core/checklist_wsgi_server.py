@@ -28,7 +28,10 @@ class ChecklistWsgiServer(wsgiref.simple_server.WSGIServer):
         self.exit_flag = True
 
     def serve(self):
-        logger.info('Starting server on "http://%s:%d"', *self.server_address)
+        logger.info(
+            'Starting server on "http://%s:%d"\nPress Ctrl+C to shutdown the server and save the checklist to disk.',
+            *self.server_address,
+        )
 
         try:
             while not self.exit_flag:

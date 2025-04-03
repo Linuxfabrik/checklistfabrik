@@ -16,7 +16,7 @@
             <h2>{{ title }}</h2>
         </div>
         <div class="column col-2 col-ml-auto">
-            <a class="btn btn-error float-right" href="/exit">Exit</a>
+            <a class="btn btn-error float-right" href="/exit">Exit and Save File</a>
         </div>
     </div>
 
@@ -31,6 +31,7 @@
             <input class="btn btn-primary ml-1" type="submit" name="submit_action" value="{% if next_task_name %}Next{% else %}Save{% endif %}" form="checklist_form"/>
         </div>
     </div>
+
     <hr/>
     <p class="text-center">
         <a href="https://github.com/Linuxfabrik/checklistfabrik">ChecklistFabrik</a> was <i class="fa fa-code text-primary" aria-label="coded" role="img"></i> with <i class="fa fa-heart text-error" aria-label="passion" role="img"></i> by <a href="https://linuxfabrik.ch">Linuxfabrik GmbH</a> in Zurich/Switzerland | ChecklistFabrik is released under the <a href="https://unlicense.org">UNLICENSE</a>

@@ -1,1 +1,1 @@
-recursive-include src/checklistfabrik/core/templates *.css *.html *.j2 *.js
+recursive-include src/checklistfabrik/core/templates *.css *.html *.j2 *.js *.ttf *.woff2

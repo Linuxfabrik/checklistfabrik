@@ -1,5 +1,6 @@
 import json
 import logging
+import urllib.parse
 import uuid
 
 import jinja2
@@ -33,11 +34,10 @@ class ChecklistWsgiApp:
 
         self.url_map = werkzeug.routing.Map(
             [
-                werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('page/')),
+                werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('page')),
                 werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
                 werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
-                werkzeug.routing.Rule('/page/', endpoint=self.on_first_page),
-                werkzeug.routing.Rule('/page/<name>', endpoint=self.on_page),
+                werkzeug.routing.Rule('/page', endpoint=self.on_page),
             ],
         )
 
@@ -71,18 +71,23 @@ class ChecklistWsgiApp:
         except werkzeug.exceptions.HTTPException as exception:
             return exception
 
-    def on_first_page(self, request, **kwargs):
-        first_page_name = self.checklist.first_page_name()
-
-        if first_page_name is None:
-            raise werkzeug.exceptions.NotFound()
-
-        return werkzeug.utils.redirect(f'/page/{first_page_name}')
-
     def on_page(self, request, **kwargs):
-        page_name = kwargs['name']
+        quoted_page_name = request.args.get('name')
+
+        if not quoted_page_name:
+            first_page_name = self.checklist.first_page_name()
+
+            if first_page_name is None:
+                raise werkzeug.exceptions.NotFound()
+
+            return werkzeug.utils.redirect(f'/page?name={urllib.parse.quote(first_page_name, safe="")}')
+
+        page_name = urllib.parse.unquote(quoted_page_name)
+
         next_page_name = self.checklist.next_page_name(page_name)
         prev_page_name = self.checklist.prev_page_name(page_name)
+        quoted_next_page_name = urllib.parse.quote(next_page_name, safe="") if next_page_name is not None else None
+        quoted_prev_page_name = urllib.parse.quote(prev_page_name, safe="") if prev_page_name is not None else None
 
         if page_name is None:
             raise werkzeug.exceptions.NotFound()
@@ -108,7 +113,7 @@ class ChecklistWsgiApp:
                     self.checklist.facts[key] = request.form.get(key)
 
             if redirect_next:
-                return werkzeug.utils.redirect(f'/page/{next_page_name}')
+                return werkzeug.utils.redirect(f'/page?name={quoted_next_page_name}')
 
         page_data = current_page.render(self.checklist.facts)
 
@@ -116,8 +121,8 @@ class ChecklistWsgiApp:
             self.templ_env.from_string(TEMPLATE_STRING).render(
                 title=self.checklist.title,
                 version=self.checklist.version,
-                next_task_name=next_page_name,
-                prev_task_name=prev_page_name,
+                next_task_name=quoted_next_page_name,
+                prev_task_name=quoted_prev_page_name,
                 data=page_data,
                 server_id=self.server_id,
             ),

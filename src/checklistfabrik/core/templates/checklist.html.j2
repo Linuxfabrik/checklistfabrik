@@ -28,8 +28,11 @@
 
     <div class="d-flex" style="justify-content: space-between;">
         <div class="d-flex" style="gap: 0.4rem;">
-            <a class="btn {%- if not prev_task_name %} disabled {%- endif %}" {%- if prev_task_name %} href="/page?name={{ prev_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Previous</a>
-            <input class="btn btn-primary" type="submit" name="submit_action" value="{% if next_task_name %}Next{% else %}Save{% endif %}" form="checklist_form"/>
+            {% if prev_task_name %}
+            <a class="btn" href="/page?name={{ prev_task_name }}" role="button">Previous</a>
+            {% endif %}
+
+            <input class="btn btn-primary" type="submit" name="submit_action" value="{% if next_task_name %}Next{% else %}Submit{% endif %}" form="checklist_form"/>
         </div>
         <a class="btn btn-error" href="/exit">Exit and Save File</a>
     </div>

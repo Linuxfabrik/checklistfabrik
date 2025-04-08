@@ -1,0 +1,312 @@
+title: 'ChecklistFabrik Built-In Modules Showcase'
+version: '20250408'
+pages:
+
+  - title: 'linuxfabrik.clf.checkbox_input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.checkbox_input* module can be used to display single checkboxes or groups of checkboxes:
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'This is a single checkbox'
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'This is a group of checkboxes'
+          values:
+            - 'Check 1'
+            - 'Check 2'
+            - 'Check 3'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            You might have noticed that the checkboxes above were all optional (i.e. they did not need to be checked to be able to proceed).
+            If you want to validate that a checkbox is actually checked, you can do so using `required: true`.
+            
+            > Please note that if you use a checkbox group, all checkboxes must be checked when using `require: true`.
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'This checkbox must be checked to be able to proceed'
+          required: true
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'All checkboxes of this group must be checked to be able to proceed'
+          values:
+            - 'Check 1'
+            - 'Check 2'
+            - 'Check 3'
+          required: true
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The label of a checkbox (or group) supports Markdown formatting and Jinja templating:
+
+      - linuxfabrik.clf.checkbox_input:
+          label: |
+            **This is** a *Markdown* formatted `checkbox` label
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}
+
+      - linuxfabrik.clf.checkbox_input:
+          label: |
+            **This is** a *Markdown* formatted `checkbox group` label
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}
+          values:
+            - 'Check 1'
+            - 'Check 2'
+            - 'Check 3'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The values of a checkbox group support Jinja templating:
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'The fourth checkbox value is templated using Jinja'
+          values:
+            - 'Radio 1'
+            - 'Radio 2'
+            - 'Radio 3'
+            - 'Radio {{ 2 * 2 }}'
+
+  - title: 'linuxfabrik.clf.markdown'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.markdown* module can be used to display Markdown formatted content:
+            
+            In fact, this very text is formatted using the markdown module.
+            
+            > This module uses the [Mistune Python Markdown Parser](https://mistune.lepture.com/en/latest/index.html).
+            > You can refer to its documentation to see which Markdown features are supported.
+            
+            Jinja templating is supported *too*! The following list is generated using Jinja:
+            
+            {% for i in range(5) %}
+            
+            - List item {{ i }}
+              {% endfor %}
+
+  - title: 'linuxfabrik.clf.radio_input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.radio_input* module can be used to display a group of radio buttons:
+
+      - linuxfabrik.clf.radio_input:
+          label: 'This is a radio button group'
+          values:
+            - 'Radio 1'
+            - 'Radio 2'
+            - 'Radio 3'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The radio group above is optional (i.e. no radio button needs to be checked to be able to proceed).
+            If you want to ensure that a radio button is checked, you can do so using `required: true`.
+
+      - linuxfabrik.clf.radio_input:
+          label: 'You need to check a radio button in this group to be able to proceed'
+          values:
+            - 'Radio 1'
+            - 'Radio 2'
+            - 'Radio 3'
+          required: true
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The label of the radio button group supports Markdown formatting and Jinja templating:
+
+      - linuxfabrik.clf.radio_input:
+          label: |
+            **This is** a *Markdown* formatted `radio group` label
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}
+          values:
+            - 'Radio 1'
+            - 'Radio 2'
+            - 'Radio 3'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The radio button values support Jinja templating:
+
+      - linuxfabrik.clf.radio_input:
+          label: 'The fourth radio button value is templated using Jinja'
+          values:
+            - 'Radio 1'
+            - 'Radio 2'
+            - 'Radio 3'
+            - 'Radio {{ 2 * 2 }}'
+
+  - title: 'linuxfabrik.clf.select_input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.select_input* module can be used to display a (multiple) select input:
+
+      - linuxfabrik.clf.select_input:
+          label: 'This is a (single) select input'
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+
+      - linuxfabrik.clf.select_input:
+          label: 'This is a multi-select input'
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+          multiple: true
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            Using `require: true` you can ensure that:
+            
+            - for single-selects an option is selected (i.e. not `--- Please Select ---`).
+            - for multi-selects that at least one option is selected.
+
+      - linuxfabrik.clf.select_input:
+          label: 'You must select an option other than `--- Please Select ---` to be able to proceed.'
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+          required: true
+
+      - linuxfabrik.clf.select_input:
+          label: 'You must select at least one option to be able to proceed.'
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+          multiple: true
+          required: true
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The label of the select input supports Markdown formatting and Jinja templating (regardless if it is a multi-select or not):
+
+      - linuxfabrik.clf.select_input:
+          label: |
+            **This is** a *Markdown* formatted `select` label
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The options values support Jinja templating (regardless if it is a multi-select or not):
+
+      - linuxfabrik.clf.select_input:
+          label: 'Option 4 is templated using Jinja'
+          values:
+            - 'Option 1'
+            - 'Option 2'
+            - 'Option 3'
+            - 'Option {{ 2 + 2 }}'
+
+  - title: 'linuxfabrik.clf.text_input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.text_input* module can be used to display a text input field:
+
+      - linuxfabrik.clf.text_input:
+          label: 'This is a text input field'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            As already seen with the other input modules, you can use `required: true` to enforce a non-empty input to be able to proceed.
+
+      - linuxfabrik.clf.text_input:
+          label: 'You must type something here to be able to proceed'
+          required: true
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            The text input label also supports Markdown formatting and Jinja templating:
+
+      - linuxfabrik.clf.text_input:
+          label: |
+            This **is** a *Markdown* text input label
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}
+
+  - title: 'linuxfabrik.clf.text_output'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.text_output* module can be used to display a text as an HTML paragraph:
+
+      - linuxfabrik.clf.text_output:
+          content: |
+            This text is rendered inside an HTML paragraph.
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ---
+            Jinja templating is supported and the content may include HTML tags.
+            As such special attention must be paid to not break the HTML representation of the checklist.
+            
+            > The `linuxfabrik.clf.markdown` module is most likely a better choice for the majority of formatted content.
+            > This module exists mostly as a fallback for anything that Markdown does not support.
+
+
+      - linuxfabrik.clf.text_output:
+          content: |
+            This text contains <i>HTML</i> code.
+            <br/>
+            
+            For linebreaks the <code>br</code> element needs to be used
+            <br/>
+            
+            <pre>This is a &lt;pre&gt; block</pre>
+            <br/>
+            
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% else %}
+            In real checklists you would probably use more sensible Jinja code than this. ;)
+            {% endif %}

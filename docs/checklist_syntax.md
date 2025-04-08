@@ -42,7 +42,8 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       The very first key in the mapping. 
       Specifies the module, to which to delegate the task rendering.  
       *The mapping is passed to the respective module for rendering.
-      Check the syntax documentation of the respective module for its format.*  
+      Check the syntax documentation of the respective module for its format.*
+      The documentation for built-in modules can be found in this document in their respective sections below.  
       There exists a special module `linuxfabrik.clf.import` that can be used to import a sequence of tasks from a different file.
       For this special module the value must be a string of the path to the file to load (instead of a mapping).
 
@@ -74,153 +75,124 @@ The version field from a template will be copied to a new checklist unchanged.
 This field could be used, for example, to track from which iteration of a template the checklist was originally generated.
 
 
-# Task Module *linuxfabrik.clf.checkbox_input*
+## Task Module *linuxfabrik.clf.checkbox_input*
 
 A task module that renders either a single HTML checkbox input field or a group of them.
 
+### Fields
 
-## `label`
+- **`label`**  
+  *Type*: string  
+  The text to be used for the HTML label element of the group fieldset.  
+  Supports Jinja templating.  
+  Supports Markdown formatting.  
+  May be left empty.
 
-* Type: string
+- **`values`**  
+  *Type*: sequence  
+  Each list element will be rendered as a separate checkbox *of the same group*.
+  Multiple checkboxes may be checked at any time.  
+  Use multiple checkbox tasks with a single value each if you want independent checkboxes.  
+  Support Jinja templating.  
+  May be omitted if one only wants a single checkbox.
+  In that case the (group) label would be the label of the checkbox.
 
-The text to be used for the HTML label element of the group fieldset.
-Supports Jinja templating.
-Supports Markdown formatting.
-May be left empty.
-
-
-## `values`
-
-* Type: sequence
-
-Each list element will be rendered as a separate checkbox *of the same group*.
-Use multiple tasks with a single value each if you want independent checkboxes.
-Multiple checkboxes may be checked at any time.
-Support Jinja templating.
-May be omitted if one only wants a single checkbox. In that case the (group) label would be the label of the checkbox.
-
-
-## `required`
-
-* Type: boolean
-
-Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that *all checkboxes of the same group must be checked* to pass validation.
+- **`required`**  
+  *Type*: boolean  
+  Controls the `required` attribute of the HTML input element.  
+  Setting this key to `true` has the effect that *all checkboxes of the same group must be checked* to pass validation.
 
 
-# Task Module *linuxfabrik.clf.markdown*
+## Task Module *linuxfabrik.clf.markdown*
 
 A task module that renders markdown content as HTML.
 
+### Fields
 
-## `content`
-
-* Type: string
-
-The Markdown formatted text to render as an HTML paragraph.
-Supports Jinja templating.
+- **`content`**  
+  *Type*: string  
+  The Markdown formatted text to render as an HTML paragraph.  
+  Supports Jinja templating.
 
 
-# Task Module *linuxfabrik.clf.radio_input*
+## Task Module *linuxfabrik.clf.radio_input*
 
 A task module that renders a group of HTML radio inputs (also named radio buttons).
 
+### Fields
 
-## `label`
+- **`label`**  
+  *Type*: string  
+  The text to be used for the HTML label element of the radio button group.  
+  Supports Jinja templating.  
+  Supports Markdown formatting.
 
-* Type: string
+- **`values`**  
+  *Type*: sequence  
+  Each list element will be rendered as a radio button of the same radio button group.
+  As by the nature of radio buttons, only one of them may be checked at all times.
 
-The text to be used for the HTML label element of the radio button group.
-Supports Jinja templating.
-Supports Markdown formatting.
-
-
-## `values`
-
-* Type: sequence
-
-Each list element will be rendered as a radio button of the same radio button group.
-As by the nature of radio buttons, only one of them may be checked at all times.
-
-
-## `required`
-
-* Type: boolean
-
-Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that *one* of the radio buttons must be checked to pass validation.
+- **`required`**  
+  *Type*: boolean  
+  Controls the `required` attribute of the HTML input element.  
+  Setting this key to `true` has the effect that *one* of the radio buttons must be checked to pass validation.
 
 
-# Task Module *linuxfabrik.clf.select_input*
+## Task Module *linuxfabrik.clf.select_input*
 
 A task module that renders an HTML select.
 
+### Fields
 
-## `label`
+- **`label`**  
+  *Type*: string  
+  The text to be used for the HTML label element of the rendered select element.  
+  Supports Jinja templating.  
+  Supports Markdown formatting.
 
-* Type: string
+- **`values`**  
+  *Type*: sequence  
+  Each list item will be rendered as a select option.  
+  The special option `--- Please Select ---` will always be present to denote an "empty" state.
 
-The text to be used for the HTML label element of the rendered select element.
-Supports Jinja templating.
-Supports Markdown formatting.
+- **`multiple`**  
+  *Type:* boolean  
+  If set to true renders the HTML select with the multiple attribute so that multiple options may be selected.
 
-
-## `values`
-
-* Type: sequence
-
-Each list item will be rendered as a select option.
-The special option `--- Please Select ---` will always be present to denote an "empty" state.
-
-
-## `multiple`
-
-* Type: boolean
-
-If set to true renders the HTML select with the multiple attribute so that multiple options may be selected.
-
-## `required`
-
-* Type: boolean
-
-Controls the `required` attribute of the HTML select element.
-Setting this key to `true` has the following effects:
-
-- for single-select: any option other than `--- Please Select ---` must be selected to pass validation.
-- for multi-select: at least one option must be selected to pass validation.
+- **`required`**  
+  *Type*: boolean  
+  Controls the `required` attribute of the HTML select element.  
+  Setting this key to `true` has the following effects:
+    - for single-select: any option other than `--- Please Select ---` must be selected to pass validation.
+    - for multi-select: at least one option must be selected to pass validation.
 
 
-# Task Module *linuxfabrik.clf.text_input*
+## Task Module *linuxfabrik.clf.text_input*
 
 A task module that renders an HTML text input.
 
+### Fields
 
-## `label`
+- **`label`**  
+  *Type*: string  
+  The text to be used for the HTML label element of the rendered text input.  
+  Supports Jinja templating.  
+  Supports Markdown formatting.
 
-* Type: string
-
-The text to be used for the HTML label element of the rendered text input.
-Supports Jinja templating.
-Supports Markdown formatting.
-
-
-## `required`
-
-* Type: boolean
-
-Controls the `required` attribute of the HTML input element.
-Setting this key to `true` has the effect that the text input *must be non-empty* to pass validation.
+- **`required`**  
+  *Type*: boolean  
+  Controls the `required` attribute of the HTML input element.  
+  Setting this key to `true` has the effect that the text input *must be non-empty* to pass validation.
 
 
-# Task Module *linuxfabrik.clf.text_output*
+## Task Module *linuxfabrik.clf.text_output*
 
 A task module that renders an HTML paragraph.
 
+### Fields
 
-## `content`
-
-* Type: string
-
-The text to render as an HTML paragraph.
-May include HTML tags.
-Supports Jinja templating.
+- **`content`**  
+  *Type*: string  
+  The text to render as an HTML paragraph.  
+  May include HTML tags.  
+  Supports Jinja templating.

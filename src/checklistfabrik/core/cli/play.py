@@ -1,3 +1,4 @@
+import argparse
 import logging
 import pathlib
 import webbrowser
@@ -57,6 +58,13 @@ class PlayCli(BaseCli):
         )
 
         self.arg_parser.add_argument(
+            '--open',
+            action=argparse.BooleanOptionalAction,
+            help='Control whether to open the checklist page the default browser.',
+            default=True,
+        )
+
+        self.arg_parser.add_argument(
             '--template',
             help=(
                 'Optional: Path to a YAML template file for creating a new checklist. '
@@ -90,7 +98,8 @@ class PlayCli(BaseCli):
 
         checklist_server = checklist_wsgi_server.ChecklistWsgiServer(HOST, PORT, checklist_app)
 
-        webbrowser.open(f'http://{HOST}:{PORT}')
+        if self.args.open:
+            webbrowser.open(f'http://{HOST}:{PORT}')
 
         checklist_server.serve()
 

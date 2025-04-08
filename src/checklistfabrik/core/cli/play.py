@@ -58,6 +58,16 @@ class PlayCli(BaseCli):
         )
 
         self.arg_parser.add_argument(
+            '--force',
+            action='store_true',
+            help=(
+                'Allow creating a checklist from a template even if the target checklist file '
+                '(the `file` argument) already exists. '
+                'WARNING: THE TARGET FILE WILL BE OVERWRITTEN.'
+            ),
+        )
+
+        self.arg_parser.add_argument(
             '--open',
             action=argparse.BooleanOptionalAction,
             help='Control whether to open the checklist page the default browser.',
@@ -68,15 +78,15 @@ class PlayCli(BaseCli):
             '--template',
             help=(
                 'Optional: Path to a YAML template file for creating a new checklist. '
-                'This option must be used only when the target checklist file (the `--file` '
-                'argument) does not already exist.'
+                'This option may only be used when the target checklist file (the `file` '
+                'argument) does not already exist or the `--force` option is used.'
             ),
             type=pathlib.Path,
         )
 
     def validate_args(self):
         if self.args.template is not None:
-            if self.args.file.is_file():
+            if self.args.file.is_file() and not self.args.force:
                 self.arg_parser.error('--template may only be specified if file does not exist')
 
             if not self.args.template.is_file():

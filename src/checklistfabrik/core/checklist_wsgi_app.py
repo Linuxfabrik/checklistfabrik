@@ -48,13 +48,13 @@ class ChecklistWsgiApp:
             },
         )
 
-        self.checklist = self.load_checklist(prefer_template=True)
+        self.checklist = self.load_checklist()
 
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
 
-    def load_checklist(self, prefer_template=False):
-        file_to_load = self.checklist_template if prefer_template and self.checklist_template is not None else self.checklist_file
+    def load_checklist(self):
+        file_to_load = self.checklist_template if self.checklist_template is not None else self.checklist_file
 
         return self.checklist_mapper.load_checklist(file_to_load)
 

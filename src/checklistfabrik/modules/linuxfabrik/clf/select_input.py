@@ -76,19 +76,23 @@ def main(**kwargs):
         html = jinja2.Template(
             TEMPLATE_MULTI_SELECT_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name, []),
-            templated_label=templated_label,
-            templated_values=templated_values,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name, []),
+                'templated_label': templated_label,
+                'templated_values': templated_values,
+            }),
         )
     else:
         html = jinja2.Template(
             TEMPLATE_SINGLE_SELECT_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name),
-            templated_label=templated_label,
-            templated_values=templated_values,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name),
+                'templated_label': templated_label,
+                'templated_values': templated_values,
+            }),
         )
 
     return {

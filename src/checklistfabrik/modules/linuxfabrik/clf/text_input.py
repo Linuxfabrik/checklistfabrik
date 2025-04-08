@@ -39,9 +39,11 @@ def main(**kwargs):
         'html': jinja2.Template(
             TEMPLATE_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name),
-            templated_label=templated_label,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name),
+                'templated_label': templated_label,
+            }),
         ),
         'fact_name': fact_name,
     }

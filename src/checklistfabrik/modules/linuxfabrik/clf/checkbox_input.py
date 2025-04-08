@@ -79,19 +79,23 @@ def main(**kwargs):
         html = jinja2.Template(
             TEMPLATE_MULTI_CHECK_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name, []),
-            templated_label=templated_label,
-            templated_values=templated_values,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name, []),
+                'templated_label': templated_label,
+                'templated_values': templated_values,
+            }),
         )
     else:
         # If we don't have any values just render a single checkbox.
         html = jinja2.Template(
             TEMPLATE_SINGLE_CHECK_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name),
-            templated_label=templated_label,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name),
+                'templated_label': templated_label,
+            }),
         )
 
     return {

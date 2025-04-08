@@ -51,10 +51,12 @@ def main(**kwargs):
         'html': jinja2.Template(
             TEMPLATE_STRING,
         ).render(
-            **kwargs,
-            fact_value=kwargs.get(fact_name),
-            templated_group_label=templated_group_label,
-            templated_values=templated_values,
+            **(kwargs | {
+                'fact_name': fact_name,
+                'fact_value': kwargs.get(fact_name),
+                'templated_group_label': templated_group_label,
+                'templated_values': templated_values,
+            }),
         ),
         'fact_name': fact_name,
     }

@@ -19,9 +19,15 @@ import jinja2
 import mistune
 
 TEMPLATE_MULTI_CHECK_STRING = '''\
-<fieldset>
+<fieldset class="form-group" {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
+    {% if required %}
+    <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
+    {% endif %}
+    
     {% if label %}
-    <label>{{ templated_label }}</label>
+        <div class="form-label" id="{{ fact_name }}-label">
+            {{ templated_label }}
+        </div>
     {% endif %}
 
     {% for value in templated_values %}
@@ -41,14 +47,21 @@ TEMPLATE_MULTI_CHECK_STRING = '''\
 '''
 
 TEMPLATE_SINGLE_CHECK_STRING = '''\
-<div class="form-group">
+<div class="form-group d-flex">
     <label class="form-checkbox">
-        <input name="{{ fact_name }}" type="checkbox"
+        <input name="{{ fact_name }}" type="checkbox" aria-labelledby="{{ fact_label }}-label"
             {%- if fact_value %} checked="checked" {%- endif %}
             {%- if required %} required="required" {%- endif %}/>
         <i class="form-icon"></i>
-        {{ templated_label }}
     </label>
+    
+    <div class="form-label" id="{{ fact_name }}-label">
+        {{ templated_label }}
+    </div>
+    
+    {% if required %}
+    <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
+    {% endif %}
 </div>
 
 {# Hidden field to allow unchecking a checkbox, since a HTML form does not send unchecked checkboxes. #}

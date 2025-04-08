@@ -22,6 +22,10 @@
         {% endblock %}
     </form>
 
+    <p class="d-flex" aria-hidden="true">
+        <i class="fa-solid clf-fa-required text-error"></i> <i>Required field(s)</i>
+    </p>
+
     <div class="d-flex" style="justify-content: space-between;">
         <div class="d-flex" style="gap: 0.4rem;">
             <a class="btn {%- if not prev_task_name %} disabled {%- endif %}" {%- if prev_task_name %} href="/page?name={{ prev_task_name }}" {%- else %} aria-disabled="true" {%- endif %} role="button">Previous</a>

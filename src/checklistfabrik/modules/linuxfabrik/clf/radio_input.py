@@ -18,8 +18,17 @@ import jinja2
 import mistune
 
 TEMPLATE_STRING = '''
-<div class="form-group">
-    <label class="form-label">{{ templated_group_label }}</label>
+<fieldset class="form-group">
+    {% if required %}
+    <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
+    {% endif %}
+    
+    {% if label %}
+        <div class="form-label" id="{{ fact_name }}-label">
+            {{ templated_group_label }}
+        </div>
+    {% endif %}
+    
     {% for value in values %}
     <label class="form-radio">
         <input name="{{ fact_name }}" type="radio" value="{{ value }}"
@@ -28,7 +37,7 @@ TEMPLATE_STRING = '''
         <i class="form-icon"></i>{{ value }}
     </label>
     {% endfor %}
-</div>
+</fieldset>
 '''
 
 

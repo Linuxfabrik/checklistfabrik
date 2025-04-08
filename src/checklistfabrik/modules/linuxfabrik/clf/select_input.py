@@ -21,23 +21,41 @@ import mistune
 
 TEMPLATE_MULTI_SELECT_STRING = '''\
 <div class="form-group">
-    <label class="form-label" for={{ fact_name }}>{{ templated_label }}</label>
-    <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}[]" multiple="multiple"
+    <div class="d-flex">
+        <div class="form-label" id="{{ fact_name }}-label">
+            {{ templated_label }}
+        </div>
+        
+        {% if required %}
+        <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
+        {% endif %}
+    </div>
+    
+    <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}[]" multiple="multiple" aria-labelledby="{{ fact_name }}-label"
         {%- if required %} required="required" {%- endif %}/>
         {% for value in templated_values %}
         <option {%- if value in fact_value %} selected="selected" {%- endif %}>{{ value }}</option>
         {% endfor %}
     </select>
-</div>
     
-{# Hidden input to allow selecting no option, since a HTML form does not send empty selections. #}
-<input type="hidden" name="{{ fact_name }}[]" value=""/>
+    {# Hidden input to allow selecting no option, since a HTML form does not send empty selections. #}
+    <input type="hidden" name="{{ fact_name }}[]" value=""/>
+</div>
 '''
 
 TEMPLATE_SINGLE_SELECT_STRING = '''\
 <div class="form-group">
-    <label class="form-label" for={{ fact_name }}>{{ templated_label }}</label>
-    <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}"
+    <div class="d-flex">
+        <div class="form-label" id="{{ fact_name }}-label">
+            {{ templated_label }}
+        </div>
+        
+        {% if required %}
+        <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
+        {% endif %}
+    </div>
+    
+    <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}" aria-labelledby="{{ fact_name }}-label"
         {%- if required %} required="required" {%- endif %}/>
         <option value="">--- Please select ---</option>
         {% for value in templated_values %}

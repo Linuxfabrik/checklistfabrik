@@ -15,10 +15,18 @@ import mistune
 
 TEMPLATE_STRING = '''
 <div class="form-group">
-    <label class="form-label" for="{{ fact_name }}">{{ templated_label }}</label>
-    <input class="form-input" id="{{ fact_name }}" name="{{ fact_name }}" type="text"
-        {%- if required %} required="required" {%- endif %}
-        {%- if fact_value %} value="{{ fact_value }}" {%- endif %}/>
+    
+    <div class="form-label" id="{{ fact_name }}-label">
+        {{ templated_label }}
+    </div>
+    
+    <div class="has-icon-right">
+        <input class="form-input" id="{{ fact_name }}" name="{{ fact_name }}" type="text" aria-labelledby="{{ fact_name }}-label"
+            {%- if required %} required="required" {%- endif %}
+            {%- if fact_value %} value="{{ fact_value }}" {%- endif %}/>
+        
+        {% if required %}<i class="form-icon fa-solid clf-fa-required text-error"></i>{% endif %}
+    </div>
 </div>
 '''
 

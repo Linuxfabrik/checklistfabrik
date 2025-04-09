@@ -18,7 +18,7 @@ import jinja2
 import mistune
 
 TEMPLATE_STRING = '''
-<fieldset class="form-group">
+<fieldset>
     {% if required %}
     <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
     {% endif %}

@@ -19,7 +19,7 @@ import jinja2
 import mistune
 
 TEMPLATE_MULTI_CHECK_STRING = '''\
-<fieldset class="form-group" {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
+<fieldset {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
     {% if required %}
     <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
     {% endif %}

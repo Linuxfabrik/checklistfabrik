@@ -77,6 +77,8 @@ class BaseCli:
         cli.parse_args(args)
         cli.validate_args()
 
-        cli.init_logging()
+        cli.init_logging(
+            console_log_level=logging.DEBUG if getattr(cli.args, 'verbose', False) else logging.INFO,
+        )
 
         sys.exit(cli.run())

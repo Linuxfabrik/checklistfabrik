@@ -48,6 +48,12 @@ class PlayCli(BaseCli):
         )
 
         self.arg_parser.add_argument(
+            '-v', '--verbose',
+            action='store_true',
+            help='Optional: Also log debug messages on console.',
+        )
+
+        self.arg_parser.add_argument(
             'file',
             help=(
                 'Path to the checklist file. If the file exists, it will be loaded for re-running. '

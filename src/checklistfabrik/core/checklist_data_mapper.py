@@ -7,6 +7,9 @@ from . import utils
 
 logger = logging.getLogger(__name__)
 
+class ChecklistLoadError(Exception):
+    """Failure while loading checklist data."""
+    pass
 
 class ChecklistDataMapper:
     """Helper to map checklist data from YAML files to Python classes and vice versa."""
@@ -23,7 +26,11 @@ class ChecklistDataMapper:
 
         logger.info('Loading checklist data from "%s"', file)
 
-        return self.process_checklist(self.load_yaml(file))
+        try:
+            return self.process_checklist(self.load_yaml(file))
+        except ChecklistLoadError:
+            logger.critical('Loading checklist data from file failed')
+            sys.exit(1)
 
     def save_checklist(self, file, checklist):
         """Save a checklist and its pages, tasks and facts to a YAML file."""
@@ -36,7 +43,8 @@ class ChecklistDataMapper:
         self.yaml.dump(checklist.to_dict(), stream)
 
         if stream.tell() == 0:
-            raise Exception(f'Yaml dump failed. File "{file}" is left untouched')
+            logger.critical('Yaml dump failed and returned an empty result. File "%s" is left untouched', file)
+            sys.exit(1)
 
         with open(file, mode='w', encoding='utf-8') as checklist_file:
             stream.seek(0)
@@ -51,12 +59,30 @@ class ChecklistDataMapper:
         valid, message = utils.validate_dict_keys(checklist, {'title', 'pages'}, {'version'}, disallow_extra_keys=True)
 
         if not valid:
-            logger.error(message)
-            sys.exit(1)
+            logger.critical('Failed to load checklist: %s', message)
+            raise ChecklistLoadError
+
+        page_list = checklist['pages']
+        title = checklist['title']
+
+        if not isinstance(title, str):
+            logger.critical('Title field of checklist is not a string')
+            raise ChecklistLoadError
+
+        if not title or title.isspace():
+            logger.warning('Title field of checklist is empty')
+
+        if not isinstance(page_list, list):
+            logger.critical('Checklist "%s" does not contain any pages', title)
+            raise ChecklistLoadError
+
+        if 'version' in checklist and not isinstance(checklist['version'], str):
+            logger.critical('Version field of checklist "%s" is not a string', title)
+            raise ChecklistLoadError
 
         return models.Checklist(
-            checklist['title'],
-            self.process_page_list(checklist['pages'], facts),
+            title,
+            self.process_page_list(page_list, facts),
             facts,
             checklist.get('version'),
         )
@@ -65,10 +91,31 @@ class ChecklistDataMapper:
         pages = []
 
         for page in page_list:
-            page_directive, page_context = list(page.items())[0]
+            if not isinstance(page, dict):
+                logger.critical('Page data is not a mapping')
+                raise ChecklistLoadError
+
+            # Try to detect special directives before processing the page.
+            try:
+                page_directive, page_context = list(page.items())[0]
+            except IndexError:
+                page_directive = None
+                page_context = None
 
             if page_directive == 'linuxfabrik.clf.import':
-                pages.extend(self.process_page_list(self.load_yaml(page_context), facts))
+                if not isinstance(page_context, str):
+                    logger.critical('Page import key is specified but its value is not a string')
+                    raise ChecklistLoadError
+
+                logger.info('Importing pages from "%s"', page_context)
+
+                imported_page_list = self.load_yaml(page_context)
+
+                if not isinstance(imported_page_list, list):
+                    logger.critical('Imported data is not a page list')
+                    raise ChecklistLoadError
+
+                pages.extend(self.process_page_list(imported_page_list, facts))
                 continue
 
             pages.append(self.process_page(page, facts))
@@ -79,36 +126,74 @@ class ChecklistDataMapper:
         valid, message = utils.validate_dict_keys(page, {'title', 'tasks'}, optional_keys={'when'}, disallow_extra_keys=True)
 
         if not valid:
-            logger.error(message)
-            sys.exit(1)
+            logger.critical('Failed to load page: %s', message)
+            raise ChecklistLoadError
 
-        return models.Page(
-            page['title'],
-            self.process_task_list(page['tasks'], facts),
-            page.get('when'),
-        )
+        task_list = page['tasks']
+        title = page['title']
+
+        if not isinstance(title, str):
+            logger.critical('Title field of page is not a string')
+            raise ChecklistLoadError
+
+        if not title or title.isspace():
+            logger.critical('Title field of page is empty')
+            raise ChecklistLoadError
+
+        if not isinstance(task_list, list):
+            logger.critical('Tasks field on page "%s" is not a list', title)
+            raise ChecklistLoadError
+
+        if task_list:
+            tasks = self.process_task_list(page['tasks'], facts)
+        else:
+            logger.warning('Task list on page "%s" is empty', title)
+            tasks = []
+
+        return models.Page(title, tasks, page.get('when'))
 
     def process_task_list(self, task_list, facts):
         tasks = []
 
         for task in task_list:
-            task_module, task_context = list(task.items())[0]
+            if not isinstance(task, dict):
+                logger.critical('Task data is not a mapping')
+                raise ChecklistLoadError
+
+            task_items = list(task.items())
+
+            if len(task_items) == 0:
+                logger.critical('Task data is missing')
+                raise ChecklistLoadError
+
+            task_module, task_context = task_items[0]
 
             if task_module == 'linuxfabrik.clf.import':
-                tasks.extend(self.process_task_list(self.load_yaml(task_context), facts))
+                if not isinstance(task_context, str):
+                    logger.critical('Task import key is specified but its value is not a string')
+                    raise ChecklistLoadError
+
+                logger.info('Importing tasks from "%s"', task_context)
+
+                imported_task_list = self.load_yaml(task_context)
+
+                if not isinstance(imported_task_list, list):
+                    logger.critical('Imported data is not a task list')
+                    raise ChecklistLoadError
+
+                tasks.extend(self.process_task_list(imported_task_list, facts))
                 continue
 
-            tasks.append(self.process_task(task, facts))
+            if not isinstance(task_context, dict):
+                logger.critical('Task context is not a mapping')
+                raise ChecklistLoadError
+
+            fact_name = task.get('fact_name')
+            value = task.get('value')
+
+            if fact_name is not None and value is not None:
+                facts[fact_name] = value
+
+            tasks.append(models.Task(task_module, task_context, fact_name))
 
         return tasks
-
-    def process_task(self, task, facts):
-        task_module, task_context = list(task.items())[0]
-
-        fact_name = task.get('fact_name')
-        value = task.get('value')
-
-        if fact_name is not None and value is not None:
-            facts[fact_name] = value
-
-        return models.Task(task_module, task_context, fact_name)

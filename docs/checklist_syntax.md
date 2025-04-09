@@ -29,7 +29,8 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
 - **`title`**  
   *Type*: string  
   Title of the checklist page.  
-  The title will be used as the label for the page's form primary fieldset.
+  The title will be used as the label for the page's form primary fieldset.  
+  May not be empty.
 
 - **`tasks`**  
   *Type*: sequence of mappings  

@@ -1,5 +1,6 @@
 import io
 import logging
+import pathlib
 import sys
 
 from . import models
@@ -7,9 +8,11 @@ from . import utils
 
 logger = logging.getLogger(__name__)
 
+
 class ChecklistLoadError(Exception):
     """Failure while loading checklist data."""
     pass
+
 
 class ChecklistDataMapper:
     """Helper to map checklist data from YAML files to Python classes and vice versa."""
@@ -18,8 +21,18 @@ class ChecklistDataMapper:
         self.yaml = yaml
 
     def load_yaml(self, file):
-        with open(file, mode='r', encoding='utf-8') as file_handle:
-            return self.yaml.load(file_handle.read())
+        try:
+            with open(file, mode='r', encoding='utf-8') as file_handle:
+                return self.yaml.load(file_handle.read())
+        except FileNotFoundError:
+            logger.critical('Cannot open file "%s" as it does not exist', file)
+            raise ChecklistLoadError
+        except IsADirectoryError:
+            logger.critical('Cannot open file "%s" as it is a directory', file)
+            raise ChecklistLoadError
+        except PermissionError:
+            logger.critical('Cannot open file "%s" due to insufficient permissions', file)
+            raise ChecklistLoadError
 
     def load_checklist(self, file):
         """Load a checklist with all of its pages, tasks and facts from a YAML file and process all imports."""
@@ -27,7 +40,7 @@ class ChecklistDataMapper:
         logger.info('Loading checklist data from "%s"', file)
 
         try:
-            return self.process_checklist(self.load_yaml(file))
+            return self.process_checklist(self.load_yaml(file), file.parent)
         except ChecklistLoadError:
             logger.critical('Loading checklist data from file failed')
             sys.exit(1)
@@ -50,7 +63,7 @@ class ChecklistDataMapper:
             stream.seek(0)
             checklist_file.write(stream.read())
 
-    def process_checklist(self, checklist):
+    def process_checklist(self, checklist, workdir):
         facts = {}
 
         if checklist is None:
@@ -82,12 +95,12 @@ class ChecklistDataMapper:
 
         return models.Checklist(
             title,
-            self.process_page_list(page_list, facts),
+            self.process_page_list(page_list, workdir, facts),
             facts,
             checklist.get('version'),
         )
 
-    def process_page_list(self, page_list, facts):
+    def process_page_list(self, page_list, workdir, facts):
         pages = []
 
         for page in page_list:
@@ -107,22 +120,26 @@ class ChecklistDataMapper:
                     logger.critical('Page import key is specified but its value is not a string')
                     raise ChecklistLoadError
 
-                logger.info('Importing pages from "%s"', page_context)
+                # Relative import paths should be relative to the checklist file.
+                import_path = pathlib.Path(page_context)
+                computed_import_path = import_path if import_path.is_absolute() else workdir / page_context
 
-                imported_page_list = self.load_yaml(page_context)
+                logger.info('Importing pages from "%s"', computed_import_path)
+
+                imported_page_list = self.load_yaml(computed_import_path)
 
                 if not isinstance(imported_page_list, list):
                     logger.critical('Imported data is not a page list')
                     raise ChecklistLoadError
 
-                pages.extend(self.process_page_list(imported_page_list, facts))
+                pages.extend(self.process_page_list(imported_page_list, workdir, facts))
                 continue
 
-            pages.append(self.process_page(page, facts))
+            pages.append(self.process_page(page, workdir, facts))
 
         return pages
 
-    def process_page(self, page, facts):
+    def process_page(self, page, workdir, facts):
         valid, message = utils.validate_dict_keys(page, {'title', 'tasks'}, optional_keys={'when'}, disallow_extra_keys=True)
 
         if not valid:
@@ -145,14 +162,14 @@ class ChecklistDataMapper:
             raise ChecklistLoadError
 
         if task_list:
-            tasks = self.process_task_list(page['tasks'], facts)
+            tasks = self.process_task_list(page['tasks'], workdir, facts)
         else:
             logger.warning('Task list on page "%s" is empty', title)
             tasks = []
 
         return models.Page(title, tasks, page.get('when'))
 
-    def process_task_list(self, task_list, facts):
+    def process_task_list(self, task_list, workdir, facts):
         tasks = []
 
         for task in task_list:
@@ -173,15 +190,19 @@ class ChecklistDataMapper:
                     logger.critical('Task import key is specified but its value is not a string')
                     raise ChecklistLoadError
 
-                logger.info('Importing tasks from "%s"', task_context)
+                # Relative import paths should be relative to the checklist file.
+                import_path = pathlib.Path(task_context)
+                computed_import_path = import_path if import_path.is_absolute() else workdir / task_context
 
-                imported_task_list = self.load_yaml(task_context)
+                logger.info('Importing tasks from "%s"', computed_import_path)
+
+                imported_task_list = self.load_yaml(computed_import_path)
 
                 if not isinstance(imported_task_list, list):
                     logger.critical('Imported data is not a task list')
                     raise ChecklistLoadError
 
-                tasks.extend(self.process_task_list(imported_task_list, facts))
+                tasks.extend(self.process_task_list(imported_task_list, workdir, facts))
                 continue
 
             if not isinstance(task_context, dict):

@@ -23,3 +23,7 @@ form fieldset > legend {
   font-size: 0.625em;
   margin-inline: 0.3rem;
 }
+
+li p {
+  display: inline-flex;
+}

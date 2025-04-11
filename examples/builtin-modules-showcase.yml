@@ -76,10 +76,10 @@ pages:
       - linuxfabrik.clf.checkbox_input:
           label: 'The fourth checkbox value is templated using Jinja'
           values:
-            - 'Radio 1'
-            - 'Radio 2'
-            - 'Radio 3'
-            - 'Radio {{ 2 * 2 }}'
+            - 'Check 1'
+            - 'Check 2'
+            - 'Check 3'
+            - 'Check {{ 2 * 2 }}'
 
   - title: 'linuxfabrik.clf.markdown'
     tasks:
@@ -96,9 +96,8 @@ pages:
             Jinja templating is supported *too*! The following list is generated using Jinja:
             
             {% for i in range(5) %}
-            
             - List item {{ i }}
-              {% endfor %}
+            {% endfor %}
 
   - title: 'linuxfabrik.clf.radio_input'
     tasks:

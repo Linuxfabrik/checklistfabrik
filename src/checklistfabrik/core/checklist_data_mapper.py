@@ -154,7 +154,7 @@ class ChecklistDataMapper:
                     logger.critical('Imported data is not a page list')
                     raise ChecklistLoadError
 
-                pages.extend(self.process_page_list(imported_page_list, workdir, facts))
+                pages.extend(self.process_page_list(imported_page_list, computed_import_path.parent, facts))
                 continue
 
             pages.append(self.process_page(page, workdir, facts))
@@ -224,7 +224,7 @@ class ChecklistDataMapper:
                     logger.critical('Imported data is not a task list')
                     raise ChecklistLoadError
 
-                tasks.extend(self.process_task_list(imported_task_list, workdir, facts))
+                tasks.extend(self.process_task_list(imported_task_list, computed_import_path.parent, facts))
                 continue
 
             if not isinstance(task_context, dict):

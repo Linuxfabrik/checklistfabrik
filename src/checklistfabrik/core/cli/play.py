@@ -58,8 +58,10 @@ class PlayCli(BaseCli):
             help=(
                 'Path to the checklist file. If the file exists, it will be loaded for re-running. '
                 'If you want to create a new checklist, provide a non-existent file path and use '
-                'the `--template` option.'
+                'the `--template` option. This option may be left empty to auto-generate a filename '
+                'based on the template (if provided) or simply a timestamp.'
             ),
+            nargs='?',
             type=pathlib.Path,
         )
 
@@ -92,14 +94,14 @@ class PlayCli(BaseCli):
 
     def validate_args(self):
         if self.args.template is not None:
-            if self.args.file.is_file() and not self.args.force:
+            if self.args.file and self.args.file.is_file() and not self.args.force:
                 self.arg_parser.error('--template may only be specified if file does not exist')
 
             if not self.args.template.is_file():
                 self.arg_parser.error('--template must be a file')
 
         else:
-            if not self.args.file.is_file():
+            if not (self.args.file and self.args.file.is_file()):
                 self.arg_parser.error('file must exist')
 
     def run(self):

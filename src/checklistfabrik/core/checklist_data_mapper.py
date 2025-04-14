@@ -45,7 +45,7 @@ class ChecklistDataMapper:
             logger.critical('Loading checklist data from file failed')
             sys.exit(1)
 
-    def save_checklist(self, file, checklist):
+    def save_checklist(self, file, checklist, overwrite=True):
         """Save a checklist and its pages, tasks and facts to a YAML file."""
 
         logger.info('Saving checklist data to "%s"', file)
@@ -59,7 +59,19 @@ class ChecklistDataMapper:
             logger.critical('Yaml dump failed and returned an empty result. File "%s" is left untouched', file)
             sys.exit(1)
 
-        with open(file, mode='w', encoding='utf-8') as checklist_file:
+        if not overwrite:
+            # Find a free file name
+            original_file = file
+            counter = 1
+
+            while file.exists():
+                file = original_file.with_name(f'{original_file.stem}_{counter}{original_file.suffix}')
+                counter += 1
+
+            if file != original_file:
+                logger.warning('File "%s" already exists. Saving to "%s" instead', original_file, file)
+
+        with open(file, mode='w' if overwrite else 'x', encoding='utf-8') as checklist_file:
             stream.seek(0)
             checklist_file.write(stream.read())
 
@@ -69,7 +81,12 @@ class ChecklistDataMapper:
         if checklist is None:
             raise ValueError('Cannot load an empty checklist.')
 
-        valid, message = utils.validate_dict_keys(checklist, {'title', 'pages'}, {'version'}, disallow_extra_keys=True)
+        valid, message = utils.validate_dict_keys(
+            checklist,
+            {'title', 'pages'},
+            {'target_filename', 'version'},
+            disallow_extra_keys=True,
+        )
 
         if not valid:
             logger.critical('Failed to load checklist: %s', message)
@@ -89,6 +106,10 @@ class ChecklistDataMapper:
             logger.critical('Checklist "%s" does not contain any pages', title)
             raise ChecklistLoadError
 
+        if 'target_filename' in checklist and not isinstance(checklist['target_filename'], str):
+            logger.critical('Target filename field of checklist "%s" is not a string', title)
+            raise ChecklistLoadError
+
         if 'version' in checklist and not isinstance(checklist['version'], str):
             logger.critical('Version field of checklist "%s" is not a string', title)
             raise ChecklistLoadError
@@ -97,6 +118,7 @@ class ChecklistDataMapper:
             title,
             self.process_page_list(page_list, workdir, facts),
             facts,
+            checklist.get('target_filename'),
             checklist.get('version'),
         )
 

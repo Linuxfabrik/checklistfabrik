@@ -1,5 +1,7 @@
+import datetime
 import json
 import logging
+import pathlib
 import urllib.parse
 import uuid
 
@@ -59,7 +61,44 @@ class ChecklistWsgiApp:
         return self.checklist_mapper.load_checklist(file_to_load)
 
     def save_checklist(self):
-        self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
+        if self.checklist_file:
+            # Loaded from this file now save to it.
+            self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
+            return
+
+        # No filename was specified, neither on the CLI nor in the template file, so generate one.
+
+        # Try to generate filename based on the templates target filename
+        if self.checklist.target_filename:
+            generated_filename = jinja2.Template(self.checklist.target_filename).render(self.checklist.facts)
+
+            # Remove well-known invalid characters for the most commonly used operating systems and filesystems.
+            clean_filename = generated_filename.translate(
+                str.maketrans(
+                    {
+                        ctrl_char: None for ctrl_char in range(0, 32)
+                    } | {
+                        '"': None,
+                        '*': None,
+                        '/': None,
+                        ':': None,
+                        '<': None,
+                        '>': None,
+                        '?': None,
+                        '\\': None,
+                    }
+                )
+            )
+
+            file_to_save = pathlib.Path(f'{clean_filename}.yml')
+            logger.info('Generated file name based on template: "%s"', file_to_save)
+        else:
+            file_to_save = pathlib.Path(f'checklist_{datetime.datetime.now().isoformat(timespec="milliseconds")}.yml')
+            logger.warning('No file name set. Falling back to "%s"', file_to_save)
+
+        # Saving to the file with the generated filename.
+        # This should never overwrite already existing files with the same name.
+        self.checklist_mapper.save_checklist(file_to_save, self.checklist, overwrite=False)
 
     @werkzeug.Request.application
     def application(self, request):

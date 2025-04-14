@@ -1,10 +1,11 @@
 class Checklist:
     """Models a ChecklistFabrik checklist."""
 
-    def __init__(self, title, pages, facts, version=None):
+    def __init__(self, title, pages, facts, target_filename=None, version=None):
         self.title = title
         self.pages = {page.title: page for page in pages}
         self.facts = facts
+        self.target_filename = target_filename
         self.version = version
 
     def to_dict(self):

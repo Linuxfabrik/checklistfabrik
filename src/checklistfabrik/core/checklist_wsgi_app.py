@@ -147,9 +147,22 @@ class ChecklistWsgiApp:
                 if key.endswith('[]'):
                     # List keys are marked with '[]' to differentiate them from single value keys,
                     # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
-                    self.checklist.facts[key[:-2]] = request.form.getlist(key)
+                    self.checklist.facts[key[:-2]] = [
+                        value
+                        for value in request.form.getlist(key)
+                        # Only save if non-empty. An empty string is used to force the HTML form to send empty selections/states.
+                        # This was implemented as otherwise it would be impossible to change an already submitted value
+                        # to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
+                        if value
+                    ]
                 else:
-                    self.checklist.facts[key] = request.form.get(key)
+                    value = request.form.get(key)
+
+                    if value:
+                        # Only save if non-empty. An empty string is used to force the HTML form to send empty selections/states.
+                        # This was implemented as otherwise it would be impossible to change an already submitted value
+                        # to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
+                        self.checklist.facts[key] = value
 
             if redirect_next:
                 return werkzeug.utils.redirect(f'/page?name={quoted_next_page_name}')

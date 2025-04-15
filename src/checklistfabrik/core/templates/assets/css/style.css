@@ -16,6 +16,10 @@ form fieldset > legend {
   padding-inline: 0.4rem;
 }
 
+pre > code:only-child {
+  display: block;
+}
+
 .clf-fa-required {
   --fa: "\f621";
   display: flex;

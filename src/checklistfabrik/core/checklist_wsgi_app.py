@@ -2,7 +2,6 @@ import datetime
 import json
 import logging
 import pathlib
-import urllib.parse
 import uuid
 
 import jinja2
@@ -38,10 +37,11 @@ class ChecklistWsgiApp:
 
         self.url_map = werkzeug.routing.Map(
             [
-                werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('page')),
+                werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
                 werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
                 werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
-                werkzeug.routing.Rule('/page', endpoint=self.on_page),
+                werkzeug.routing.Rule('/page/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
+                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page),
             ],
         )
 
@@ -113,30 +113,14 @@ class ChecklistWsgiApp:
             return exception
 
     def on_page(self, request, **kwargs):
-        quoted_page_name = request.args.get('name')
+        page_id = kwargs['id']
+        num_pages = len(self.checklist)
 
-        if not quoted_page_name:
-            first_page_name = self.checklist.first_page_name()
-
-            if first_page_name is None:
-                raise werkzeug.exceptions.NotFound()
-
-            return werkzeug.utils.redirect(f'/page?name={urllib.parse.quote(first_page_name, safe="")}')
-
-        page_name = urllib.parse.unquote(quoted_page_name)
-
-        next_page_name = self.checklist.next_page_name(page_name)
-        prev_page_name = self.checklist.prev_page_name(page_name)
-        quoted_next_page_name = urllib.parse.quote(next_page_name, safe="") if next_page_name is not None else None
-        quoted_prev_page_name = urllib.parse.quote(prev_page_name, safe="") if prev_page_name is not None else None
-
-        if page_name is None:
+        if page_id >= num_pages:  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
 
-        current_page = self.checklist.pages.get(page_name)
-
-        if current_page is None:
-            raise werkzeug.exceptions.NotFound()
+        next_page = page_id + 1 if page_id < num_pages - 1 else None
+        prev_page = page_id - 1 if page_id > 0 else None
 
         if request.method == 'POST':
             redirect_next = False
@@ -167,16 +151,16 @@ class ChecklistWsgiApp:
                         self.checklist.facts[key] = value
 
             if redirect_next:
-                return werkzeug.utils.redirect(f'/page?name={quoted_next_page_name}')
+                return werkzeug.utils.redirect(f'/page/{next_page}')
 
-        page_data = current_page.render(self.checklist.facts)
+        page_data = self.checklist.pages[page_id].render(self.checklist.facts)
 
         return werkzeug.Response(
             self.templ_env.from_string(TEMPLATE_STRING).render(
                 title=self.checklist.title,
                 version=self.checklist.version,
-                next_task_name=quoted_next_page_name,
-                prev_task_name=quoted_prev_page_name,
+                next_page=next_page,
+                prev_page=prev_page,
                 data=page_data,
                 server_id=self.server_id,
             ),

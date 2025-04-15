@@ -28,11 +28,11 @@
 
     <div class="d-flex" style="justify-content: space-between;">
         <div class="d-flex" style="gap: 0.4rem;">
-            {% if prev_task_name %}
-            <a class="btn" href="/page?name={{ prev_task_name }}" role="button">Previous</a>
+            {% if prev_page is not none %}
+            <a class="btn" href="/page/{{ prev_page }}" role="button">Previous</a>
             {% endif %}
 
-            <input class="btn btn-primary" type="submit" name="submit_action" value="{% if next_task_name %}Next{% else %}Submit{% endif %}" form="checklist_form"/>
+            <input class="btn btn-primary" type="submit" name="submit_action" value="{% if next_page is not none %}Next{% else %}Submit{% endif %}" form="checklist_form"/>
         </div>
         <a class="btn btn-error" href="/exit">Exit and Save File</a>
     </div>

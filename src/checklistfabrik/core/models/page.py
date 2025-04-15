@@ -55,7 +55,7 @@ class Page:
             if self.eval_when(facts):
                 data = ''.join([task.render(facts) for task in self.tasks])
             else:
-                data = '<div class="toast toast-warning">This page was marked as not applicable based on previous input.</div>'
+                data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
         except jinja2.exceptions.TemplateSyntaxError as error:
             logger.error('Syntax error at "%s": %s', self.when, error.message)
             data = f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>'

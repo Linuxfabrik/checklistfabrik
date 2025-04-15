@@ -12,6 +12,8 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
+import checklistfabrik.core.templates
+
 TEMPLATE_STRING = '''\
 {% extends "checklist.html.j2" %}
 {% block form_content %}
@@ -187,7 +189,7 @@ class ChecklistWsgiApp:
 
         self.server_exit_callback()
 
-        return werkzeug.Response('<h1>Shutting down server</h1><p>You can now close this page.</p>', mimetype='text/html')
+        return werkzeug.utils.send_file(checklistfabrik.core.templates.get_template_path() / 'shutdown.html', request.environ)
 
     def on_heartbeat(self, request, **kwargs):
         return werkzeug.Response(json.dumps({'server_id': self.server_id}), mimetype='application/json')

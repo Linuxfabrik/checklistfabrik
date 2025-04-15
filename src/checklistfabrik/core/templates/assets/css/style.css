@@ -31,3 +31,12 @@ pre > code:only-child {
 li p {
   display: inline-flex;
 }
+
+/* This styling is missing from spectre (only implemented for .form-input) */
+:where(
+  .form-checkbox:has(input:invalid) > .form-icon,
+  .form-radio:has(input:invalid) > .form-icon,
+  .form-select:invalid
+) {
+  border-color: #e85600;
+}

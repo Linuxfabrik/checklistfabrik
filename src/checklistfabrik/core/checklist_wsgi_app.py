@@ -144,11 +144,10 @@ class ChecklistWsgiApp:
                 else:
                     value = request.form.get(key)
 
-                    if value:
-                        # Only save if non-empty. An empty string is used to force the HTML form to send empty selections/states.
-                        # This was implemented as otherwise it would be impossible to change an already submitted value
-                        # to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
-                        self.checklist.facts[key] = value
+                    # Only save if non-empty, otherwise reset. An empty string is used to force the HTML form to send
+                    # empty selections/states. This was implemented as otherwise it would be impossible to change an already
+                    # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
+                    self.checklist.facts[key] = value if value else None
 
             if redirect_next:
                 return werkzeug.utils.redirect(f'/page/{next_page}')

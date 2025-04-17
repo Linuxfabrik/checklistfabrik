@@ -1,0 +1,155 @@
+title: 'ChecklistFabrik Feature Showcase'
+version: '2025041701'
+pages:
+
+  - title: 'Part 1 - Storing User Input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            ChecklistFabrik can store user input for later use.
+            The `fact_name` task key controls under which name the data will be available.
+            
+            ```yaml
+            - linuxfabrik.clf.text_input:
+                label: 'Hostname'
+                required: true
+              fact_name: 'hostname'
+            ```
+            
+            The user's input can then be used on subsequent pages like this:
+            
+            {% raw %}
+            
+            ```yaml
+            - linuxfabrik.clf.checkbox_input:
+                label: 'Allow access to SSH on {{ hostname }}'
+            ```
+            
+            {% endraw %}
+            
+            ---
+
+      - linuxfabrik.clf.text_input:
+          label: 'Hostname'
+          required: true
+        fact_name: 'hostname'
+
+  - title: 'Example 1'
+    tasks:
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Allow access to SSH on *{{ hostname }}*'
+
+  - title: 'Part 2 - Conditional Expressions'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            In ChecklistFabrik pages can be conditionally shown based on previous user input.
+            This can be achieved by using Jinja conditional expressions in a page's `when` key.
+            
+            There is no need to surround variables in conditionals with double curly braces.
+            
+            ```yaml
+            - title: 'Example 2 - OS Selection'
+              tasks:
+                - linuxfabrik.clf.select_input:
+                    label: 'Operating System'
+                    values:
+                      - 'Linux'
+                      - 'MacOS'
+                      - 'Windows'
+                    fact_name: 'install_type'
+            
+            - title: 'Example 2 - Install Linux'
+              tasks:
+                - linuxfabrik.clf.markdown:
+                    content: 'This page can only be seen if "Linux" has been selected.'
+              when: 'install_type | lower() == "linux"'
+            ```
+            
+            See the next pages on how this example works in practice.
+
+  - title: 'Example 2 - OS Selection'
+    tasks:
+      - linuxfabrik.clf.select_input:
+          label: 'Operating System'
+          values:
+            - 'Linux'
+            - 'MacOS'
+            - 'Windows'
+          fact_name: 'install_type'
+
+  - title: 'Example 2 - Install Linux'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: 'This page can only be seen if "Linux" has been selected.'
+    when: 'install_type | lower() == "linux"'
+
+  - title: 'Part 3 - Multiple Conditionals'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            Multiple `when` conditionals are combined with a logical `and`;
+            the following example requires that both conditionals evaluate to true:
+            
+            ```yaml
+            - title: 'Example 3 - Programming Languages'
+              tasks:
+                - linuxfabrik.clf.checkbox_input:
+                    values:
+                      - 'C'
+                      - 'Java'
+                      - 'Kotlin'
+                      - 'Python'
+                  fact_name: 'language'
+            
+            - title: 'Example 3 - Python C Interop'
+              tasks:
+                - linuxfabrik.clf.markdown:
+                    content: |
+                      Install Python C-bindings if necessary.
+              when:
+                - '"c" in (language | map("lower"))'
+                - '"python" in (language | map("lower"))'
+            ```
+            
+            Jinja's logical operators can also be used to combine conditions and construct more complex conditions:
+            
+            ```yaml
+            - title: 'Example 3 - JDK'
+              tasks:
+                - linuxfabrik.clf.markdown:
+                    content: |
+                      Install a suitable JDK.
+              when: '"java" in (language | map("lower") or "kotlin" in (language | map("lower")'
+            ```
+            
+            See the next pages on how this example works in practice.
+
+  - title: 'Example 3 - Programming Languages'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - 'C'
+            - 'Java'
+            - 'Kotlin'
+            - 'Python'
+        fact_name: 'language'
+
+  - title: 'Example 3 - Python C Interop'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            Install Python's C-headers if necessary.
+    when:
+      - '"c" in (language | map("lower"))'
+      - '"python" in (language | map("lower"))'
+
+  - title: 'Example 3 - JDK'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            Install a suitable JDK.
+    when: '"java" in (language | map("lower")) or "kotlin" in (language | map("lower"))'

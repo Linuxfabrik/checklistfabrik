@@ -57,6 +57,11 @@ For documentation on the YAML format used by ChecklistFabrik, see the [checklist
 clf-play --template path/to/template.yml path/to/checklist_to_create.yml
 ```
 
+The destination file may be omitted; in that case:
+
+- If the template specifies a `target_filename`, then that field is used to generate a new filename.
+- Otherwise, a generic, timestamped filename is generated.
+
 
 ## Re-Running an Existing Checklist
 

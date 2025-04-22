@@ -6,13 +6,18 @@ This module renders either a single HTML checkbox input field or a group of them
 EXAMPLE::
 
     - linuxfabrik.clf.checkbox_input:
-        label: 'Use "values" if you want a group of checkboxes {{ check_id }}?'
+        label: 'Single checkbox input'
+        required: false
+      fact_name: 'single_check_result'
+
+    - linuxfabrik.clf.checkbox_input:
+        label: 'Use "values" if you want a group of checkboxes?'
         values:
             - 'Step 1'
             - 'Step 2'
             - 'Step 3'
         required: true
-      fact_name: 'check_result'
+      fact_name: 'multi_check_result'
 """
 
 import jinja2
@@ -20,24 +25,33 @@ import mistune
 
 TEMPLATE_MULTI_CHECK_STRING = '''\
 <fieldset {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
-    {% if required %}
-    <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
-    {% endif %}
-    
-    {% if label %}
+    <div class="form-label d-flex">
+        {% if required %}
+        <div class="d-flex" style="height: 1.8rem;">
+            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
+        </div>
+        {% endif %}
+        
         <div class="form-label" id="{{ fact_name }}-label">
+            {% if not templated_label and required %}
+            <i>All checkboxes are required</i>
+            {% endif %}
             {{ templated_label }}
         </div>
-    {% endif %}
+    </div>
 
     {% for value in templated_values %}
-    <div class="form-group">
+    <div class="form-group d-flex">
         <label class="form-checkbox">
-            <input name="{{ fact_name }}[]" type="checkbox" value="{{ value }}"
+            <input name="{{ fact_name }}[]" type="checkbox" value="{{ value }}" aria-describedby="{{ value }}-label"
                 {%- if value in fact_value %} checked="checked" {%- endif %}
                 {%- if required %} required="required" {%- endif %}/>
-            <i class="form-icon"></i>{{ value }}
+            <i class="form-icon"></i>
         </label>
+        
+        <div class="form-label" id="{{ value }}-label">
+            {{ value }}
+        </div>
     </div>
     {% endfor %}
     
@@ -55,13 +69,18 @@ TEMPLATE_SINGLE_CHECK_STRING = '''\
         <i class="form-icon"></i>
     </label>
     
+    {% if required %}
+    <div class="d-flex" style="height: 1.8rem;">
+        <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
+    </div>
+    {% endif %}
+    
     <div class="form-label" id="{{ fact_name }}-label">
+        {% if not templated_label and required %}
+        <i>Required</i>
+        {% endif %}
         {{ templated_label }}
     </div>
-    
-    {% if required %}
-    <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
-    {% endif %}
 </div>
 
 {# Hidden field to allow unchecking a checkbox, since a HTML form does not send unchecked checkboxes. #}

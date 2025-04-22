@@ -21,14 +21,19 @@ import mistune
 
 TEMPLATE_MULTI_SELECT_STRING = '''\
 <div class="form-group">
-    <div class="d-flex">
-        <div class="form-label" id="{{ fact_name }}-label">
+    <div class="form-label d-flex">
+        {% if required %}
+        <div class="d-flex" style="height: 1.2rem;">
+            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
+        </div>
+        {% endif %}
+        
+        <div id="{{ fact_name }}-label">
+            {% if not templated_label and required %}
+            <i>A selection is required</i>
+            {% endif %}
             {{ templated_label }}
         </div>
-        
-        {% if required %}
-        <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
-        {% endif %}
     </div>
     
     <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}[]" multiple="multiple" aria-labelledby="{{ fact_name }}-label"
@@ -45,14 +50,19 @@ TEMPLATE_MULTI_SELECT_STRING = '''\
 
 TEMPLATE_SINGLE_SELECT_STRING = '''\
 <div class="form-group">
-    <div class="d-flex">
-        <div class="form-label" id="{{ fact_name }}-label">
+    <div class="form-label d-flex">
+        {% if required %}
+        <div class="d-flex" style="height: 1.2rem;">
+            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
+        </div>
+        {% endif %}
+        
+        <div id="{{ fact_name }}-label">
+            {% if not templated_label and required %}
+            <i>A selection is required</i>
+            {% endif %}
             {{ templated_label }}
         </div>
-        
-        {% if required %}
-        <div style="margin-top: 0.6rem"><i class="fa-solid clf-fa-required text-error"></i></div>
-        {% endif %}
     </div>
     
     <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}" aria-labelledby="{{ fact_name }}-label"

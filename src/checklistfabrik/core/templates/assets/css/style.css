@@ -29,6 +29,7 @@ hr {
   border: 0 none; /* Not using border here as it does not render consistently across browsers. */
   height: 0.05rem;
   background-color: rgb(188, 195, 206);
+  margin-block: 0.4rem;
 }
 
 pre > code:only-child {
@@ -40,7 +41,7 @@ pre > code:only-child {
   display: flex;
   align-items: center;
   font-size: 0.625em;
-  margin-inline: 0.3rem;
+  margin-right: 0.3rem;
 }
 
 li p {

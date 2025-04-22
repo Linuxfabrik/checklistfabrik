@@ -19,15 +19,20 @@ import mistune
 
 TEMPLATE_STRING = '''
 <fieldset>
-    {% if required %}
-    <legend class="form-label" style="margin-bottom: 0;"><i class="fa-solid clf-fa-required text-error""></i></legend>
-    {% endif %}
+    <div class="form-label d-flex">
+        {% if required %}
+        <div class="d-flex" style="height: 1.2rem;">
+            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
+        </div>
+        {% endif %}
     
-    {% if label %}
-        <div class="form-label" id="{{ fact_name }}-label">
+        <div id="{{ fact_name }}-label">
+            {% if not templated_group_label and required %}
+            <i>A selection is required</i>
+            {% endif %}
             {{ templated_group_label }}
         </div>
-    {% endif %}
+    </div>
     
     {% for value in templated_values %}
     <label class="form-radio">

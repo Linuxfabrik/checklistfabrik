@@ -17,8 +17,10 @@ import mistune
 
 
 def main(**kwargs):
+    rendered_html = mistune.html(
+        jinja2.Template(kwargs['content']).render(**kwargs),
+    )
+
     return {
-        'html': mistune.html(
-            jinja2.Template(kwargs['content']).render(**kwargs),
-        ),
+        'html': f'<div class="form-label">{rendered_html}</div>',
     }

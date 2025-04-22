@@ -48,12 +48,12 @@ class Page:
 
         return single_condition or multi_conditions
 
-    def render(self, facts):
+    def render(self, facts, template_env):
         """Render the page with all tasks using Jinja."""
 
         try:
             if self.eval_when(facts):
-                data = ''.join([task.render(facts) for task in self.tasks])
+                data = ''.join([task.render(facts, template_env) for task in self.tasks])
             else:
                 data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
         except jinja2.exceptions.TemplateSyntaxError as error:

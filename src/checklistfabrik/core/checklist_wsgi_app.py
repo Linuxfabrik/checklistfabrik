@@ -11,8 +11,6 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
-import checklistfabrik.core.templates
-
 TEMPLATE_STRING = '''\
 {% extends "checklist.html.j2" %}
 {% block form_content %}
@@ -152,7 +150,7 @@ class ChecklistWsgiApp:
             if redirect_next:
                 return werkzeug.utils.redirect(f'/page/{next_page}')
 
-        page_data = self.checklist.pages[page_id].render(self.checklist.facts)
+        page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env)
 
         return werkzeug.Response(
             self.templ_env.from_string(TEMPLATE_STRING).render(
@@ -172,7 +170,7 @@ class ChecklistWsgiApp:
 
         self.server_exit_callback()
 
-        return werkzeug.utils.send_file(checklistfabrik.core.templates.get_template_path() / 'shutdown.html', request.environ)
+        return werkzeug.Response(self.templ_env.get_template('shutdown.html.j2').render(), mimetype='text/html')
 
     def on_heartbeat(self, request, **kwargs):
         return werkzeug.Response(json.dumps({'server_id': self.server_id}), mimetype='application/json')

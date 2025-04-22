@@ -17,9 +17,7 @@ TEMPLATE_STRING = '''
 <div class="form-group">
     <div class="form-label d-flex">
         {% if required %}
-        <div class="d-flex" style="height: 1.2rem;">
-            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
-        </div>
+        {% include "required_indicator.html.j2" %}
         {% endif %}
     
         <div id="{{ fact_name }}-label">
@@ -38,11 +36,15 @@ TEMPLATE_STRING = '''
 
 
 def main(**kwargs):
+    clf_template_env = kwargs['clf_template_env']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
-    templated_label = mistune.html(jinja2.Template(kwargs.get('label', '')).render(**kwargs))
+
+    module_template_env = jinja2.Environment()
+
+    templated_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
     return {
-        'html': jinja2.Template(
+        'html': clf_template_env.from_string(
             TEMPLATE_STRING,
         ).render(
             **(kwargs | {

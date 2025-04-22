@@ -27,12 +27,10 @@ TEMPLATE_MULTI_CHECK_STRING = '''\
 <fieldset {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
     <div class="form-label d-flex">
         {% if required %}
-        <div class="d-flex" style="height: 1.8rem;">
-            <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
-        </div>
+        {% include "required_indicator.html.j2" %}
         {% endif %}
         
-        <div class="form-label" id="{{ fact_name }}-label">
+        <div id="{{ fact_name }}-label">
             {% if not templated_label and required %}
             <i>All checkboxes are required</i>
             {% endif %}
@@ -69,17 +67,17 @@ TEMPLATE_SINGLE_CHECK_STRING = '''\
         <i class="form-icon"></i>
     </label>
     
-    {% if required %}
-    <div class="d-flex" style="height: 1.8rem;">
-        <i class="fa-solid clf-fa-required text-error" title="Required" role="img"></i>
-    </div>
-    {% endif %}
-    
-    <div class="form-label" id="{{ fact_name }}-label">
-        {% if not templated_label and required %}
-        <i>Required</i>
+    <div class="form-label d-flex">
+        {% if required %}
+        {% include "required_indicator.html.j2" %}
         {% endif %}
-        {{ templated_label }}
+    
+        <div id="{{ fact_name }}-label">
+            {% if not templated_label and required %}
+            <i>An input is required</i>
+            {% endif %}
+            {{ templated_label }}
+        </div>
     </div>
 </div>
 
@@ -89,13 +87,17 @@ TEMPLATE_SINGLE_CHECK_STRING = '''\
 
 
 def main(**kwargs):
+    clf_template_env = kwargs['clf_template_env']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
-    templated_label = mistune.html(jinja2.Template(kwargs.get('label', '')).render(**kwargs))
+
+    module_template_env = jinja2.Environment()
+
+    templated_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
     if kwargs.get('values'):
-        templated_values = [jinja2.Template(value).render(**kwargs) for value in kwargs.get('values', [''])]
+        templated_values = [module_template_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
 
-        html = jinja2.Template(
+        html = clf_template_env.from_string(
             TEMPLATE_MULTI_CHECK_STRING,
         ).render(
             **(kwargs | {
@@ -107,7 +109,7 @@ def main(**kwargs):
         )
     else:
         # If we don't have any values just render a single checkbox.
-        html = jinja2.Template(
+        html = clf_template_env.from_string(
             TEMPLATE_SINGLE_CHECK_STRING,
         ).render(
             **(kwargs | {

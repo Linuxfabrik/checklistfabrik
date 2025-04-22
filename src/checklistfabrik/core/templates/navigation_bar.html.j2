@@ -1,0 +1,11 @@
+<div class="d-flex" style="justify-content: space-between; margin-bottom: 1.2rem;">
+    <div class="d-flex" style="gap: 0.4rem;">
+        {% if prev_page is not none %}
+            <a class="btn" href="/page/{{ prev_page }}" role="button">Previous</a>
+        {% endif %}
+
+        <input class="btn btn-primary" form="checklist_form" name="submit_action" type="submit"
+               value="{% if next_page is not none %}Next{% else %}Submit{% endif %}"/>
+    </div>
+    <a class="btn btn-error" href="/exit">Save and Exit</a>
+</div>

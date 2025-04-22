@@ -29,7 +29,7 @@ class Task:
 
         return result
 
-    def render(self, facts):
+    def render(self, facts, template_env):
         """Render the task using its module."""
 
         try:
@@ -39,6 +39,7 @@ class Task:
             return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{self.module}</em>. Is it installed?</div>'
 
         render_context = facts.copy()
+        render_context['clf_template_env'] = template_env
         if self.fact_name:
             render_context['fact_name'] = self.fact_name
         else:

@@ -44,7 +44,7 @@ class Task:
         else:
             # Provide an automatic fact name that the module can use.
             # The module needs to report this back as fact_name if it uses the suggested name.
-            render_context['auto_fact_name'] = uuid.uuid4().hex
+            render_context['auto_fact_name'] = f'auto_{uuid.uuid4().hex}'  # Prefix the hex uuid so that it is a valid Python identifier.
         render_context.update(self.context)
 
         if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):

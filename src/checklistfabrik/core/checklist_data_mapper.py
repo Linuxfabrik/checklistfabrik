@@ -234,8 +234,19 @@ class ChecklistDataMapper:
             fact_name = task.get('fact_name')
             value = task.get('value')
 
-            if fact_name is not None and value is not None:
-                facts[fact_name] = value
+            if fact_name is not None:
+                if not fact_name.isidentifier():
+                    logger.warning(
+                        'Fact name "%s" is not a valid (Python) identifier. It cannot be referenced as a variable in Jinja templates',
+                        fact_name,
+                    )
+
+                if fact_name.endswith('[]'):
+                    logger.critical('Invalid fact name "%s". Fact names may not end with "[]"', fact_name)
+                    raise ChecklistLoadError
+
+                if value is not None:
+                    facts[fact_name] = value
 
             tasks.append(models.Task(task_module, task_context, fact_name))
 

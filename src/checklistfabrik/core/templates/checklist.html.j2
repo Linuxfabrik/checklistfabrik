@@ -42,7 +42,7 @@
                     return false;
                 }
 
-                const data = response.json()
+                const data = await response.json()
 
                 return data.server_id === server_id;
             } catch (error) {
@@ -83,7 +83,7 @@
 
         const heartbeatInterval = setInterval(
             () => {
-                checkHeartBeat(window.location.origin).then(
+                checkHeartBeat(window.location.origin, server_id).then(
                     (server_alive) => {
                         if (!server_alive) {
                             const warning_toast = document.createElement('div');

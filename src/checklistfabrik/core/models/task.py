@@ -80,4 +80,4 @@ class Task:
             elif self.fact_name != result['fact_name']:
                 logger.warning('Task module reports a different fact name than originally specified. This is most likely a bug in the task module')
 
-        return result.get('html', '')
+        return f'{result.get("html", "")}\n<hr/>'

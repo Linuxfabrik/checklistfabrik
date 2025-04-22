@@ -21,7 +21,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             You might have noticed that the checkboxes above were all optional (i.e. they did not need to be checked to be able to proceed).
             If you want to validate that a checkbox is actually checked, you can do so using `required: true`.
             
@@ -41,7 +40,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The label of a checkbox (or group) supports Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.checkbox_input:
@@ -70,7 +68,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The values of a checkbox group support Jinja templating:
 
       - linuxfabrik.clf.checkbox_input:
@@ -115,7 +112,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The radio group above is optional (i.e. no radio button needs to be checked to be able to proceed).
             If you want to ensure that a radio button is checked, you can do so using `required: true`.
 
@@ -129,7 +125,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The label of the radio button group supports Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.radio_input:
@@ -148,7 +143,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The radio button values support Jinja templating:
 
       - linuxfabrik.clf.radio_input:
@@ -172,6 +166,7 @@ pages:
             - 'Option 1'
             - 'Option 2'
             - 'Option 3'
+        values: 'Option 1'
 
       - linuxfabrik.clf.select_input:
           label: 'This is a multi-select input'
@@ -183,7 +178,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             Using `require: true` you can ensure that:
             
             - for single-selects an option is selected (i.e. not `--- Please Select ---`).
@@ -208,7 +202,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The label of the select input supports Markdown formatting and Jinja templating (regardless if it is a multi-select or not):
 
       - linuxfabrik.clf.select_input:
@@ -227,7 +220,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The options values support Jinja templating (regardless if it is a multi-select or not):
 
       - linuxfabrik.clf.select_input:
@@ -250,7 +242,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             As already seen with the other input modules, you can use `required: true` to enforce a non-empty input to be able to proceed.
 
       - linuxfabrik.clf.text_input:
@@ -259,7 +250,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             The text input label also supports Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.text_input:
@@ -285,7 +275,6 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            ---
             Jinja templating is supported and the content may include HTML tags.
             As such special attention must be paid to not break the HTML representation of the checklist.
             

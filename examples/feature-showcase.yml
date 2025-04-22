@@ -27,8 +27,6 @@ pages:
             ```
             
             {% endraw %}
-            
-            ---
 
       - linuxfabrik.clf.text_input:
           label: 'Hostname'

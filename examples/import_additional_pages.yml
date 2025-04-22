@@ -7,5 +7,4 @@
 
     - linuxfabrik.clf.markdown:
         content: |
-          ---
           This is the second task on a page of the imported page list.

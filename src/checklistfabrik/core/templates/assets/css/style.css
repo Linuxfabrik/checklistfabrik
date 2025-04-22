@@ -6,14 +6,29 @@ div.form-label :last-child {
   margin-bottom: 0;
 }
 
-form fieldset {
+/*
+Spectre removes the fieldset border, bring it back for the outermost fieldset
+(and also integrate it with Spectre's design).
+*/
+form > fieldset {
   border: 0.05rem solid rgb(188, 195, 206);
-  border-radius: .1rem;
+  border-radius: 0.1rem;
   padding: 0.4rem;
+}
+
+/* Don't display last hr as it is not needed and only clutters the layout. */
+form > fieldset > hr:last-child {
+  display: none;
 }
 
 form fieldset > legend {
   padding-inline: 0.4rem;
+}
+
+hr {
+  border: 0 none; /* Not using border here as it does not render consistently across browsers. */
+  height: 0.05rem;
+  background-color: rgb(188, 195, 206);
 }
 
 pre > code:only-child {

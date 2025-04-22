@@ -1,9 +1,7 @@
 - linuxfabrik.clf.markdown:
     content: |
-      ---
       This task is part of a task list that was imported using `linuxfabrik.clf.import`.
 
 - linuxfabrik.clf.markdown:
     content: |
-      ---
       This is the second task on the imported task list.

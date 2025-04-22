@@ -48,7 +48,7 @@ li p {
 }
 
 /* This styling is missing from spectre (only implemented for .form-input) */
-:where(
+:is(
   .form-checkbox:has(input:invalid) > .form-icon,
   .form-radio:has(input:invalid) > .form-icon,
   .form-select:invalid

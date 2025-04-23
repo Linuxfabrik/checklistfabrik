@@ -11,44 +11,46 @@ EXAMPLE::
       fact_name: 'single_check_result'
 
     - linuxfabrik.clf.checkbox_input:
-        label: 'Use "values" if you want a group of checkboxes?'
+        label: 'Use "values" if you want a group of checkboxes'
         values:
-            - 'Step 1'
-            - 'Step 2'
-            - 'Step 3'
+            - label: 'Step 1'
+            - label: 'Step 2'
+              value: 'step2'
+            - value: 'Step 3'
         required: true
       fact_name: 'multi_check_result'
 """
+
+import uuid
 
 import jinja2
 import mistune
 
 TEMPLATE_MULTI_CHECK_STRING = '''\
-<fieldset {%- if label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
-    <div class="form-label d-flex">
-        {% if required %}
-        {% include "required_indicator.html.j2" %}
-        {% endif %}
-        
-        <div id="{{ fact_name }}-label">
-            {% if not templated_label and required %}
-            <i>All checkboxes are required</i>
-            {% endif %}
-            {{ templated_label }}
-        </div>
+<fieldset {%- if templated_label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
+    {% if templated_label %}
+    <div class="form-label" id="{{ fact_name }}-label">
+        {{ templated_label }}
     </div>
+    {% endif %}
 
-    {% for value in templated_values %}
+    {% for check in templated_checks %}
     <div class="form-group d-flex">
         <label class="form-checkbox">
-            <input name="{{ fact_name }}[]" type="checkbox" value="{{ value }}" aria-describedby="{{ value }}-label"
-                {%- if value in fact_value %} checked="checked" {%- endif %}
-                {%- if required %} required="required" {%- endif %}/>
+            <input name="{{ fact_name }}[]" type="checkbox" value="{{ check.value }}" aria-labelledby="{{ check.value }}-label"
+                {%- if check.value in fact_value %} checked="checked" {%- endif %}
+                {%- if check.required or required %} required="required" {%- endif %}/>
             <i class="form-icon"></i>
         </label>
         
-        <div class="form-label" id="{{ value }}-label">
-            {{ value }}
+        <div class="form-label d-flex">
+            {% if check.required %}
+            {% include "required_indicator.html.j2" %}
+            {% endif %}
+            
+            <div id="{{ check.value }}-label">
+                {{ check.label | default(check.value, true) }}
+            </div>
         </div>
     </div>
     {% endfor %}
@@ -94,8 +96,28 @@ def main(**kwargs):
 
     templated_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
+    task_context_update = None
+
     if kwargs.get('values'):
-        templated_values = [module_template_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
+        task_context_update = {
+            'values': [
+                {
+                    'label': check.get('label'),
+                    'value': check.get('value', uuid.uuid4().hex),
+                    'required': check.get('required'),
+                }
+                for check in kwargs['values']
+            ]
+        }
+
+        templated_checks = [
+            {
+                'label': mistune.html(module_template_env.from_string(check['label']).render(**kwargs)) if check['label'] else None,
+                'value': check['value'],
+                'required': check['required'],
+            }
+            for check in task_context_update['values']
+        ]
 
         html = clf_template_env.from_string(
             TEMPLATE_MULTI_CHECK_STRING,
@@ -104,7 +126,7 @@ def main(**kwargs):
                 'fact_name': fact_name,
                 'fact_value': kwargs.get(fact_name, []),
                 'templated_label': templated_label,
-                'templated_values': templated_values,
+                'templated_checks': templated_checks,
             }),
         )
     else:
@@ -122,4 +144,5 @@ def main(**kwargs):
     return {
         'html': html,
         'fact_name': fact_name,
+        'task_context_update': task_context_update,
     }

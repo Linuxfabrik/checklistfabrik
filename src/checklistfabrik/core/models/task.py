@@ -81,4 +81,9 @@ class Task:
             elif self.fact_name != result['fact_name']:
                 logger.warning('Task module reports a different fact name than originally specified. This is most likely a bug in the task module')
 
+        task_context_update = result.get('task_context_update')
+
+        if task_context_update:
+           self.context.update(task_context_update)
+
         return f'{result.get("html", "")}\n<hr/>'

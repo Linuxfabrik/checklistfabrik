@@ -101,14 +101,20 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            The *linuxfabrik.clf.radio_input* module can be used to display a group of radio buttons:
+            The *linuxfabrik.clf.radio_input* module can be used to display a group of radio buttons.
+            
+            Each item in the `values` list has a label and a value:
+            
+            - `label` is the label of a single radio, supports Jinja and Markdown for formatting; if `label` is omitted, `value` will be used as a fallback.
+            - `value` specifies the value that the fact will be set to if this radio is selected; if `value` is omitted, ChecklistFabrik will auto-generate it.
 
       - linuxfabrik.clf.radio_input:
           label: 'This is a radio button group'
           values:
-            - 'Radio 1'
-            - 'Radio 2'
-            - 'Radio 3'
+            - label: 'Radio 1' # A value will be auto-generated here.
+            - label: 'Radio 2'
+              value: 'radio2' # Use a human-friendly name here for later use.
+            - value: 'Radio 3' # The label display the value as a fallback here.
 
       - linuxfabrik.clf.markdown:
           content: |
@@ -118,18 +124,18 @@ pages:
       - linuxfabrik.clf.radio_input:
           label: 'You need to check a radio button in this group to be able to proceed'
           values:
-            - 'Radio 1'
-            - 'Radio 2'
-            - 'Radio 3'
+            - label: 'Radio 1'
+            - label: 'Radio 2'
+            - label: 'Radio 3'
           required: true
 
       - linuxfabrik.clf.markdown:
           content: |
-            The label of the radio button group supports Markdown formatting and Jinja templating:
+            The labels of this module supports Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.radio_input:
           label: |
-            **This is** a *Markdown* formatted `radio group` label
+            **This is** a *Markdown* formatted *radio group* label
             
             {% if true %}
             Jinja templating is supported *too*!
@@ -137,21 +143,13 @@ pages:
             In real checklists you would probably use more sensible Jinja code than this. ;)
             {% endif %}
           values:
-            - 'Radio 1'
-            - 'Radio 2'
-            - 'Radio 3'
-
-      - linuxfabrik.clf.markdown:
-          content: |
-            The radio button values support Jinja templating:
-
-      - linuxfabrik.clf.radio_input:
-          label: 'The fourth radio button value is templated using Jinja'
-          values:
-            - 'Radio 1'
-            - 'Radio 2'
-            - 'Radio 3'
-            - 'Radio {{ 2 * 2 }}'
+            - label: |
+                **Radio 1**
+                
+                *Markdown* can be used here too!
+            - label: 'Radio 2'
+            - label: 'Radio 3'
+            - label: 'Radio {{ 2 + 2 }}: This label is templated using Jinja'
 
   - title: 'linuxfabrik.clf.select_input'
     tasks:

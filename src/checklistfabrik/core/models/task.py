@@ -64,7 +64,12 @@ class Task:
             )
             return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> looks like a ChecklistFabrik module but is malformed.</div>'
 
-        result = loaded_module.main(**render_context)
+        try:
+            result = loaded_module.main(**render_context)
+        except Exception as exception:
+            logger.error('Task rendering error: Rendering module "%s" failed: %s', self.module, exception)
+            return f'<div class="toast toast-error">Task rendering error: Rendering module <em>{self.module}</em> failed</div>'
+
 
         if not isinstance(result, dict):
             logger.error(

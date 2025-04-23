@@ -6,13 +6,17 @@ This module renders an HTML radio group.
 EXAMPLE::
 
     - linuxfabrik.clf.radio_input:
-        label: 'Backup strategy for host {{ host }}?'
+        label: 'Choose your favourite food'
         values:
-          - 'hope for the best'
-          - '3-2-1'
+          - label: 'Pizza'
+            value: 'pizza'
+          - value: 'burger'
+          - label: 'Other'
         required: true
-      fact_name: 'backup_strategy'
+      fact_name: 'fav_food'
 """
+
+import uuid
 
 import jinja2
 import mistune
@@ -32,13 +36,19 @@ TEMPLATE_STRING = '''
         </div>
     </div>
     
-    {% for value in templated_values %}
-    <label class="form-radio">
-        <input name="{{ fact_name }}" type="radio" value="{{ value }}"
-            {%- if fact_value == value %} checked="checked" {%- endif %}
-            {%- if required %} required="required" {%- endif %}/>
-        <i class="form-icon"></i>{{ value }}
-    </label>
+    {% for radio in templated_radios %}
+    <div class="form-group d-flex">
+        <label class="form-radio">
+            <input name="{{ fact_name }}" type="radio" value="{{ radio.value }}" aria-labelledby="{{ radio.value }}-label"
+                {%- if radio.value == fact_value %} checked="checked" {%- endif %}
+                {%- if required %} required="required" {%- endif %}/>
+            <i class="form-icon"></i>
+        </label>
+        
+        <div class="form-label" id="{{ radio.value }}-label">
+            {{ radio.label | default(radio.value, true) }}
+        </div>
+    </div>
     {% endfor %}
 </fieldset>
 '''
@@ -52,7 +62,23 @@ def main(**kwargs):
 
     templated_group_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
-    templated_values = [module_template_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
+    task_context_update = {
+        'values': [
+            {
+                'label': radio.get('label'),
+                'value': radio.get('value', uuid.uuid4().hex),
+            }
+            for radio in kwargs['values']
+        ]
+    }
+
+    templated_radios = [
+        {
+            'label': mistune.html(module_template_env.from_string(radio['label']).render(**kwargs)) if radio['label'] else None,
+            'value': radio['value'],
+        }
+        for radio in task_context_update['values']
+    ]
 
     return {
         'html': clf_template_env.from_string(
@@ -62,8 +88,9 @@ def main(**kwargs):
                 'fact_name': fact_name,
                 'fact_value': kwargs.get(fact_name),
                 'templated_group_label': templated_group_label,
-                'templated_values': templated_values,
+                'templated_radios': templated_radios,
             }),
         ),
         'fact_name': fact_name,
+        'task_context_update': task_context_update,
     }

@@ -8,6 +8,14 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             The *linuxfabrik.clf.checkbox_input* module can be used to display single checkboxes or groups of checkboxes:
+            
+            A group of checkboxes can be created using the `values` list.
+            Each item in the `values` list has a label and a value:
+            
+            - `label` is the label of a single checkbox, supports Jinja and Markdown for formatting;
+              if `label` is omitted, `value` will be used as a fallback.
+            - `value` specifies the value that the fact will be set to if this checkbox is selected;
+              if `value` is omitted, ChecklistFabrik will auto-generate it.
 
       - linuxfabrik.clf.checkbox_input:
           label: 'This is a single checkbox'
@@ -15,32 +23,38 @@ pages:
       - linuxfabrik.clf.checkbox_input:
           label: 'This is a group of checkboxes'
           values:
-            - 'Check 1'
-            - 'Check 2'
-            - 'Check 3'
+            - label: 'Check 1' # A value will be auto-generated here.
+            - label: 'Check 2'
+              value: 'check2' # Use a human-friendly name here for later use.
+            - value: 'Check 3' # The label display the value as a fallback here.
 
       - linuxfabrik.clf.markdown:
           content: |
             You might have noticed that the checkboxes above were all optional (i.e. they did not need to be checked to be able to proceed).
             If you want to validate that a checkbox is actually checked, you can do so using `required: true`.
             
-            > Please note that if you use a checkbox group, all checkboxes must be checked when using `require: true`.
+            > Please note that if you use a checkbox group,
+            > individual checkboxes can be marked as required by setting `required: true` on the respective item.
+            >
+            > Setting `required: true` on the task level will have the effect that all checkboxes of this group are required.
 
       - linuxfabrik.clf.checkbox_input:
           label: 'This checkbox must be checked to be able to proceed'
           required: true
 
       - linuxfabrik.clf.checkbox_input:
-          label: 'All checkboxes of this group must be checked to be able to proceed'
+          label: 'Checkbox 1 and 3 of this group must be checked to be able to proceed'
           values:
-            - 'Check 1'
-            - 'Check 2'
-            - 'Check 3'
-          required: true
+            - label: 'Check 1 (required)'
+              required: true
+            - label: 'Check 2 (optional)'
+            - label: 'Check 3 (required)'
+              required: true
+          required: false # Setting this to true will overwrite the individual item's required field.
 
       - linuxfabrik.clf.markdown:
           content: |
-            The label of a checkbox (or group) supports Markdown formatting and Jinja templating:
+            The labels of this module support Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.checkbox_input:
           label: |
@@ -62,21 +76,13 @@ pages:
             In real checklists you would probably use more sensible Jinja code than this. ;)
             {% endif %}
           values:
-            - 'Check 1'
-            - 'Check 2'
-            - 'Check 3'
-
-      - linuxfabrik.clf.markdown:
-          content: |
-            The values of a checkbox group support Jinja templating:
-
-      - linuxfabrik.clf.checkbox_input:
-          label: 'The fourth checkbox value is templated using Jinja'
-          values:
-            - 'Check 1'
-            - 'Check 2'
-            - 'Check 3'
-            - 'Check {{ 2 * 2 }}'
+            - label: |
+                **Check 1**
+                
+                *Markdown* can be used here too!
+            - label: 'Check 2'
+            - label: 'Check 3'
+            - label: 'Check {{ 2 * 2 }}: This label is templated using Jinja'
 
   - title: 'linuxfabrik.clf.markdown'
     tasks:
@@ -131,7 +137,7 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            The labels of this module supports Markdown formatting and Jinja templating:
+            The labels of this module support Markdown formatting and Jinja templating:
 
       - linuxfabrik.clf.radio_input:
           label: |

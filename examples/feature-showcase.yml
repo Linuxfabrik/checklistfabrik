@@ -97,10 +97,10 @@ pages:
               tasks:
                 - linuxfabrik.clf.checkbox_input:
                     values:
-                      - 'C'
-                      - 'Java'
-                      - 'Kotlin'
-                      - 'Python'
+                      - value: 'C'
+                      - value: 'Java'
+                      - value: 'Kotlin'
+                      - value: 'Python'
                   fact_name: 'language'
             
             - title: 'Example 3 - Python C Interop'
@@ -130,10 +130,10 @@ pages:
     tasks:
       - linuxfabrik.clf.checkbox_input:
           values:
-            - 'C'
-            - 'Java'
-            - 'Kotlin'
-            - 'Python'
+            - value: 'C'
+            - value: 'Java'
+            - value: 'Kotlin'
+            - value: 'Python'
         fact_name: 'language'
 
   - title: 'Example 3 - Python C Interop'

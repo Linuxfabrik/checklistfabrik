@@ -170,7 +170,6 @@ pages:
             - 'Option 1'
             - 'Option 2'
             - 'Option 3'
-        values: 'Option 1'
 
       - linuxfabrik.clf.select_input:
           label: 'This is a multi-select input'
@@ -298,7 +297,7 @@ pages:
             <br/>
             
             {% if true %}
-            Jinja templating is supported *too*!
+            Jinja templating is supported <em>too</em>!
             {% else %}
             In real checklists you would probably use more sensible Jinja code than this. ;)
             {% endif %}

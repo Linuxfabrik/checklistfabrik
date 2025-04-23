@@ -49,7 +49,7 @@ TEMPLATE_MULTI_CHECK_STRING = '''\
             {% endif %}
             
             <div id="{{ check.value }}-label">
-                {{ check.label | default(check.value, true) }}
+                {{ check.templated_label | default(check.value, true) }}
             </div>
         </div>
     </div>
@@ -99,24 +99,14 @@ def main(**kwargs):
     task_context_update = None
 
     if kwargs.get('values'):
-        task_context_update = {
-            'values': [
-                {
-                    'label': check.get('label'),
-                    'value': check.get('value', uuid.uuid4().hex),
-                    'required': check.get('required'),
-                }
-                for check in kwargs['values']
-            ]
-        }
-
         templated_checks = [
             {
-                'label': mistune.html(module_template_env.from_string(check['label']).render(**kwargs)) if check['label'] else None,
-                'value': check['value'],
-                'required': check['required'],
+                'label': check.get('label'),
+                'templated_label': mistune.html(module_template_env.from_string(check['label']).render(**kwargs)) if check.get('label') else None,
+                'value': check.get('value', uuid.uuid4().hex),
+                'required': check.get('required'),
             }
-            for check in task_context_update['values']
+            for check in kwargs['values']
         ]
 
         html = clf_template_env.from_string(
@@ -129,6 +119,17 @@ def main(**kwargs):
                 'templated_checks': templated_checks,
             }),
         )
+
+        task_context_update = {
+            'values': [
+                {
+                    key: value
+                    for key, value in check.items()
+                    if key in ('label', 'value', 'required') and value is not None
+                }
+                for check in templated_checks
+            ]
+        }
     else:
         # If we don't have any values just render a single checkbox.
         html = clf_template_env.from_string(

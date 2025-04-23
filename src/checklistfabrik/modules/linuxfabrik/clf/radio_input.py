@@ -22,7 +22,7 @@ import jinja2
 import mistune
 
 TEMPLATE_STRING = '''
-<fieldset>
+<fieldset {%- if templated_label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
     <div class="form-label d-flex">
         {% if required %}
         {% include "required_indicator.html.j2" %}
@@ -46,7 +46,7 @@ TEMPLATE_STRING = '''
         </label>
         
         <div class="form-label" id="{{ radio.value }}-label">
-            {{ radio.label | default(radio.value, true) }}
+            {{ radio.templated_label | default(radio.value, true) }}
         </div>
     </div>
     {% endfor %}
@@ -62,22 +62,13 @@ def main(**kwargs):
 
     templated_group_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
-    task_context_update = {
-        'values': [
-            {
-                'label': radio.get('label'),
-                'value': radio.get('value', uuid.uuid4().hex),
-            }
-            for radio in kwargs['values']
-        ]
-    }
-
     templated_radios = [
         {
-            'label': mistune.html(module_template_env.from_string(radio['label']).render(**kwargs)) if radio['label'] else None,
-            'value': radio['value'],
+            'label': radio.get('label'),
+            'templated_label': mistune.html(module_template_env.from_string(radio['label']).render(**kwargs)) if radio.get('label') else None,
+            'value': radio.get('value', uuid.uuid4().hex),
         }
-        for radio in task_context_update['values']
+        for radio in kwargs['values']
     ]
 
     return {
@@ -92,5 +83,14 @@ def main(**kwargs):
             }),
         ),
         'fact_name': fact_name,
-        'task_context_update': task_context_update,
+        'task_context_update': {
+            'values': [
+                {
+                    key: value
+                    for key, value in radio.items()
+                    if key in ('label', 'value') and value is not None
+                }
+                for radio in templated_radios
+            ]
+        },
     }

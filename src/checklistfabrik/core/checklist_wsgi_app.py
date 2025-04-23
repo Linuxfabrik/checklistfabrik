@@ -36,10 +36,13 @@ class ChecklistWsgiApp:
         self.url_map = werkzeug.routing.Map(
             [
                 werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
+                werkzeug.routing.Rule('/done', endpoint=self.on_done),
                 werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
                 werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
                 werkzeug.routing.Rule('/page/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
                 werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page),
+                werkzeug.routing.Rule('/page/<int:id>/next', endpoint=self.on_next_page),
+                werkzeug.routing.Rule('/page/<int:id>/prev', endpoint=self.on_prev_page),
             ],
         )
 
@@ -112,13 +115,9 @@ class ChecklistWsgiApp:
 
     def on_page(self, request, **kwargs):
         page_id = kwargs['id']
-        num_pages = len(self.checklist)
 
-        if page_id >= num_pages:  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
+        if page_id >= len(self.checklist):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
-
-        next_page = page_id + 1 if page_id < num_pages - 1 else None
-        prev_page = page_id - 1 if page_id > 0 else None
 
         if request.method == 'POST':
             redirect_next = False
@@ -148,7 +147,7 @@ class ChecklistWsgiApp:
                     self.checklist.facts[key] = value if value else None
 
             if redirect_next:
-                return werkzeug.utils.redirect(f'/page/{next_page}')
+                return werkzeug.utils.redirect(f'/page/{page_id}/next')
 
         page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env)
 
@@ -156,10 +155,37 @@ class ChecklistWsgiApp:
             self.templ_env.from_string(TEMPLATE_STRING).render(
                 title=self.checklist.title,
                 version=self.checklist.version,
-                next_page=next_page,
-                prev_page=prev_page,
+                page_id=page_id,
                 data=page_data,
                 server_id=self.server_id,
+            ),
+            mimetype='text/html',
+        )
+
+    def on_next_page(self, request, **kwargs):
+        page_id = kwargs['id']
+
+        # Find the next applicable page.
+        next_page_id = page_id + 1
+        while next_page_id < len(self.checklist):
+            if self.checklist.pages[next_page_id].eval_when(self.checklist.facts)[0]:
+                break
+
+            next_page_id += 1
+        else:
+            return werkzeug.utils.redirect(f'/done')
+
+        return werkzeug.utils.redirect(f'/page/{next_page_id}')
+
+    def on_prev_page(self, request, **kwargs):
+        page_id = kwargs['id']
+
+        return werkzeug.utils.redirect(f'/page/{max(0, page_id - 1)}')
+
+    def on_done(self, request, **kwargs):
+        return werkzeug.Response(
+            self.templ_env.get_template('done.html.j2').render(
+                last_page_id=len(self.checklist) - 1,
             ),
             mimetype='text/html',
         )

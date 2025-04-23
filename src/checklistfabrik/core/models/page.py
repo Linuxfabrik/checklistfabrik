@@ -41,23 +41,27 @@ class Page:
         """
 
         if self.when is None:
-            return True
+            return True, None
 
-        single_condition = isinstance(self.when, str) and checklistfabrik.core.utils.eval_conditional(facts, self.when)
-        multi_conditions = isinstance(self.when, list) and checklistfabrik.core.utils.eval_all_conditionals(facts, self.when)
+        try:
+            single_condition = isinstance(self.when, str) and checklistfabrik.core.utils.eval_conditional(facts, self.when)
+            multi_conditions = isinstance(self.when, list) and checklistfabrik.core.utils.eval_all_conditionals(facts, self.when)
+        except jinja2.exceptions.TemplateSyntaxError as error:
+            logger.error('Syntax error at "%s": %s', self.when, error.message)
+            return False, f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>'
 
-        return single_condition or multi_conditions
+        return single_condition or multi_conditions, None
 
     def render(self, facts, template_env):
         """Render the page with all tasks using Jinja."""
 
-        try:
-            if self.eval_when(facts):
-                data = ''.join([task.render(facts, template_env) for task in self.tasks])
-            else:
-                data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
-        except jinja2.exceptions.TemplateSyntaxError as error:
-            logger.error('Syntax error at "%s": %s', self.when, error.message)
-            data = f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>'
+        show_page, error = self.eval_when(facts)
+
+        if show_page:
+            data = ''.join([task.render(facts, template_env) for task in self.tasks])
+        elif error:
+            data = error
+        else:
+            data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
 
         return TEMPLATE_FORMAT_STRING.format(title=self.title, data=data)

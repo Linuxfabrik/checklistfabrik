@@ -14,6 +14,17 @@ TEMPLATE_FORMAT_STRING = '''\
 logger = logging.getLogger(__name__)
 
 
+def remove_last_divider(html: str) -> str:
+    """
+    HTML hack: Remove the last horizontal line (if any) in a fieldset for aesthetic reasons.
+    """
+    divider = '<div class="divider"></div>'
+    last_index = html.rfind(divider)
+    if last_index != -1:
+        return html[:last_index] + html[last_index + len(divider):]
+    return html
+
+
 class Page:
     """Models a ChecklistFabrik checklist page."""
 
@@ -59,6 +70,7 @@ class Page:
 
         if show_page:
             data = ''.join([task.render(facts, template_env) for task in self.tasks])
+            data = remove_last_divider(data)
         elif error:
             data = error
         else:

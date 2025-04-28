@@ -91,4 +91,4 @@ class Task:
         if task_context_update:
            self.context.update(task_context_update)
 
-        return f'{result.get("html", "")}\n<hr/>'
+        return f'{result.get("html", "")}\n<div class="divider"></div>'

@@ -4,6 +4,7 @@
     {% block head %}
         <meta charset="UTF-8"/>
         <title>{% block title %}ChecklistFabrik{% endblock %}</title>
+        <link rel="stylesheet" href="/assets/css/docs.min.css"/>
         <link rel="stylesheet" href="/assets/css/fontawesome.min.css"/>
         <link rel="stylesheet" href="/assets/css/fontawesome-solid.min.css"/>
         <link rel="stylesheet" href="/assets/css/spectre.min.css"/>
@@ -18,14 +19,15 @@
 {% block body %}
 {% endblock %}
 
-<hr/>
 
-<p class="text-center">
-    <a href="https://github.com/Linuxfabrik/checklistfabrik">ChecklistFabrik</a> was
-    <i class="fa fa-code text-primary" aria-label="coded" role="img"></i> with
-    <i class="fa fa-heart text-error" aria-label="passion" role="img"></i> by
-    <a href="https://linuxfabrik.ch">Linuxfabrik GmbH</a> in Zurich/Switzerland | ChecklistFabrik is released under the
-    <a href="https://unlicense.org">UNLICENSE</a>
-</p>
+<div class="docs-footer container grid-lg" id="copyright">
+    <p>
+        <a href="https://github.com/Linuxfabrik/checklistfabrik">ChecklistFabrik</a>
+        was <i class="fa fa-code text-primary" aria-label="coded" role="img"></i>
+        with <span class="text-error">&hearts;</span>
+        by <a href="https://linuxfabrik.ch" target="_blank">Linuxfabrik GmbH</a> in Zurich/Switzerland.
+        Licensed under the <a href="https://unlicense.org" target="_blank">UNLICENSE</a>.
+    </p>
+</div>
 </body>
 </html>

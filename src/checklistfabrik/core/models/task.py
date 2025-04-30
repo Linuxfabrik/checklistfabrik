@@ -91,13 +91,17 @@ class Task:
                 'Task rendering error: Module "%s" looks like a ChecklistFabrik module but is malformed as its signature does not allow variadic keyword arguments',
                 self.module,
             )
-            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> looks like a ChecklistFabrik module but is malformed.</div>'
+            return TEMPLATE_FORMAT_STRING.format(
+                html=f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> looks like a ChecklistFabrik module but is malformed.</div>',
+            )
 
         try:
             result = loaded_module.main(**render_context)
         except Exception as exception:
             logger.error('Task rendering error: Rendering module "%s" failed: %s', self.module, exception)
-            return f'<div class="toast toast-error">Task rendering error: Rendering module <em>{self.module}</em> failed</div>'
+            return TEMPLATE_FORMAT_STRING.format(
+                html=f'<div class="toast toast-error">Task rendering error: Rendering module <em>{self.module}</em> failed: <pre>{exception}</pre></div>',
+            )
 
         if not isinstance(result, dict):
             logger.error(
@@ -106,7 +110,9 @@ class Task:
                 type(result),
                 type({}),
             )
-            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> returned an invalid output.</div>'
+            return TEMPLATE_FORMAT_STRING.format(
+                html=f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> returned an invalid output.</div>',
+            )
 
         if 'fact_name' in result:
             if not self.fact_name:

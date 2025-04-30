@@ -3,7 +3,13 @@ import inspect
 import logging
 import uuid
 
+import jinja2
+
+from .. import utils
+
 MODULE_NAMESPACE = 'checklistfabrik.modules'
+
+TEMPLATE_FORMAT_STRING = '{html}\n<div class="divider"></div>'
 
 logger = logging.getLogger(__name__)
 
@@ -11,10 +17,11 @@ logger = logging.getLogger(__name__)
 class Task:
     """Models a ChecklistFabrik checklist task."""
 
-    def __init__(self, module, context, fact_name):
+    def __init__(self, module, context, fact_name, when):
         self.module = module
         self.context = context
         self.fact_name = fact_name
+        self.when = when
 
     def to_dict(self, facts):
         result = {
@@ -27,10 +34,31 @@ class Task:
             if facts is not None and self.fact_name in facts:
                 result['value'] = facts[self.fact_name]
 
+        if self.when is not None:
+            result['when'] = self.when
+
         return result
+
+    def eval_when(self, facts):
+        """ Evaluate this page's 'when' condition(s) using provided facts."""
+
+        try:
+            result = utils.eval_when(facts, self.when)
+        except jinja2.exceptions.TemplateSyntaxError as error:
+            logger.error('Syntax error at "%s": %s', self.when, error.message)
+            return False, f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>'
+
+        return result, None
 
     def render(self, facts, template_env, markdown):
         """Render the task using its module."""
+
+        show_task, error = self.eval_when(facts)
+
+        if not show_task:
+            return ''
+        elif error:
+            return TEMPLATE_FORMAT_STRING.format(html=error)
 
         try:
             loaded_module = importlib.import_module(f'{MODULE_NAMESPACE}.{self.module}')
@@ -91,4 +119,4 @@ class Task:
         if task_context_update:
             self.context.update(task_context_update)
 
-        return f'{result.get("html", "")}\n<div class="divider"></div>'
+        return TEMPLATE_FORMAT_STRING.format(html=result.get('html', ''))

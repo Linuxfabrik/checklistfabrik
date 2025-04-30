@@ -2,7 +2,7 @@ import logging
 
 import jinja2.exceptions
 
-import checklistfabrik.core.utils
+from .. import utils
 
 TEMPLATE_FORMAT_STRING = '''\
 <fieldset>
@@ -45,23 +45,15 @@ class Page:
         return result
 
     def eval_when(self, facts):
-        """
-        Evaluate this pages 'when' condition(s) using provided facts.
-
-        The absence of 'when' conditions is considered to be truthy.
-        """
-
-        if self.when is None:
-            return True, None
+        """ Evaluate this task's "when" condition(s) using provided facts."""
 
         try:
-            single_condition = isinstance(self.when, str) and checklistfabrik.core.utils.eval_conditional(facts, self.when)
-            multi_conditions = isinstance(self.when, list) and checklistfabrik.core.utils.eval_all_conditionals(facts, self.when)
+            result = utils.eval_when(facts, self.when)
         except jinja2.exceptions.TemplateSyntaxError as error:
             logger.error('Syntax error at "%s": %s', self.when, error.message)
             return False, f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>'
 
-        return single_condition or multi_conditions, None
+        return result, None
 
     def render(self, facts, template_env, markdown):
         """Render the page with all tasks using Jinja."""

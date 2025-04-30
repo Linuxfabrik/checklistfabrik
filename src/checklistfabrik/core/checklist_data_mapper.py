@@ -245,6 +245,7 @@ class ChecklistDataMapper:
 
             fact_name = task.get('fact_name')
             value = task.get('value')
+            when = task.get('when')
 
             if fact_name is not None:
                 if not fact_name.isidentifier():
@@ -261,6 +262,6 @@ class ChecklistDataMapper:
                 if value is not None:
                     facts[fact_name] = value
 
-            tasks.append(models.Task(task_module, task_context, fact_name))
+            tasks.append(models.Task(task_module, task_context, fact_name, when))
 
         return tasks

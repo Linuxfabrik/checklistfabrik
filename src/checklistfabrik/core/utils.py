@@ -22,6 +22,22 @@ def eval_all_conditionals(facts, conditionals):
     return True
 
 
+def eval_when(facts, when):
+    """
+    Automagically evaluate either a when condition or list of conditions.
+
+    The absence of "when" conditions is considered to be truthy.
+    """
+
+    if when is None:
+        return True, None
+
+    single_condition = isinstance(when, str) and eval_conditional(facts, when)
+    multi_conditions = isinstance(when, list) and eval_all_conditionals(facts, when)
+
+    return single_condition or multi_conditions
+
+
 def validate_dict_keys(
         dictionary,
         required_keys,

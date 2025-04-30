@@ -1,0 +1,9 @@
+<div style="margin-block: 1.2rem;">
+    <ul class="step">
+        {% for page in pages %}
+            <li class="step-item {%- if page.id == page_id %} active {%- elif page.id < page_id and not page.eval_when %} skipped {%- endif %}">
+                <a href="/page/{{ page.id }}" class="tooltip" data-tooltip="{{ page.title }}">Step {{ page.id }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

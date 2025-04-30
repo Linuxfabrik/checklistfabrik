@@ -10,6 +10,8 @@
             <p>Version: {{ version }}</p>
         {% endif %}
 
+        {% include 'steps.html.j2' %}
+
         {% include 'navigation_bar.html.j2' %}
 
         <form id="checklist_form" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
@@ -17,7 +19,7 @@
             {% endblock %}
         </form>
 
-        <p class="d-flex text-gray aria-hidden="true">
+        <p class="d-flex text-gray" aria-hidden="true">
             Required fields are marked red or with a&nbsp;<i class="fa-solid clf-fa-required"></i>
         </p>
 

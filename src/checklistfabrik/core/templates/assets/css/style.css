@@ -57,3 +57,12 @@ p > code {
   margin-inline: 0.1rem;
   padding: 0.2rem 0.4rem;
 }
+
+.step .step-item.skipped a::before {
+  background-color: #bcc3ce;
+}
+
+.step .step-item.skipped a {
+  color: #bcc3ce;
+  text-decoration: line-through;
+}

@@ -166,6 +166,14 @@ class ChecklistWsgiApp:
                 version=self.checklist.version,
                 page_id=page_id,
                 data=page_data,
+                pages=[
+                    {
+                        'id': id,
+                        'title': page.title,
+                        'eval_when': page.eval_when(self.checklist.facts)[0],
+                    }
+                    for id, page in enumerate(self.checklist.pages)
+                ],
                 server_id=self.server_id,
             ),
             mimetype='text/html',

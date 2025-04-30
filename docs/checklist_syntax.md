@@ -3,11 +3,11 @@
 ChecklistFabrik uses YAML files to describe checklists.
 
 
-## `target_path`
+## `report_path`
 
 * Type: string
 
-This field can be used *in templates* to auto-generate file paths for the target files based on Jinja templates.
+This field can be used *in templates* to auto-generate file paths for the report files based on Jinja templates.
 Only applies if used in templates, otherwise this field is ignored.
 Environment variable expansion is supported.
 

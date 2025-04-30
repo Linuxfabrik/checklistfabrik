@@ -54,12 +54,13 @@ class PlayCli(BaseCli):
         )
 
         self.arg_parser.add_argument(
-            'file',
+            'report_file',
             help=(
-                'Path to the checklist file. If the file exists, it will be loaded for re-running. '
-                'If you want to create a new checklist, provide a non-existent file path and use '
-                'the `--template` option. This option may be left empty to auto-generate the file path '
-                'based on the template\'s `target_path` (if provided) or simply a timestamp.'
+                'Path to the report file. If the file exists, it will be loaded for re-running. '
+                'If you want to create a new report from an existing checklist/template, '
+                'provide a non-existent file path and use the `--template` option. '
+                'This option may be left empty to auto-generate the file path '
+                'based on the template\'s `report_path` (if provided) or simply a timestamp.'
             ),
             nargs='?',
             type=pathlib.Path,
@@ -69,9 +70,9 @@ class PlayCli(BaseCli):
             '--force',
             action='store_true',
             help=(
-                'Allow creating a checklist from a template even if the target checklist file '
-                '(the `file` argument) already exists. '
-                'WARNING: THE TARGET FILE WILL BE OVERWRITTEN.'
+                'Allow creating a checklist from a template even if the report checklist file '
+                '(the `report_file` argument) already exists. '
+                'WARNING: THE REPORT FILE WILL BE OVERWRITTEN.'
             ),
         )
 
@@ -85,8 +86,8 @@ class PlayCli(BaseCli):
         self.arg_parser.add_argument(
             '--template',
             help=(
-                'Optional: Path to a YAML template file for creating a new checklist. '
-                'This option may only be used when the target checklist file (the `file` '
+                'Optional: Path to a YAML template file for creating a new report. '
+                'This option may only be used when the report file (the `report_file` '
                 'argument) does not already exist or the `--force` option is used.'
             ),
             type=pathlib.Path,
@@ -94,20 +95,20 @@ class PlayCli(BaseCli):
 
     def validate_args(self):
         if self.args.template is not None:
-            if self.args.file and self.args.file.is_file() and not self.args.force:
-                self.arg_parser.error('--template may only be specified if file does not exist')
+            if self.args.report_file and self.args.report_file.is_file() and not self.args.force:
+                self.arg_parser.error('--template may only be specified if the report file does not exist')
 
             if not self.args.template.is_file():
                 self.arg_parser.error('--template must be a file')
 
         else:
-            if not (self.args.file and self.args.file.is_file()):
-                self.arg_parser.error('file must exist')
+            if not (self.args.report_file and self.args.report_file.is_file()):
+                self.arg_parser.error('report file must exist')
 
     def run(self):
 
         checklist_app = checklist_wsgi_app.ChecklistWsgiApp(
-            self.args.file,
+            self.args.report_file,
             self.data_mapper,
             templates.get_template_loader(),
             templates.get_assets_path(),

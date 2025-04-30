@@ -76,15 +76,15 @@ class ChecklistWsgiApp:
 
     def save_checklist(self):
         if self.checklist_file:
-            # Loaded from this file now save to it.
+            # Loaded from this file, now write to it again.
             self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
             return
 
         # No file was specified, neither on the CLI nor in the template file, so generate one.
 
-        # Try to generate filename based on the template's target path.
-        if self.checklist.target_path:
-            generated_filename = self.templ_env.from_string(self.checklist.target_path).render(self.checklist.facts)
+        # Try to generate filename based on the template's report path.
+        if self.checklist.report_path:
+            generated_filename = self.templ_env.from_string(self.checklist.report_path).render(self.checklist.facts)
 
             # Remove well-known invalid characters for the most commonly used operating systems and filesystems.
             clean_filename = generated_filename.translate(

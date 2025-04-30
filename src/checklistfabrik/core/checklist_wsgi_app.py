@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import os.path
 import pathlib
 import uuid
 
@@ -79,11 +80,11 @@ class ChecklistWsgiApp:
             self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
             return
 
-        # No filename was specified, neither on the CLI nor in the template file, so generate one.
+        # No file was specified, neither on the CLI nor in the template file, so generate one.
 
-        # Try to generate filename based on the templates target filename
-        if self.checklist.target_filename:
-            generated_filename = jinja2.Template(self.checklist.target_filename).render(self.checklist.facts)
+        # Try to generate filename based on the template's target path.
+        if self.checklist.target_path:
+            generated_filename = self.templ_env.from_string(self.checklist.target_path).render(self.checklist.facts)
 
             # Remove well-known invalid characters for the most commonly used operating systems and filesystems.
             clean_filename = generated_filename.translate(
@@ -101,13 +102,13 @@ class ChecklistWsgiApp:
                 )
             )
 
-            file_to_save = pathlib.Path(clean_filename)
-            logger.info('Generated file name based on template: "%s"', file_to_save)
+            file_to_save = pathlib.Path(os.path.expandvars(clean_filename))
+            logger.info('Generated file path based on template: "%s"', file_to_save)
         else:
             file_to_save = pathlib.Path(f'checklist_{datetime.datetime.now().isoformat(timespec="milliseconds")}.yml')
             logger.warning('No file name set. Falling back to "%s"', file_to_save)
 
-        # Saving to the file with the generated filename.
+        # Saving to the file with the generated file name.
         # This should never overwrite already existing files with the same name.
         self.checklist_mapper.save_checklist(file_to_save, self.checklist, overwrite=False)
 

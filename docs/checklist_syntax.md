@@ -3,15 +3,15 @@
 ChecklistFabrik uses YAML files to describe checklists.
 
 
-## `target_filename`
+## `target_path`
 
 * Type: string
 
-This field can be used *in templates* to auto-generate filenames based on Jinja templates.
+This field can be used *in templates* to auto-generate file paths for the target files based on Jinja templates.
 Only applies if used in templates, otherwise this field is ignored.
+Environment variable expansion is supported.
 
-The `.yml` extension will be automatically added.
-Invalid characters for file names (e.g. non-printables, slashes, newlines, ...) will be automatically be removed.
+Invalid characters for file names (e.g. non-printables, newlines, ...) will automatically be removed.
 
 This field is optional.
 

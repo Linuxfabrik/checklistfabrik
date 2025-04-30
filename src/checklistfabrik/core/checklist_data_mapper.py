@@ -59,6 +59,18 @@ class ChecklistDataMapper:
             logger.critical('Yaml dump failed and returned an empty result. File "%s" is left untouched', file)
             sys.exit(1)
 
+        try:
+            file.parent.mkdir(parents=True, exist_ok=True)
+        except (NotADirectoryError, FileExistsError) as error:
+            fallback_file = pathlib.Path.cwd() / file.name
+            logger.error(
+                'Cannot create parent directory "%s" (%s). Saving to "%s" instead',
+                file.parent,
+                error,
+                fallback_file,
+            )
+            file = fallback_file
+
         if not overwrite:
             # Find a free file name
             original_file = file
@@ -84,7 +96,7 @@ class ChecklistDataMapper:
         valid, message = utils.validate_dict_keys(
             checklist,
             {'title', 'pages'},
-            {'target_filename', 'version'},
+            {'target_path', 'version'},
             disallow_extra_keys=True,
         )
 
@@ -106,8 +118,8 @@ class ChecklistDataMapper:
             logger.critical('Checklist "%s" does not contain any pages', title)
             raise ChecklistLoadError
 
-        if 'target_filename' in checklist and not isinstance(checklist['target_filename'], str):
-            logger.critical('Target filename field of checklist "%s" is not a string', title)
+        if 'target_path' in checklist and not isinstance(checklist['target_path'], str):
+            logger.critical('Target path field of checklist "%s" is not a string', title)
             raise ChecklistLoadError
 
         if 'version' in checklist and not isinstance(checklist['version'], str):
@@ -118,7 +130,7 @@ class ChecklistDataMapper:
             title,
             self.process_page_list(page_list, workdir, facts),
             facts,
-            checklist.get('target_filename'),
+            checklist.get('target_path'),
             checklist.get('version'),
         )
 
@@ -243,6 +255,7 @@ class ChecklistDataMapper:
 
                 if fact_name.endswith('[]'):
                     logger.critical('Invalid fact name "%s". Fact names may not end with "[]"', fact_name)
+                    # ChecklistFabrik uses `[]` as a suffix on HTML forms to differentiate lists from single values.
                     raise ChecklistLoadError
 
                 if value is not None:

@@ -58,8 +58,8 @@ class PlayCli(BaseCli):
             help=(
                 'Path to the checklist file. If the file exists, it will be loaded for re-running. '
                 'If you want to create a new checklist, provide a non-existent file path and use '
-                'the `--template` option. This option may be left empty to auto-generate a filename '
-                'based on the template (if provided) or simply a timestamp.'
+                'the `--template` option. This option may be left empty to auto-generate the file path '
+                'based on the template\'s `target_path` (if provided) or simply a timestamp.'
             ),
             nargs='?',
             type=pathlib.Path,

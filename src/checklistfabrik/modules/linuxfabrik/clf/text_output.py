@@ -15,12 +15,10 @@ TEMPLATE_FORMAT_STRING = '''\
 
 
 def main(**kwargs):
-    clf_template_env = kwargs['clf_template_env']
+    clf_jinja_env = kwargs['clf_jinja_env']
 
     return {
-        'html': clf_template_env.from_string(
-            TEMPLATE_FORMAT_STRING.format(
-                content=kwargs['content'],
-            )
+        'html': clf_jinja_env.from_string(
+            TEMPLATE_FORMAT_STRING.format(content=kwargs['content']),
         ).render(**kwargs)
     }

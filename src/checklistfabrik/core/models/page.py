@@ -63,13 +63,13 @@ class Page:
 
         return single_condition or multi_conditions, None
 
-    def render(self, facts, template_env):
+    def render(self, facts, template_env, markdown):
         """Render the page with all tasks using Jinja."""
 
         show_page, error = self.eval_when(facts)
 
         if show_page:
-            data = ''.join([task.render(facts, template_env) for task in self.tasks])
+            data = ''.join([task.render(facts, template_env, markdown) for task in self.tasks])
             data = remove_last_divider(data)
         elif error:
             data = error

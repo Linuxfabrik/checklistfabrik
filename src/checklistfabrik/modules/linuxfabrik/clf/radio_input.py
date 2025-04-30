@@ -18,9 +18,6 @@ EXAMPLE::
 
 import uuid
 
-import jinja2
-import mistune
-
 TEMPLATE_STRING = '''
 <fieldset {%- if templated_label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
     <div class="form-label d-flex">
@@ -55,24 +52,25 @@ TEMPLATE_STRING = '''
 
 
 def main(**kwargs):
-    clf_template_env = kwargs['clf_template_env']
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
-    module_template_env = jinja2.Environment()
-
-    templated_group_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
+    templated_group_label = clf_markdown(clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
     templated_radios = [
         {
             'label': radio.get('label'),
-            'templated_label': mistune.html(module_template_env.from_string(radio['label']).render(**kwargs)) if radio.get('label') else None,
+            'templated_label': clf_markdown(
+                clf_jinja_env.from_string(radio['label']).render(**kwargs),
+            ) if radio.get('label') else None,
             'value': radio.get('value', uuid.uuid4().hex),
         }
         for radio in kwargs['values']
     ]
 
     return {
-        'html': clf_template_env.from_string(
+        'html': clf_jinja_env.from_string(
             TEMPLATE_STRING,
         ).render(
             **(kwargs | {

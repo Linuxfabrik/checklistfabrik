@@ -12,14 +12,13 @@ EXAMPLE::
             ChecklistFabrik supports *Markdown*!
 """
 
-import mistune
-
 
 def main(**kwargs):
-    clf_template_env = kwargs['clf_template_env']
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
 
-    rendered_html = mistune.html(
-        clf_template_env.from_string(kwargs['content']).render(**kwargs),
+    rendered_html = clf_markdown(
+        clf_jinja_env.from_string(kwargs['content']).render(**kwargs),
     )
 
     return {

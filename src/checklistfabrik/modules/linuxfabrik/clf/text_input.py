@@ -10,9 +10,6 @@ EXAMPLE:
       fact_name: 'nr_backups'
 """
 
-import jinja2
-import mistune
-
 TEMPLATE_STRING = '''
 <div class="form-group">
     <div class="form-label d-flex">
@@ -36,15 +33,14 @@ TEMPLATE_STRING = '''
 
 
 def main(**kwargs):
-    clf_template_env = kwargs['clf_template_env']
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
-    module_template_env = jinja2.Environment()
-
-    templated_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
+    templated_label = clf_markdown(clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
     return {
-        'html': clf_template_env.from_string(
+        'html': clf_jinja_env.from_string(
             TEMPLATE_STRING,
         ).render(
             **(kwargs | {

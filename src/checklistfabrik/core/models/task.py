@@ -29,7 +29,7 @@ class Task:
 
         return result
 
-    def render(self, facts, template_env):
+    def render(self, facts, template_env, markdown):
         """Render the task using its module."""
 
         try:
@@ -39,7 +39,8 @@ class Task:
             return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{self.module}</em>. Is it installed?</div>'
 
         render_context = facts.copy()
-        render_context['clf_template_env'] = template_env
+        render_context['clf_jinja_env'] = template_env
+        render_context['clf_markdown'] = markdown
         if self.fact_name:
             render_context['fact_name'] = self.fact_name
         else:
@@ -70,7 +71,6 @@ class Task:
             logger.error('Task rendering error: Rendering module "%s" failed: %s', self.module, exception)
             return f'<div class="toast toast-error">Task rendering error: Rendering module <em>{self.module}</em> failed</div>'
 
-
         if not isinstance(result, dict):
             logger.error(
                 'Task rendering error: Module "%s" returned a value of type "%s" but expected "%s"',
@@ -89,6 +89,6 @@ class Task:
         task_context_update = result.get('task_context_update')
 
         if task_context_update:
-           self.context.update(task_context_update)
+            self.context.update(task_context_update)
 
         return f'{result.get("html", "")}\n<div class="divider"></div>'

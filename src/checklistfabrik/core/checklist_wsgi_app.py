@@ -11,6 +11,8 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
+from . import markdown
+
 TEMPLATE_STRING = '''\
 {% extends "checklist.html.j2" %}
 {% block form_content %}
@@ -32,6 +34,7 @@ class ChecklistWsgiApp:
 
         self.server_id = uuid.uuid4().hex
         self.templ_env = jinja2.Environment(loader=template_loader)
+        self.markdown = markdown.create_markdown()
 
         self.url_map = werkzeug.routing.Map(
             [
@@ -149,7 +152,7 @@ class ChecklistWsgiApp:
             if redirect_next:
                 return werkzeug.utils.redirect(f'/page/{page_id}/next')
 
-        page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env)
+        page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env, self.markdown)
 
         return werkzeug.Response(
             self.templ_env.from_string(TEMPLATE_STRING).render(

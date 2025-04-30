@@ -16,9 +16,6 @@ EXAMPLE::
       fact_name: 'backup_datacenter_location'
 """
 
-import jinja2
-import mistune
-
 TEMPLATE_MULTI_SELECT_STRING = '''\
 <div class="form-group">
     <div class="form-label d-flex">
@@ -73,17 +70,16 @@ TEMPLATE_SINGLE_SELECT_STRING = '''\
 
 
 def main(**kwargs):
-    clf_template_env = kwargs['clf_template_env']
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
-    module_template_env = jinja2.Environment()
+    templated_label = clf_markdown(clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs))
 
-    templated_label = mistune.html(module_template_env.from_string(kwargs.get('label', '')).render(**kwargs))
-
-    templated_values = [module_template_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
+    templated_values = [clf_jinja_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
 
     if kwargs.get('multiple'):
-        html = clf_template_env.from_string(
+        html = clf_jinja_env.from_string(
             TEMPLATE_MULTI_SELECT_STRING,
         ).render(
             **(kwargs | {
@@ -94,7 +90,7 @@ def main(**kwargs):
             }),
         )
     else:
-        html = clf_template_env.from_string(
+        html = clf_jinja_env.from_string(
             TEMPLATE_SINGLE_SELECT_STRING,
         ).render(
             **(kwargs | {

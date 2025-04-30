@@ -22,6 +22,11 @@ TEMPLATE_STRING = '''\
 
 logger = logging.getLogger(__name__)
 
+# Global Jinja variables for use in templates
+jinja_globals = {
+    'now': datetime.datetime.now,
+}
+
 
 class ChecklistWsgiApp:
     """The WSGI app that powers the ChecklistFabrik HTML interface."""
@@ -35,6 +40,8 @@ class ChecklistWsgiApp:
         self.server_id = uuid.uuid4().hex
         self.templ_env = jinja2.Environment(loader=template_loader)
         self.markdown = markdown.create_markdown()
+
+        self.templ_env.globals.update(jinja_globals)
 
         self.url_map = werkzeug.routing.Map(
             [
@@ -86,17 +93,15 @@ class ChecklistWsgiApp:
                     } | {
                         '"': None,
                         '*': None,
-                        '/': None,
                         ':': None,
                         '<': None,
                         '>': None,
                         '?': None,
-                        '\\': None,
                     }
                 )
             )
 
-            file_to_save = pathlib.Path(f'{clean_filename}.yml')
+            file_to_save = pathlib.Path(clean_filename)
             logger.info('Generated file name based on template: "%s"', file_to_save)
         else:
             file_to_save = pathlib.Path(f'checklist_{datetime.datetime.now().isoformat(timespec="milliseconds")}.yml')

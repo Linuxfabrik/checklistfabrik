@@ -51,7 +51,7 @@ li p {
 }
 
 /* Style inline code as spectre's code blocks. Also fixes low contrast. */
-p > code {
+:not(pre) > code {
   background-color: #f7f8f9;
   color: #3b4351;
   margin-inline: 0.1rem;

@@ -18,7 +18,8 @@ class BaseCli:
         raise NotImplementedError('This method must be implemented by a subclass')
 
     def parse_args(self, args):
-        self.args = self.arg_parser.parse_args(args)
+        self.arg_parser.prog = os.path.basename(args[0])
+        self.args = self.arg_parser.parse_args(args[1:])
 
     def validate_args(self):
         pass
@@ -69,7 +70,7 @@ class BaseCli:
     @classmethod
     def main(cls, args=None):
         if args is None:
-            args = sys.argv[1:]
+            args = sys.argv
 
         cli = cls()
 

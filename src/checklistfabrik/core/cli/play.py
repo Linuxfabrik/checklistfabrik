@@ -6,6 +6,7 @@ import webbrowser
 import ruamel.yaml
 
 from .base_cli import BaseCli
+from .. import __version__
 from .. import checklist_data_mapper
 from .. import checklist_wsgi_app
 from .. import checklist_wsgi_server
@@ -21,7 +22,6 @@ PORT = 9309
 logger = logging.getLogger(__name__)
 
 __author__ = 'Linuxfabrik GmbH, Zurich/Switzerland'
-__version__ = '2025032801'
 
 
 class PlayCli(BaseCli):
@@ -128,7 +128,3 @@ class PlayCli(BaseCli):
 
 def main(args=None):
     PlayCli.main(args)
-
-
-if __name__ == '__main__':
-    main()

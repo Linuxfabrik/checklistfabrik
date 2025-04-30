@@ -25,13 +25,6 @@ form fieldset > legend {
   padding-inline: 0.4rem;
 }
 
-hr {
-  border: 0 none; /* Not using border here as it does not render consistently across browsers. */
-  height: 0.05rem;
-  background-color: rgb(188, 195, 206);
-  margin-block: 0.4rem;
-}
-
 pre > code:only-child {
   display: block;
 }
@@ -55,4 +48,12 @@ li p {
   .form-select:invalid
 ) {
   border-color: #e85600;
+}
+
+/* Style inline code as spectre's code blocks. Also fixes low contrast. */
+p > code {
+  background-color: #f7f8f9;
+  color: #3b4351;
+  margin-inline: 0.1rem;
+  padding: 0.2rem 0.4rem;
 }

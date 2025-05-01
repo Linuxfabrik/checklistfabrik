@@ -1,0 +1,214 @@
+# Based on:
+# https://docs.redhat.com/en-us/documentation/red_hat_build_of_keycloak/22.0/pdf/getting_started_guide/Red_Hat_build_of_Keycloak-22.0-Getting_Started_Guide-en-US.pdf
+
+title: 'Demo - Getting Started with Red Hat build of Keycloak 22.0'
+version: '2025050101'
+pages:
+
+  - title: 'Questionnaire'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Target Platform?'
+          values:
+            - value: 'Linux'
+            - value: 'Windows'
+          fact_name: 'platform'
+
+  - title: 'Before you start'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'Make sure you have [OpenJDK 17](https://openjdk.java.net/) installed'
+
+  - title: 'Download Red Hat Build of Keycloak'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: |
+                Download Red Hat build of Keycloak from the
+                [Red Hat website](https://access.redhat.com/products/red-hat-build-of-keycloak/)
+                and extract it.
+
+            - label: |
+                After extracting this file, you should have a directory that is named
+                **rhbk-22.0.13**.
+
+  - title: 'Start Red Hat Build of Keycloak'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'From a terminal, open the **rhbk-22.0.13** directory.'
+
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'On Linux: `bin/kc.sh start-dev`'
+        when:
+          - '"linux" in (platform | map("lower"))'
+
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'On Windows: `bin\kc.bat start-dev`'
+        when:
+          - '"windows" in (platform | map("lower"))'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            Using the **start-dev** option, you are starting Red Hat build of Keycloak in
+            development mode. In this mode, you can try out Red Hat build of Keycloak for the first
+            time to get it up and running quickly. This mode offers convenient defaults for
+            developers, such as for developing a new Red Hat build of Keycloak theme.
+
+  - title: 'Create an Admin User'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            Red Hat build of Keycloak has no default admin user. You need to create an admin user
+            before you can start Keycloak.
+
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'Open [http://localhost:8080/](http://localhost:8080/).'
+
+            - label: 'Fill in the form with your preferred username and password.'
+
+
+  - title: 'Log in to the Admin Console'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: |
+                Go to the [Red Hat build of Keycloak Admin Console](http://localhost:8080/admin).
+
+            - label: 'Log in with the username and password you created earlier.'
+
+  - title: 'Create a Realm'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            A realm in Red Hat build of Keycloak is equivalent to a tenant. Each realm allows an
+            administrator to create isolated groups of applications and users. Initially, Red Hat
+            build of Keycloak includes a single realm, called **master**. Use this realm only for
+            managing Red Hat build of Keycloak and not for managing any applications.
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Use these steps to create the first realm.'
+          values:
+            - label: |
+                Open the [Red Hat build of Keycloak Admin Console](http://localhost:8080/admin).
+
+            - label: 'Click the word **master** in the top-left corner, then click **Create Realm**.'
+
+            - label: 'Enter **myrealm** in the **Realm name** field.'
+
+            - label: 'Click **Create**.'
+
+  - title: 'Create a User'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Initially, the realm has no users. Use these steps to create a user:'
+          values:
+            - label: |
+                Open the [Red Hat build of Keycloak Admin Console](http://localhost:8080/admin).
+
+            - label: 'Click the word **master** in the top-left corner, then click **myrealm**.'
+
+            - label: 'Click **Users** in the left-hand menu.'
+
+            - label: 'Click **Add user**.'
+
+            - label: |
+                Fill in the form with the following values:
+
+                * **Username**: **myuser**
+                * **First name**: any first name
+                * **Last name**: any last name
+
+            - label: 'Click **Create**.'
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'This user needs a password to log in. To set the initial password:'
+          values:
+            - label: 'Click **Credentials** at the top of the page.'
+
+            - label: 'Fill in the **Set password** form with a password.'
+
+            - label: |
+                Toggle **Temporary** to **Off** so that the user does not need to update this
+                password at the first login.
+
+  - title: 'Log in to the Account Console'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Initially, the realm has no users. Use these steps to create a user:'
+          values:
+            - label: |
+                Open the [Red Hat build of Keycloak Account Console](http://localhost:8080/realms/myrealm/account).
+
+            - label: 'Log in with **myuser** and the password you created earlier.'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            As a user in the Account Console, you can manage your account including modifying your
+            profile, adding two-factor authentication, and including identity provider accounts.
+
+  - title: 'Secure the first Application'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          label: |
+            To secure the first application, you start by registering the application with your Red
+            Hat build of Keycloak instance:
+          values:
+            - label: |
+                Open the [Red Hat build of Keycloak Admin Console](http://localhost:8080/admin).
+
+            - label: 'Click the word **master** in the top-left corner, then click **myrealm**.'
+
+            - label: 'Click **Clients**.'
+
+            - label: 'Click **Create client**'
+
+            - label: |
+                Fill in the form with the following values:
+
+                * **Client type**: **OpenID Connect**
+                * **Client ID**: **myclient**
+
+            - label: 'Click **Next**'
+
+            - label: 'Confirm that **Standard flow** is enabled.'
+
+            - label: 'Click **Next**.'
+
+            - label: |
+                Make these changes under **Login settings**.
+
+                * Set **Valid redirect URIs** to **https://www.keycloak.org/app/\***
+                * Set **Web origins** to **https://www.keycloak.org**
+
+            - label: 'Click **Save**.'
+
+      - linuxfabrik.clf.checkbox_input:
+          label: |
+            To confirm the client was created successfully, you can use the SPA testing application
+            on the [Keycloak website](https://www.keycloak.org/app/).
+          values:
+            - label: 'Open [https://www.keycloak.org/app/](https://www.keycloak.org/app/).'
+
+            - label: 'Click **Save** to use the default configuration.'
+
+            - label: |
+                Click **Sign in** to authenticate to this application using the Red Hat build of
+                Keycloak server you started earlier.
+
+  - title: 'Taking the next Step'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            Before you run Red Hat build of Keycloak in production, consider the following actions:
+
+            * Switch to a production ready database such as PostgreSQL.
+            * Configure SSL with your own certificates.
+            * Switch the admin password to a more secure password.
+
+            For more information, see the
+            [Server Guide](https://access.redhat.com/documentation/en-us/red_hat_build_of_keycloak/22.0/html-single/server_guide/.

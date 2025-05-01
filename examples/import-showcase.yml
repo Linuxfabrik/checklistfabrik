@@ -15,7 +15,7 @@ pages:
             pages:
               - title: 'Page with Imported Tasks'
                 tasks:
-                  - linuxfabrik.clf.import: 'import_additional_tasks.yml'
+                  - linuxfabrik.clf.import: 'import-additional-tasks.yml'
             ```
             
             There are a few important details about task imports:
@@ -25,9 +25,9 @@ pages:
             - The file to import *must* be formatted as a list of tasks (even if it only contains one task).
             - Importing a file in an already imported file is supported.
             
-            The following tasks were imported from `import_additional_tasks.yml`:
+            The following tasks were imported from `import-additional-tasks.yml`:
 
-      - linuxfabrik.clf.import: 'import_additional_tasks.yml'
+      - linuxfabrik.clf.import: 'import-additional-tasks.yml'
 
   - title: 'Importing Pages'
     tasks:
@@ -40,7 +40,7 @@ pages:
             
             ```yaml
             pages:
-              - linuxfabrik.clf.import: 'import_additional_pages.yml'
+              - linuxfabrik.clf.import: 'import-additional-pages.yml'
             ```
             
             There are a few important details about task imports:
@@ -50,6 +50,6 @@ pages:
             - The file to import *must* be formatted as a list of pages (even if it only contains one page).
             - Importing a file in an already imported file is supported.
             
-            The next page was imported from `import_additional_pages.yml`:
+            The next page was imported from `import-additional-pages.yml`:
 
-  - linuxfabrik.clf.import: 'import_additional_pages.yml'
+  - linuxfabrik.clf.import: 'import-additional-pages.yml'

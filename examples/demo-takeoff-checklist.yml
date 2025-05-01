@@ -1,0 +1,69 @@
+title: 'Demo - Before Takeoff Checklist'
+version: '2025050101'
+pages:
+
+  - title: 'Introduction'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            The segmented checklist improves your ability to manage the cockpit and adhere to
+            standard procedures. Many pilots have avoided embarrassing situations and possibly even
+            accidents by using the written checklist correctly.
+
+            Example taken from
+            [https://www.aopa.org/](https://www.aopa.org/training-and-safety/students/presolo/skills/before-takeoff-checklist)
+
+      - linuxfabrik.clf.text_input:
+          label: "Pilot's name:"
+        fact_name: 'pilot'
+        value: 'Firstname Lastname'
+
+
+  - title: 'Before-Takeoff Checklist'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'Auxiliary fuel pump — Off'
+            - label: 'Flight controls — Free and correct'
+            - label: 'Instruments and radios — Checked and set'
+            - label: 'Landing gear position lights — Checked'
+            - label: 'Altimeter — Set'
+            - label: 'Directional gyro — Set'
+            - label: 'Fuel gauges — Checked'
+            - label: 'Trim — Set'
+            - label: 'Propeller — Exercise'
+            - label: 'Magnetos — Checked'
+            - label: 'Engine idle — Checked'
+            - label: 'Flaps — As required'
+            - label: 'Seat belts/shoulder harnesses — Fastened'
+            - label: 'Parking brake — Off '
+          required: true
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Final items'
+          values:
+            - label: 'Doors and windows — Locked'
+            - label: 'Mixture — Full rich unless above 3,000 feet msl'
+            - label: 'Lights — Landing, taxi, strobes on'
+            - label: 'Camera — Transponder on'
+            - label: 'Action — Engine instruments checked'
+          required: true
+
+  - title: 'Before-Landing Checklist'
+    tasks:
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'Fuel selector — Fullest tank'
+            - label: 'Directional gyro — Aligned with magnetic compass'
+            - label: 'Seat belts/shoulder harnesses — secure'
+            - label: 'Mixture — Full rich unless airport above 3,000 feet msl'
+            - label: 'Cowl flaps — As required '
+          required: true
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Final items'
+          values:
+            - label: 'Landing gear — Down'
+            - label: 'Propeller — High rpm'
+            - label: 'Flaps — As required'
+          required: true

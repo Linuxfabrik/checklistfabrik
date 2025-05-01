@@ -2,7 +2,7 @@
     <ul class="step">
         {% for page in pages %}
             <li class="step-item {%- if page.id == page_id %} active {%- elif page.id < page_id and not page.eval_when %} skipped {%- endif %}">
-                <a href="/page/{{ page.id }}" class="tooltip" data-tooltip="{{ page.title }}">Step {{ page.id }}</a>
+                <a href="/page/{{ page.id }}" class="tooltip" data-tooltip="{{ page.title }}">Page {{ page.id + 1 }}</a>
             </li>
         {% endfor %}
     </ul>

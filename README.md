@@ -18,7 +18,7 @@ ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring
   Create dynamic checklists using variables and boolean expressions based on Jinja.
 
 * **Dynamically exclude inapplicable items:**  
-  ChecklistFabrik supports 'when' expressions for pages, so pages can be automatically marked as inapplicable based on previous input.
+  ChecklistFabrik supports 'when' expressions for pages and tasks, so pages and tasks can be automatically marked as inapplicable based on input. See the examples for details (grep for `when:`).
 
 
 ## Definitions and Terms

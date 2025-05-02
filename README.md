@@ -55,7 +55,7 @@ ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring
   A group of tasks that is simultaneously displayed to the user.
 
 * **Report:**  
-  A checklist file, usually generated from a template.
+  A checklist result (a yaml file), usually generated from a template.
 
 * **Task:**  
   A description of a piece of work that has to be done.

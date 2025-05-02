@@ -60,7 +60,7 @@ TEMPLATE_MULTI_CHECK_STRING = '''\
 TEMPLATE_SINGLE_CHECK_STRING = '''\
 <div class="form-group d-flex">
     <label class="form-checkbox">
-        <input name="{{ fact_name }}" type="checkbox" aria-labelledby="{{ fact_label }}-label"
+        <input name="{{ fact_name }}" type="checkbox" aria-labelledby="{{ fact_name }}-label"
             {%- if fact_value %} checked="checked" {%- endif %}
             {%- if required %} required="required" {%- endif %}/>
         <i class="form-icon"></i>

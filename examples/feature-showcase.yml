@@ -44,8 +44,8 @@ pages:
 
       - linuxfabrik.clf.markdown:
           content: |
-            In ChecklistFabrik pages can be conditionally shown based on previous user input.
-            This can be achieved by using Jinja conditional expressions in a page's `when` key.
+            In ChecklistFabrik pages and tasks can be conditionally shown based on previous user input.
+            This can be achieved by using Jinja conditional expressions in a page's or task's `when` key.
             
             There is no need to surround variables in conditionals with double curly braces.
             
@@ -60,10 +60,22 @@ pages:
                       - 'Windows'
                     fact_name: 'install_type'
             
+                - linuxfabrik.clf.select_input:
+                    label: 'Variant'
+                    values:
+                      - 'Hardware Machine'
+                      - 'Virtual Machine'
+                  fact_name: 'install_variant'
+            
             - title: 'Example 2 - Install Linux'
               tasks:
                 - linuxfabrik.clf.markdown:
                     content: 'This page can only be seen if "Linux" has been selected.'
+            
+                - linuxfabrik.clf.markdown:
+                    content: 'This task is only visible if "Virtual Machine" was selected'
+                  when: 'install_variant | lower() == "virtual machine"'
+            
               when: 'install_type | lower() == "linux"'
             ```
             
@@ -79,10 +91,22 @@ pages:
             - 'Windows'
           fact_name: 'install_type'
 
+      - linuxfabrik.clf.select_input:
+          label: 'Variant'
+          values:
+            - 'Hardware Machine'
+            - 'Virtual Machine'
+        fact_name: 'install_variant'
+
   - title: 'Example 2 - Install Linux'
     tasks:
       - linuxfabrik.clf.markdown:
-          content: 'This page can only be seen if "Linux" has been selected.'
+          content: 'This page will automatically be skipped unless "Linux" has been selected.'
+
+      - linuxfabrik.clf.markdown:
+          content: 'This task is only visible if "Virtual Machine" was selected.'
+        when: 'install_variant | lower() == "virtual machine"'
+
     when: 'install_type | lower() == "linux"'
 
   - title: 'Part 3 - Multiple Conditionals'

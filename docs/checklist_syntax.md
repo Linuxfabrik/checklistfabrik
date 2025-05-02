@@ -59,13 +59,13 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       Check the syntax documentation of the respective module for its format.*
       The documentation for built-in modules can be found in this document in their respective sections below.  
       There exists a special module `linuxfabrik.clf.import` that can be used to import a sequence of tasks from a different file.
-      For this special module the value must be a string of the path to the file to load (instead of a mapping).
+      For this special module, the value must be a string of the path to the file to load (instead of a mapping).
 
     - **`fact_name`**  
       *Type*: string  
       The name under which this module should register its output.  
       Task modules should use this as the name for their inputs in the HTML form.
-      After filling out the corresponding input the provided input is available under this name as a Jinja variable.  
+      After filling out the corresponding input, the provided input is available under this name as a Jinja variable.  
       This field is optional (yet you most likely want to set it if you want to use its output as a Jinja variable).  
       ChecklistFabrik will auto-generate names for missing fact names that *input modules* may use. All built-in input modules support auto-generated fact names.
 
@@ -75,6 +75,19 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
       Usually this field is edited by `clf-play` and does not need to be edited manually.  
       This field is optional.
 
+    - **`when`**  
+      *Type*: string or sequence of strings  
+      One or multiple Jinja conditional expressions that control if a task is shown or not.  
+      The task is shown if the expression evaluates to `true`, otherwise it is hidden.
+      Multiple expressions are combined using a logical "and".  
+      This field is optional.
+
+- **`when`**  
+  *Type*: string or sequence of strings  
+  One or multiple Jinja conditional expressions that control if a page is automatically skipped.  
+  The page is shown if the expression evaluates to `true`, otherwise it is skipped.
+  Multiple expressions are combined using a logical `and`.  
+  This field is optional.
 
 ## `version`
 
@@ -108,7 +121,7 @@ A task module that renders either a single HTML checkbox input field or a group 
   Multiple checkboxes may be checked at any time.  
   Use multiple checkbox tasks with a single value each if you want independent checkboxes.  
   May be omitted if one only wants a single checkbox.
-  In that case the (group) label would be the label of the checkbox.  
+  In that case, the (group) label would be the label of the checkbox.  
   *Fields*:
 
     - **`label`**  

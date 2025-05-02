@@ -36,7 +36,7 @@ This example showcases ChecklistFabrik's main features:
   Use conditional expressions to control if a page is shown based on previous user input.
 
 - Multiple Conditionals  
-  Examples of how to use more complex conditional expressions to conditionally show pages.
+  Examples of how to use more complex conditional expressions to conditionally show pages and tasks.
 
 
 ## Import Showcase

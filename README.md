@@ -1,3 +1,31 @@
+<h1 align="center">
+  <!--
+  <a href="https://linuxfabrik.ch" target="_blank">
+    <picture>
+      <img width="600" src="https://download.linuxfabrik.ch/monitoring-plugins/assets/img/linuxfabrik-monitoring-check-plugins-teaser.png">
+    </picture>
+  </a>
+  <br />
+  -->
+  Linuxfabrik ChecklistFabrik
+</h1>
+<p align="center"> <em>Checklist</em> <span>&#8226;</span>
+ <b>made by <a href="https://linuxfabrik.ch/">Linuxfabrik</a></b>
+</p>
+<div align="center">
+
+![GitHub](https://img.shields.io/github/license/linuxfabrik/checklistfabrik)
+![GitHub last commit](https://img.shields.io/github/last-commit/linuxfabrik/checklistfabrik)
+![Version](https://img.shields.io/github/v/release/linuxfabrik/checklistfabrik?sort=semver
+)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Linuxfabrik/checklistfabrik/badge)](https://scorecard.dev/viewer/?uri=github.com/Linuxfabrik/checklistfabrik)
+[![GitHubSponsors](https://img.shields.io/github/sponsors/Linuxfabrik?label=GitHub%20Sponsors)](https://github.com/sponsors/Linuxfabrik)
+[![PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7AW3VVX62TR4A&source=url)
+
+</div>
+
+<br />
+
 # ChecklistFabrik
 
 ChecklistFabrik (clf-play) is a Python 3 tool for managing your team's recurring checklists and procedures using HTML forms created from simple yet powerful YAML templates, including variables and logic based on Jinja.

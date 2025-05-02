@@ -27,6 +27,49 @@
     </div>
 
     <script>
+        /* Script to detect unsaved/local changes to the form and warn the user before navigating away. */
+
+        function saveFormValues(form) {
+            Array.from(form).forEach(element => {
+                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
+                    if (['checkbox', 'radio'].includes(element.type)) {
+                        element.dataset.clfChecked = element.checked;
+                    } else {
+                        element.dataset.clfValue = element.value;
+                    }
+                }
+            });
+        }
+
+        function formChanged(form) {
+            return Array.from(form).some((element) => {
+                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
+                    if (element.dataset.clfChecked !== undefined) {
+                        return element.dataset.clfChecked !== element.checked;
+                    }
+
+                    return element.dataset.clfValue !== element.value;
+                }
+
+                return false;
+            });
+        }
+
+        function handleBeforeUnload(event) {
+            if (formChanged(form)) {
+                event.preventDefault();
+            }
+        }
+
+        const form = document.getElementById('checklist_form');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            saveFormValues(form);
+        });
+    </script>
+    <script>
+        /* Heartbeat script to show an error message if disconnected from the server. */
+
         async function checkHeartBeat(url, server_id) {
             try {
                 const request = new Request(
@@ -52,34 +95,7 @@
             }
         }
 
-        function saveFormValues(form) {
-            Array.from(form).forEach(element => {
-                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
-                    element.dataset.clfValue = element.value;
-                }
-            });
-        }
-
-        function formChanged(form) {
-            return Array.from(form).some((element) => {
-                return ['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName) &&
-                    'clfValue' in element.dataset &&
-                    element.dataset.clfValue !== element.value;
-            });
-        }
-
-        function handleBeforeUnload(event) {
-            if (formChanged(form)) {
-                event.preventDefault();
-            }
-        }
-
-        const form = document.getElementById('checklist_form');
         const server_id = '{{ server_id }}';
-
-        window.addEventListener('DOMContentLoaded', () => {
-            saveFormValues(form);
-        });
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 

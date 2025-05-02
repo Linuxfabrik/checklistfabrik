@@ -1,12 +1,10 @@
 <h1 align="center">
-  <!--
   <a href="https://linuxfabrik.ch" target="_blank">
     <picture>
-      <img width="600" src="https://download.linuxfabrik.ch/monitoring-plugins/assets/img/linuxfabrik-monitoring-check-plugins-teaser.png">
+      <img width="600" src="https://download.linuxfabrik.ch/assets/linuxfabrik-clf-teaser.png">
     </picture>
   </a>
   <br />
-  -->
   Linuxfabrik ChecklistFabrik
 </h1>
 <p align="center"> <em>ChecklistFabrik</em> <span>&#8226;</span>

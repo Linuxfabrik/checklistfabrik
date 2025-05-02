@@ -17,11 +17,12 @@ logger = logging.getLogger(__name__)
 class Task:
     """Models a ChecklistFabrik checklist task."""
 
-    def __init__(self, module, context, fact_name, when):
+    def __init__(self, module, context, fact_name, when, unnamed_fact=None):
         self.module = module
         self.context = context
         self.fact_name = fact_name
         self.when = when
+        self.unnamed_fact = unnamed_fact
 
     def to_dict(self, facts):
         result = {
@@ -74,7 +75,12 @@ class Task:
         else:
             # Provide an automatic fact name that the module can use.
             # The module needs to report this back as fact_name if it uses the suggested name.
-            render_context['auto_fact_name'] = f'auto_{uuid.uuid4().hex}'  # Prefix the hex uuid so that it is a valid Python identifier.
+            auto_fact_name = f'auto_{uuid.uuid4().hex}'
+            render_context['auto_fact_name'] = auto_fact_name  # Prefix the hex uuid so that it is a valid Python identifier.
+
+            # Inject value that was provided without fact name.
+            if self.unnamed_fact:
+                render_context[auto_fact_name] = self.unnamed_fact
         render_context.update(self.context)
 
         if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):
@@ -115,6 +121,8 @@ class Task:
             )
 
         if 'fact_name' in result:
+            # Set fact name to the reported one from the module if we do not already have one.
+            # Note that pure output modules (i.e. they do not render inputs) might not report a fact name (as they don't need it).
             if not self.fact_name:
                 self.fact_name = result['fact_name']
             elif self.fact_name != result['fact_name']:

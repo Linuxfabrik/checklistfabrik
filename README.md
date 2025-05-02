@@ -17,7 +17,7 @@
 ![GitHub](https://img.shields.io/github/license/linuxfabrik/checklistfabrik)
 ![GitHub last commit](https://img.shields.io/github/last-commit/linuxfabrik/checklistfabrik)
 ![Version](https://img.shields.io/github/v/release/linuxfabrik/checklistfabrik?sort=semver)
-<!--[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Linuxfabrik/checklistfabrik/badge)](https://scorecard.dev/viewer/?uri=github.com/Linuxfabrik/checklistfabrik)-->
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Linuxfabrik/checklistfabrik/badge)](https://scorecard.dev/viewer/?uri=github.com/Linuxfabrik/checklistfabrik)
 [![GitHubSponsors](https://img.shields.io/github/sponsors/Linuxfabrik?label=GitHub%20Sponsors)](https://github.com/sponsors/Linuxfabrik)
 [![PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7AW3VVX62TR4A&source=url)
 

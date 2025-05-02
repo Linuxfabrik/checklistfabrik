@@ -22,8 +22,11 @@ Homepage = "https://github.com/linuxfabrik/checklistfabrik/"
 Source = "https://github.com/linuxfabrik/checklistfabrik/"
 Tracker = "https://github.com/linuxfabrik/checklistfabrik/issues/"
 
+[tool.pip-tools]
+generate-hashes = true
+
 [tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
+dependencies = { file = "requirements.in" }
 version = { attr = "checklistfabrik.core.__version__" }
 
 [tool.setuptools.packages.find]

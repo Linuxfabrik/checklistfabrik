@@ -129,11 +129,11 @@ class ChecklistWsgiApp:
             raise werkzeug.exceptions.NotFound()
 
         if request.method == 'POST':
-            redirect_next = False
+            redirect = ''
 
             for key in request.form.keys():
-                if key == 'submit_action' and request.form.get(key, '').lower() == 'next':
-                    redirect_next = True
+                if key == 'submit_action':
+                    redirect = request.form.get(key, '').lower()
                     continue
 
                 if key.endswith('[]'):
@@ -155,7 +155,10 @@ class ChecklistWsgiApp:
                     # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
                     self.checklist.facts[key] = value if value else None
 
-            if redirect_next:
+            if redirect == 'save and exit':
+                return werkzeug.utils.redirect(f'/exit')
+
+            if redirect == 'next':
                 return werkzeug.utils.redirect(f'/page/{page_id}/next')
 
         page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env, self.markdown)

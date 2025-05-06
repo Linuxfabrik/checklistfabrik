@@ -16,7 +16,7 @@ tbd
 
 ### Fixed ("fix")
 
-tbd
+- core: generate Windows compatible fallback filenames
 
 ### Changed ("refactor", "chore" etc.)
 

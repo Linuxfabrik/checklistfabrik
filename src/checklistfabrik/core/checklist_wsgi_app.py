@@ -105,7 +105,7 @@ class ChecklistWsgiApp:
             file_to_save = pathlib.Path(os.path.expandvars(clean_filename))
             logger.info('Generated file path based on template: "%s"', file_to_save)
         else:
-            file_to_save = pathlib.Path(f'checklist_{datetime.datetime.now().isoformat(timespec="milliseconds")}.yml')
+            file_to_save = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
             logger.warning('No file name set. Falling back to "%s"', file_to_save)
 
         # Saving to the file with the generated file name.

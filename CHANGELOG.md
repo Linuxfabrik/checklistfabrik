@@ -17,6 +17,7 @@ tbd
 ### Fixed ("fix")
 
 - core: generate Windows compatible fallback filenames
+- core: don't validate HTML form on "Save and Exit" (so that one does not need to complete a page before saving)
 
 ### Changed ("refactor", "chore" etc.)
 

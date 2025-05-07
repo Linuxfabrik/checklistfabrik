@@ -1,4 +1,5 @@
 import logging
+import webbrowser
 import wsgiref.simple_server
 
 logger = logging.getLogger(__name__)
@@ -27,11 +28,15 @@ class ChecklistWsgiServer(wsgiref.simple_server.WSGIServer):
     def exit(self):
         self.exit_flag = True
 
-    def serve(self):
-        logger.info(
-            'Starting server on "http://%s:%d"\nPress Ctrl+C to shutdown the server and save the checklist to disk.',
-            *self.server_address,
-        )
+    def serve(self, open_browser=False):
+        host, port = self.server_address
+
+        logger.info('Starting server on "http://%s:%d"', host, port)
+
+        print('Press Ctrl+C to shutdown the server and save the checklist to disk.')
+
+        if open_browser:
+            webbrowser.open(f'http://{host}:{port}')
 
         try:
             while not self.exit_flag:

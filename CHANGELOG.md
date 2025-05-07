@@ -12,16 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added ("feat")
 
-tbd
+- core: auto-select free port for the HTTP server
 
 ### Fixed ("fix")
 
 - core: generate Windows compatible fallback filenames
 - core: don't validate HTML form on "Save and Exit" (so that one does not need to complete a page before saving)
-
-### Changed ("refactor", "chore" etc.)
-
-tbd
 
 
 ## v1.0.0.1

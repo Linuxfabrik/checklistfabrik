@@ -83,3 +83,34 @@ class BaseCli:
         )
 
         sys.exit(cli.run())
+
+
+class IntRange:
+    """
+    "Type" for argparse to check if an integer is in a given range.
+
+    Use this instead of `choices=range(min, max + 1)` to avoid printing each
+    possible value on the help text (especially helpful for large ranges).
+    """
+
+    def __init__(self, min, max):
+        self.min = min
+        self.max = max
+
+    def __call__(self, string):
+        value = None
+
+        try:
+            value = int(string)
+
+            if not (self.min <= value <= self.max):
+                raise ValueError
+
+            return value
+        except ValueError:
+            msg = f'must be an integer in range [{self.min}, {self.max}]'
+
+            if type(value) == int:
+                msg += f', got {value}'
+
+            raise argparse.ArgumentTypeError(msg)

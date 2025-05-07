@@ -1,11 +1,10 @@
 import argparse
 import logging
 import pathlib
-import webbrowser
 
 import ruamel.yaml
 
-from .base_cli import BaseCli
+from .base_cli import BaseCli, IntRange
 from .. import __version__
 from .. import checklist_data_mapper
 from .. import checklist_wsgi_app
@@ -16,8 +15,7 @@ DESCRIPTION = (
     'Interactive CLI for launching dynamic, web-based checklists. '
     'Leverage YAML templates with Jinja logic to create, run, and track recurring procedures.'
 )
-HOST = 'localhost'
-PORT = 9309
+HOST = '127.0.0.1'
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +82,13 @@ class PlayCli(BaseCli):
         )
 
         self.arg_parser.add_argument(
+            '--port',
+            help='Port to use for the HTTP server. Using "0" will auto-select an available port. Default: %(default)d',
+            default=0,
+            type=IntRange(0, 65536),
+        )
+
+        self.arg_parser.add_argument(
             '--template',
             help=(
                 'Optional: Path to a YAML template file for creating a new report. '
@@ -115,12 +120,9 @@ class PlayCli(BaseCli):
             checklist_template=self.args.template,
         )
 
-        checklist_server = checklist_wsgi_server.ChecklistWsgiServer(HOST, PORT, checklist_app)
+        checklist_server = checklist_wsgi_server.ChecklistWsgiServer(HOST, self.args.port, checklist_app)
 
-        if self.args.open:
-            webbrowser.open(f'http://{HOST}:{PORT}')
-
-        checklist_server.serve()
+        checklist_server.serve(open_browser=self.args.open)
 
         checklist_app.save_checklist()
 

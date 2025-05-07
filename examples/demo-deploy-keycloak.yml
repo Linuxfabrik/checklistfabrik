@@ -2,7 +2,8 @@
 # https://docs.redhat.com/en-us/documentation/red_hat_build_of_keycloak/22.0/pdf/getting_started_guide/Red_Hat_build_of_Keycloak-22.0-Getting_Started_Guide-en-US.pdf
 
 title: 'Demo - Getting Started with Red Hat build of Keycloak 22.0'
-version: '2025050101'
+version: '2025050701'
+report_path: '$HOME/deploy-keycloak-{{ now().strftime("%Y%m%d") }}.yml'
 pages:
 
   - title: 'Questionnaire'

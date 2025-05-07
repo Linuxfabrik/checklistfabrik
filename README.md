@@ -49,7 +49,7 @@ and enjoy seamless progress tracking with Git—supported by plain YAML files.
   Create dynamic checklists using variables and Boolean expressions enabled by the Jinja templating language.
 
 * **Dynamic Item Exclusion:**  
-  Automatically mark pages or tasks as inapplicable using conditional 'when' expressions.
+  Automatically mark pages or tasks as inapplicable using conditional 'when' expressions.  
   (See our [examples](examples/README.md) for more details—search for "when:")
 
 
@@ -81,7 +81,33 @@ and enjoy seamless progress tracking with Git—supported by plain YAML files.
 
 ## Installation
 
-Clone this repository and run `pip install --user .` at the root of the repo to build and install the ChecklistFabrik package.
+### From PyPI (Recommended)
+
+ChecklistFabrik releases are available from [PyPI](https://pypi.org/project/checklistfabrik/).
+
+Using [pipx](https://pipx.pypa.io):
+
+```shell
+pipx install checklistfabrik
+```
+
+Using standard pip (user install):
+
+```shell
+pip install --user checklistfabrik
+```
+
+Please note that on certain Linux systems `--break-system-packages`
+might need to be added when using the system's Python/Pip.
+
+
+### From Git (For Development or Power Users)
+
+Clone this repository and run `pip install .` at the root of the repo to install ChecklistFabrik.
+
+For development use `--editable` to install ChecklistFabrik in
+[Development/Editable Mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
+The usage of a virtual environment is *strongly recommended*.
 
 
 ## Creating a Checklist Template

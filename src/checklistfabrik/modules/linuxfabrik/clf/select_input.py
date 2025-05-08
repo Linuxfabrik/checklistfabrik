@@ -17,13 +17,13 @@ EXAMPLE::
 """
 
 TEMPLATE_MULTI_SELECT_STRING = '''\
-<div class="form-group">
+<fieldset>
     <div class="form-label d-flex">
         {% if required %}
         {% include "required_indicator.html.j2" %}
         {% endif %}
         
-        <div id="{{ fact_name }}-label">
+        <div id="{{ fact_name }}-label" style="flex-grow: 1;">
             {% if not templated_label and required %}
             <i>A selection is required</i>
             {% endif %}
@@ -32,25 +32,25 @@ TEMPLATE_MULTI_SELECT_STRING = '''\
     </div>
     
     <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}[]" multiple="multiple" aria-labelledby="{{ fact_name }}-label"
-        {%- if required %} required="required" {%- endif %}/>
+        {%- if required %} required="required" {%- endif %}>
         {% for value in templated_values %}
         <option {%- if value in fact_value %} selected="selected" {%- endif %}>{{ value }}</option>
         {% endfor %}
     </select>
     
-    {# Hidden input to allow selecting no option, since a HTML form does not send empty selections. #}
-    <input type="hidden" name="{{ fact_name }}[]" value=""/>
-</div>
+    {# Hidden input to allow selecting no option, since an HTML form does not send empty selections. #}
+    <input type="hidden" name="{{ fact_name }}[]" value="" />
+</fieldset>
 '''
 
 TEMPLATE_SINGLE_SELECT_STRING = '''\
-<div class="form-group">
+<fieldset>
     <div class="form-label d-flex">
         {% if required %}
         {% include "required_indicator.html.j2" %}
         {% endif %}
         
-        <div id="{{ fact_name }}-label">
+        <div id="{{ fact_name }}-label" style="flex-grow: 1;">
             {% if not templated_label and required %}
             <i>A selection is required</i>
             {% endif %}
@@ -59,13 +59,13 @@ TEMPLATE_SINGLE_SELECT_STRING = '''\
     </div>
     
     <select class="form-select" id="{{ fact_name }}" name="{{ fact_name }}" aria-labelledby="{{ fact_name }}-label"
-        {%- if required %} required="required" {%- endif %}/>
+        {%- if required %} required="required" {%- endif %}>
         <option value="">--- Please select ---</option>
         {% for value in templated_values %}
         <option {%- if value == fact_value %} selected="selected" {%- endif %}>{{ value }}</option>
         {% endfor %}
     </select>
-</div>
+</fieldset>
 '''
 
 

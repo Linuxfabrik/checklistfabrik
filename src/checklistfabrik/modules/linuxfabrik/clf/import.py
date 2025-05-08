@@ -10,7 +10,7 @@ EXAMPLE::
 
 HTML = '''\
 <div class="toast toast-error">
-    <em>linuxfabrik.clf.import</em> represents the core import functionality and should never actually be rendered on a checklist.<br/>
+    <em>linuxfabrik.clf.import</em> represents the core import functionality and should never actually be rendered on a checklist.<br />
     If you encounter this message on your checklist, it indicates that an unreachable state has been reached. Please report this issue.
 </div>
 '''

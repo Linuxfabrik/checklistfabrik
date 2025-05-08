@@ -10,7 +10,7 @@ EXAMPLE::
 """
 
 TEMPLATE_FORMAT_STRING = '''\
-<p>{content}</p>
+<div style="margin-block: 0.8rem;">{content}</div>
 '''
 
 

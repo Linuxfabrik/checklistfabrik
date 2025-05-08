@@ -25,7 +25,7 @@ TEMPLATE_STRING = '''
         {% include "required_indicator.html.j2" %}
         {% endif %}
     
-        <div id="{{ fact_name }}-label">
+        <div id="{{ fact_name }}-label" style="flex-grow: 1;">
             {% if not templated_group_label and required %}
             <i>A selection is required</i>
             {% endif %}
@@ -38,11 +38,11 @@ TEMPLATE_STRING = '''
         <label class="form-radio">
             <input name="{{ fact_name }}" type="radio" value="{{ radio.value }}" aria-labelledby="{{ radio.value }}-label"
                 {%- if radio.value == fact_value %} checked="checked" {%- endif %}
-                {%- if required %} required="required" {%- endif %}/>
+                {%- if required %} required="required" {%- endif %} />
             <i class="form-icon"></i>
         </label>
         
-        <div class="form-label" id="{{ radio.value }}-label">
+        <div class="form-label" id="{{ radio.value }}-label" style="flex-grow: 1;">
             {{ radio.templated_label | default(radio.value, true) }}
         </div>
     </div>

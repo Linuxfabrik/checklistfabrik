@@ -1,8 +1,8 @@
-label :last-child {
+label:last-child > :last-child {
   margin-bottom: 0;
 }
 
-div.form-label :last-child {
+div.form-label:last-child > :last-child {
   margin-bottom: 0;
 }
 
@@ -58,6 +58,10 @@ li p {
   padding: 0.2rem 0.4rem;
 }
 
+pre:has(code) {
+  margin-top: 0;
+}
+
 .step .step-item.skipped a::before {
   background-color: #bcc3ce;
 }
@@ -65,4 +69,8 @@ li p {
 .step .step-item.skipped a {
   color: #bcc3ce;
   text-decoration: line-through;
+}
+
+.toast {
+  margin-block: 0.8rem;
 }

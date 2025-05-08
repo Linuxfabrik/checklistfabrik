@@ -37,6 +37,23 @@ pre > code:only-child {
   margin-right: 0.3rem;
 }
 
+.clf-code-copy-btn {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.2rem;
+}
+
+/* Move code block language indicator to the left */
+.code::before {
+  left: 0.5rem;
+  top: 0.3rem;
+}
+
+/* Give the code block language indicator more space */
+.code[data-lang] code {
+  padding-top: 1.6rem;
+}
+
 li p {
   display: inline-flex;
 }

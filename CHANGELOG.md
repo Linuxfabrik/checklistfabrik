@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - make html/css layout and design consistent
 - core: allow loading from data urls
 - core: fix incorrect detection of HTML form checkbox/radio changed state
+- core: add missing copy buttons to Markdown generated code blocks
 
 
 ## v1.1.0.0

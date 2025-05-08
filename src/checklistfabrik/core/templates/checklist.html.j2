@@ -68,6 +68,35 @@
         });
     </script>
     <script>
+        /* Script to inject copy functionality into code block copy buttons. */
+
+        async function copyCode(sender) {
+            const code = sender.parentElement.querySelector('code');
+
+            navigator.clipboard.writeText(code.innerText).then(() => {
+                sender.textContent = 'Copied!';
+
+                setTimeout(() => {
+                    sender.textContent = 'Copy';
+                }, 1200);
+            }).catch((error) => {
+                console.error('Failed to copy code: ', error);
+            });
+
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.clf-code-copy-btn').forEach(
+                (btn) => {
+                    btn.addEventListener('click', (event) => {
+                        event.preventDefault(); // Do not navigate or submit a form when clicking this button.
+                        copyCode(btn);
+                    });
+                },
+            );
+        });
+    </script>
+    <script>
         /* Heartbeat script to show an error message if disconnected from the server. */
 
         async function checkHeartBeat(url, server_id) {

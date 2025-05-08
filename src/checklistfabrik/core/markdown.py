@@ -10,7 +10,13 @@ class ClfHtmlRenderer(mistune.HTMLRenderer):
         if info:
             attributes += f' data-lang="{info.split(None, 1)[0]}"'
 
-        return f'<pre class="code"{attributes}><code>{mistune.util.escape(code)}</code></pre>'
+        return (
+            # DO NOT include line breaks / other whitespace in the `pre`-element as whitespace is displayed for `pre`-elements.
+            f'<pre class="code"{attributes}>'
+            '<button class="btn btn-link btn-sm clf-code-copy-btn" type="button">Copy</button>'
+            f'<code>{mistune.util.escape(code)}</code>'
+            '</pre>'
+        )
 
     def link(self, text, url, title=None):
         """Renders links as an HTML anchor with the `target="_blank"` attribute."""

@@ -265,14 +265,14 @@ pages:
             In real checklists you would probably use more sensible Jinja code than this. ;)
             {% endif %}
 
-  - title: 'linuxfabrik.clf.text_output'
+  - title: 'linuxfabrik.clf.html'
     tasks:
 
       - linuxfabrik.clf.markdown:
           content: |
-            The *linuxfabrik.clf.text_output* module can be used to display a text as an HTML paragraph:
+            The *linuxfabrik.clf.html* module can be used to display a text as an HTML paragraph:
 
-      - linuxfabrik.clf.text_output:
+      - linuxfabrik.clf.html:
           content: |
             This text is rendered inside an HTML paragraph.
 
@@ -285,7 +285,7 @@ pages:
             > This module exists mostly as a fallback for anything that Markdown does not support.
 
 
-      - linuxfabrik.clf.text_output:
+      - linuxfabrik.clf.html:
           content: |
             This text contains <i>HTML</i> code.
             <br/>

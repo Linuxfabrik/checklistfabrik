@@ -12,11 +12,11 @@ clf-play --template builtin-modules-showcase.yml
 This example includes showcases of the built-in (task) modules:
 
 - `linuxfabrik.clf.checkbox_input`
+- `linuxfabrik.clf.html`
 - `linuxfabrik.clf.markdown`
 - `linuxfabrik.clf.radio_input`
 - `linuxfabrik.clf.select_input`
 - `linuxfabrik.clf.text_input`
-- `linuxfabrik.clf.text_output`
 
 Please note that the special module `linuxfabrik.clf.import` has its own example.
 

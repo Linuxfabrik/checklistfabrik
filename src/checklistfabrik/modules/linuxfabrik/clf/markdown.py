@@ -1,7 +1,7 @@
 """
-ChecklistFabrik text_output module
+ChecklistFabrik Markdown module
 
-This module renders Jinja templated markdown to HTML.
+This module renders Jinja templated Markdown to HTML.
 
 EXAMPLE::
 

@@ -1,11 +1,11 @@
 """
-ChecklistFabrik text_output module
+ChecklistFabrik HTML module
 
-This module simply renders Jinja templated text as an HTML paragraph.
+This module simply renders Jinja templated HTML.
 
 EXAMPLE::
 
-    - linuxfabrik.clf.text_output:
+    - linuxfabrik.clf.html:
         content: 'This is an example text with Jinja expressions, for example {{ host }}.'
 """
 

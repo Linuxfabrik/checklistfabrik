@@ -149,6 +149,19 @@ A task module that renders either a single HTML checkbox input field or a group 
   Setting this key to `true` has the effect that *all checkboxes of the same group must be checked* to pass validation.
 
 
+## Task Module *linuxfabrik.clf.html*
+
+A task module that renders Jinja templated HTML.
+
+### Fields
+
+- **`content`**  
+  *Type*: string  
+  The text to render as an HTML paragraph.  
+  May include HTML tags.  
+  Supports Jinja templating.
+
+
 ## Task Module *linuxfabrik.clf.markdown*
 
 A task module that renders markdown content as HTML.
@@ -243,16 +256,3 @@ A task module that renders an HTML text input.
   *Type*: boolean  
   Controls the `required` attribute of the HTML input element.  
   Setting this key to `true` has the effect that the text input *must be non-empty* to pass validation.
-
-
-## Task Module *linuxfabrik.clf.text_output*
-
-A task module that renders an HTML paragraph.
-
-### Fields
-
-- **`content`**  
-  *Type*: string  
-  The text to render as an HTML paragraph.  
-  May include HTML tags.  
-  Supports Jinja templating.

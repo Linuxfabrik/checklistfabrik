@@ -44,7 +44,7 @@
         function formChanged(form) {
             return Array.from(form).some((element) => {
                 if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
-                    if (element.dataset.clfChecked !== undefined) {
+                    if (['checkbox', 'radio'].includes(element.type)) {
                         return element.dataset.clfChecked !== element.checked;
                     }
 

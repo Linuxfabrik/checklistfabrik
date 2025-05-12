@@ -1,7 +1,7 @@
 <h1 align="center">
   <a href="https://linuxfabrik.ch" target="_blank">
     <picture>
-      <img width="600" src="https://download.linuxfabrik.ch/assets/linuxfabrik-clf-teaser.webp">
+      <img width="600" src="https://download.linuxfabrik.ch/assets/linuxfabrik-clf-teaser.png">
     </picture>
   </a>
   <br />

@@ -113,7 +113,7 @@ The usage of a virtual environment is *strongly recommended*.
 ## Creating a Checklist Template
 
 For documentation on the YAML format used by ChecklistFabrik, see the [checklist template syntax documentation](docs/checklist_syntax.md).
-Example checklist templates can be found in the `examples` folder of this project.
+Example checklist templates can be found in the [examples](https://github.com/Linuxfabrik/checklistfabrik/tree/main/examples) folder of this project.
 
 
 ## Creating a New Checklist From a Template

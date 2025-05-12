@@ -1,13 +1,18 @@
 # Example Files for ChecklistFabrik
 
-This directory contains examples on how to use ChecklistFabrik and its YAML files.
+This directory contains examples and some showcases on how to use ChecklistFabrik and its YAML files.
+
+
+## Real-Life Examples
+
+Real-life examples all start with the prefix "demo-". To run them, type:
+
+```shell
+clf-play --template demo-deploy-keycloak.yml
+```
 
 
 ## Built-In Modules Showcase
-
-```shell
-clf-play --template builtin-modules-showcase.yml
-```
 
 This example includes showcases of the built-in (task) modules:
 
@@ -20,12 +25,14 @@ This example includes showcases of the built-in (task) modules:
 
 Please note that the special module `linuxfabrik.clf.import` has its own example.
 
-
-## Feature Showcase
+Run the "module" showcase:
 
 ```shell
-clf-play --template feature-showcase.yml
+clf-play --template builtin-modules-showcase.yml
 ```
+
+
+## Feature Showcase
 
 This example showcases ChecklistFabrik's main features:
 
@@ -38,12 +45,20 @@ This example showcases ChecklistFabrik's main features:
 - Multiple Conditionals  
   Examples of how to use more complex conditional expressions to conditionally show pages and tasks.
 
+Run the "feature" showcase:
+
+```shell
+clf-play --template feature-showcase.yml
+```
+
 
 ## Import Showcase
+
+This example showcases the special `linuxfabrik.clf.import` module,
+which can be used to import pages and tasks from separate pages.
+
+Run the "import" showcase:
 
 ```shell
 clf-play --template import-showcase.yml
 ```
-
-This example showcases the special `linuxfabrik.clf.import` module,
-which can be used to import pages and tasks from separate pages.

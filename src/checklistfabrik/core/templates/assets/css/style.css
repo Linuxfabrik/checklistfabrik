@@ -67,12 +67,12 @@ li p {
   border-color: #e85600;
 }
 
-/* Style inline code as spectre's code blocks. Also fixes low contrast. */
+/* Style inline code similar to spectre's code blocks. Also fixes low contrast. */
 :not(pre) > code {
   background-color: #f7f8f9;
   color: #3b4351;
+  display: inline-block; /* NEVER break inline code (it looks ugly and it is hard to differentiate from two separate inline code blocks */
   margin-inline: 0.1rem;
-  padding: 0.2rem 0.4rem;
 }
 
 pre:has(code) {

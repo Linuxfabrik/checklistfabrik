@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added ("feat")
+
+- core: also save form with the 'previous' button
+
+
 ### Fixed ("fix")
 
 - make html/css layout and design consistent

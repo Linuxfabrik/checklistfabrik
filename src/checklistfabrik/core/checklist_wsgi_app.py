@@ -1,4 +1,5 @@
 import datetime
+import functools
 import json
 import logging
 import os.path
@@ -82,7 +83,7 @@ class ChecklistWsgiApp:
 
         # No file was specified, neither on the CLI nor in the template file, so generate one.
 
-        # Try to generate filename based on the template's report path.
+        # Try to generate a filename based on the template's report path.
         if self.checklist.report_path:
             generated_filename = self.templ_env.from_string(self.checklist.report_path).render(self.checklist.facts)
 
@@ -155,11 +156,14 @@ class ChecklistWsgiApp:
                     # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
                     self.checklist.facts[key] = value if value else None
 
-            if redirect == 'save and exit':
-                return werkzeug.utils.redirect(f'/exit')
-
-            if redirect == 'next':
-                return werkzeug.utils.redirect(f'/page/{page_id}/next')
+            return {
+                'next': functools.partial(werkzeug.utils.redirect, f'/page/{page_id}/next'),
+                'previous': functools.partial(werkzeug.utils.redirect, f'/page/{page_id}/prev'),
+                'save and exit': functools.partial(werkzeug.utils.redirect, '/exit'),
+            }.get(
+                redirect,
+                functools.partial(werkzeug.Response, response='OK', status=200),
+            )()
 
         page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env, self.markdown)
 

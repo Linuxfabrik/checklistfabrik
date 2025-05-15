@@ -1,6 +1,6 @@
 # Example Files for ChecklistFabrik
 
-This directory contains examples and some showcases on how to use ChecklistFabrik and its YAML files.
+This directory contains examples and showcases on how to use ChecklistFabrik and its YAML files.
 
 
 ## Real-Life Examples
@@ -44,6 +44,9 @@ This example showcases ChecklistFabrik's main features:
 
 - Multiple Conditionals  
   Examples of how to use more complex conditional expressions to conditionally show pages and tasks.
+
+- Automatic Report names with `report_path`  
+  Examples of how to use `report_path` in templates to automatically generate custom save locations.
 
 Run the "feature" showcase:
 

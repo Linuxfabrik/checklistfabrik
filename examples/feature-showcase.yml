@@ -1,5 +1,6 @@
 title: 'ChecklistFabrik Feature Showcase'
-version: '2025041701'
+version: '2025051501'
+report_path: 'feature-showcase-{{ now().strftime("%Y%m%d") }}.yml'
 pages:
 
   - title: 'Part 1 - Storing User Input'
@@ -175,3 +176,49 @@ pages:
           content: |
             Install a suitable JDK.
     when: '"java" in (language | map("lower")) or "kotlin" in (language | map("lower"))'
+
+  - title: 'Part 4 - report_path'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: |
+            ChecklistFabrik templates can suggest where the report should be saved.
+            
+            Using the following example, ChecklistFabrik will save the generated report to `report_path_checklist.yml`.
+            
+            ```yaml
+            title: 'report_path Example Checklist'
+            report_path: 'report_path_checklist.yml'
+            ```
+            
+            The `report_path` *will only be used* if no file argument is specified,
+            i.e. the file parameter was omitted from the commandline: `clf-play --template report_path_template.yml`
+            
+            This allows users to simply override the template provided save location by specifying the file parameter on the commandline:
+            `clf-play --template report_path_template.yml overridden_save_location.yml`
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            Environment variables (of the form `$name` or `${name}`) in `report_path` are expanded.
+            Therefore, the next example would result in the report being saved under `~/report_path_checklist.yml`.
+            
+            ```yaml
+            title: 'report_path Example Checklist'
+            report_path: '$HOME/report_path_checklist.yml'
+            ```
+            
+            Malformed variable names and references to non-existing variables are left unchanged.
+            Windows user may also specify variables using `%name%` (this will, however, *not* be expanded on other platforms).
+            
+      - linuxfabrik.clf.markdown:
+          content: |
+            For more control over the `report_path` Jinja templating can also be used.
+            
+            This showcase, for example, uses the following Jinja templated `report_path`:
+            
+            {% raw %}
+            
+            ```yaml
+            report_path: 'feature-showcase-{{ now().strftime("%Y%m%d") }}.yml'
+            ```
+            
+            {% endraw %}

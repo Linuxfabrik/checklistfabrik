@@ -54,7 +54,7 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
 
     - **`<module>`**  
       *Type*: mapping (or string; see below)  
-      The very first key in the mapping. 
+      The very first key in the mapping.  
       Specifies the module, to which to delegate the task rendering.  
       *The mapping is passed to the respective module for rendering.
       Check the syntax documentation of the respective module for its format.*
@@ -72,8 +72,9 @@ Each page will be rendered as a separate HTML page with a form containing a fiel
 
     - **`value`**  
       *Type*: any  
-      The saved value for the fact registered by this task of a previous run of this checklist.
+      The saved value for the fact registered by this task from a previous run of this checklist.
       Usually this field is edited by `clf-play` and does not need to be edited manually.  
+      Can be set in templates to act as a default when creating a checklist from the template.  
       This field is optional.
 
     - **`when`**  

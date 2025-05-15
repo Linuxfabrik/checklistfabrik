@@ -91,3 +91,9 @@ pre:has(code) {
 .toast {
   margin-block: 0.8rem;
 }
+
+/* Better multiline alignment for (text) lists. */
+:is(ol, ul):not([class]) li {
+  list-style-position: outside;
+  margin-left: 0.8rem;
+}

@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - core: allow loading from data urls
 - core: fix incorrect detection of HTML form checkbox/radio changed state
 - core: add missing copy buttons to Markdown generated code blocks
+- core: fix optical alignment of multiline HTML lists
 
 
 ## v1.1.0.0

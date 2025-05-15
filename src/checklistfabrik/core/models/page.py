@@ -68,4 +68,7 @@ class Page:
         else:
             data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
 
-        return TEMPLATE_FORMAT_STRING.format(title=self.title, data=data)
+        return TEMPLATE_FORMAT_STRING.format(
+            title=template_env.from_string(self.title).render(**facts),
+            data=data,
+        )

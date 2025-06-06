@@ -1,3 +1,4 @@
+{% if pages|length > 1 %}
 <div style="margin-block: 1.2rem;">
     <ul class="step">
         {% for page in pages %}
@@ -7,3 +8,4 @@
         {% endfor %}
     </ul>
 </div>
+{% endif %}

@@ -10,7 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
-tbd
+### Fixed ("fix")
+
+- templates: only show the 'Pages' progress indicator if there is more than one page available
+
 
 
 ## v1.2.0
@@ -31,6 +34,7 @@ tbd
 - core: minor visual clarity improvements to inline code style
 
 
+
 ## v1.1.0.0
 
 ### Added ("feat")
@@ -42,6 +46,7 @@ tbd
 
 - core: generate Windows compatible fallback filenames
 - core: don't validate HTML form on "Save and Exit" (so that one does not need to complete a page before saving)
+
 
 
 ## v1.0.0.1

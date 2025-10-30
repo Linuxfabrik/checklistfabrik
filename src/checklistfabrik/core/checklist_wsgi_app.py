@@ -187,10 +187,8 @@ class ChecklistWsgiApp:
         )
 
     def on_next_page(self, request, **kwargs):
-        page_id = kwargs['id']
-
         # Find the next applicable page.
-        next_page_id = page_id + 1
+        next_page_id = kwargs['id'] + 1
         while next_page_id < len(self.checklist):
             if self.checklist.pages[next_page_id].eval_when(self.checklist.facts)[0]:
                 break
@@ -202,9 +200,15 @@ class ChecklistWsgiApp:
         return werkzeug.utils.redirect(f'/page/{next_page_id}')
 
     def on_prev_page(self, request, **kwargs):
-        page_id = kwargs['id']
+        # Find the last previously applicable page.
+        prev_page_id = kwargs['id'] - 1
+        while prev_page_id > 0:
+            if self.checklist.pages[prev_page_id].eval_when(self.checklist.facts)[0]:
+                break
 
-        return werkzeug.utils.redirect(f'/page/{max(0, page_id - 1)}')
+            prev_page_id -= 1
+
+        return werkzeug.utils.redirect(f'/page/{prev_page_id}')
 
     def on_done(self, request, **kwargs):
         return werkzeug.Response(

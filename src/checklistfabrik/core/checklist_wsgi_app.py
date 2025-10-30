@@ -52,7 +52,8 @@ class ChecklistWsgiApp:
                 werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
                 werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
                 werkzeug.routing.Rule('/page/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
-                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page),
+                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page_get, methods=['GET']),
+                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page_post, methods=['POST']),
                 werkzeug.routing.Rule('/page/<int:id>/next', endpoint=self.on_next_page),
                 werkzeug.routing.Rule('/page/<int:id>/prev', endpoint=self.on_prev_page),
             ],
@@ -123,47 +124,11 @@ class ChecklistWsgiApp:
         except werkzeug.exceptions.HTTPException as exception:
             return exception
 
-    def on_page(self, request, **kwargs):
+    def on_page_get(self, request, **kwargs):
         page_id = kwargs['id']
 
         if page_id >= len(self.checklist):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
-
-        if request.method == 'POST':
-            redirect = ''
-
-            for key in request.form.keys():
-                if key == 'submit_action':
-                    redirect = request.form.get(key, '').lower()
-                    continue
-
-                if key.endswith('[]'):
-                    # List keys are marked with '[]' to differentiate them from single value keys,
-                    # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
-                    self.checklist.facts[key[:-2]] = [
-                        value
-                        for value in request.form.getlist(key)
-                        # Only save if non-empty. An empty string is used to force the HTML form to send empty selections/states.
-                        # This was implemented as otherwise it would be impossible to change an already submitted value
-                        # to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
-                        if value
-                    ]
-                else:
-                    value = request.form.get(key)
-
-                    # Only save if non-empty, otherwise reset. An empty string is used to force the HTML form to send
-                    # empty selections/states. This was implemented as otherwise it would be impossible to change an already
-                    # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
-                    self.checklist.facts[key] = value if value else None
-
-            return {
-                'next': functools.partial(werkzeug.utils.redirect, f'/page/{page_id}/next'),
-                'previous': functools.partial(werkzeug.utils.redirect, f'/page/{page_id}/prev'),
-                'save and exit': functools.partial(werkzeug.utils.redirect, '/exit'),
-            }.get(
-                redirect,
-                functools.partial(werkzeug.Response, response='OK', status=200),
-            )()
 
         page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env, self.markdown)
 
@@ -185,6 +150,49 @@ class ChecklistWsgiApp:
             ),
             mimetype='text/html',
         )
+
+    def on_page_post(self, request, **kwargs):
+        page_id = kwargs['id']
+
+        if page_id >= len(self.checklist):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
+            raise werkzeug.exceptions.NotFound()
+
+        redirect = ''
+
+        for key in request.form.keys():
+            if key == 'submit_action':
+                redirect = request.form.get(key, '').lower()
+                continue
+
+            if key.endswith('[]'):
+                # List keys are marked with '[]' to differentiate them from single value keys,
+                # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
+                self.checklist.facts[key[:-2]] = [
+                    value
+                    for value in request.form.getlist(key)
+                    # Only save if non-empty. An empty string is used to force the HTML form to send empty selections/states.
+                    # This was implemented as otherwise it would be impossible to change an already submitted value
+                    # to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
+                    if value
+                ]
+            else:
+                value = request.form.get(key)
+
+                # Only save if non-empty, otherwise reset. An empty string is used to force the HTML form to send
+                # empty selections/states. This was implemented as otherwise it would be impossible to change an already
+                # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
+                self.checklist.facts[key] = value if value else None
+
+        if redirect == 'next':
+            return werkzeug.utils.redirect(f'/page/{page_id}/next')
+
+        if redirect == 'previous':
+            return werkzeug.utils.redirect(f'/page/{page_id}/prev')
+
+        if redirect == 'save and exit':
+            return werkzeug.utils.redirect('/exit')
+
+        return werkzeug.Response(response='OK', status=200)
 
     def on_next_page(self, request, **kwargs):
         # Find the next applicable page.

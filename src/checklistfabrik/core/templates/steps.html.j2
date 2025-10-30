@@ -3,7 +3,8 @@
     <ul class="step">
         {% for page in pages %}
             <li class="step-item {%- if page.id == page_id %} active {%- elif page.id < page_id and not page.eval_when %} skipped {%- endif %}">
-                <a href="/page/{{ page.id }}" class="tooltip" data-tooltip="{{ page.title }}">Page {{ page.id + 1 }}</a>
+                <!-- NOTE: This explicitly needs to be a button and not an input! Otherwise the styling won't work as pseudo-elements only work with buttons. -->
+                <button class="tooltip" data-tooltip="{{ page.title }}" form="checklist_form" formnovalidate="formnovalidate" name="submit_action" type="submit" value="Page {{ page.id }}">Page {{ page.id + 1 }}</button>
             </li>
         {% endfor %}
     </ul>

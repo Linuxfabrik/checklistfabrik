@@ -79,13 +79,57 @@ pre:has(code) {
   margin-top: 0;
 }
 
-.step .step-item.skipped a::before {
+.step .step-item.skipped a::before,
+.step .step-item.skipped button::before {
   background-color: #bcc3ce;
 }
 
-.step .step-item.skipped a {
+.step .step-item.skipped a,
+.step .step-item.skipped button {
   color: #bcc3ce;
   text-decoration: line-through;
+}
+
+/* Make inputs work in the steps component */
+.step .step-item button {
+  background: none;
+  border: none;
+  color: #5755d9;
+  display: inline-block;
+  padding: 20px 10px 0;
+  text-decoration: none;
+}
+
+.step .step-item button:hover {
+  cursor: pointer;
+}
+
+.step .step-item button::before {
+  background: #5755d9;
+  border: .1rem solid #fff;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  height: .6rem;
+  left: 50%;
+  position: absolute;
+  top: .2rem;
+  transform: translateX(-50%);
+  width: .6rem;
+  z-index: 1;
+}
+
+.step .step-item.active button::before {
+  background: #fff;
+  border: .1rem solid #5755d9;
+}
+
+.step .step-item.active ~ .step-item button {
+  color: #bcc3ce;
+}
+
+.step .step-item.active ~ .step-item button::before {
+  background: #dadee4;
 }
 
 .toast {

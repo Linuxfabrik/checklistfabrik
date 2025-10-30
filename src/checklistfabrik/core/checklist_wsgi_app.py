@@ -183,6 +183,9 @@ class ChecklistWsgiApp:
                 # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
                 self.checklist.facts[key] = value if value else None
 
+        if redirect.startswith('page '):
+            return werkzeug.utils.redirect(f'/page/{redirect.split(" ", maxsplit=1)[1]}')
+
         if redirect == 'next':
             return werkzeug.utils.redirect(f'/page/{page_id}/next')
 

@@ -7,9 +7,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.3.0] - 2025-10-31
+
+### Added ("feat")
+
+* core: implicitly save when jumping through pages
+
+
 ### Fixed ("fix")
 
 * core: also skip n/a pages with the previous button
+
+
+### Changed ("refactor", "chore" etc.)
+
+* split on_page url route into separate functions for GET/POST
+* update libraries
 
 
 ## [v1.2.1] - 2025-07-16
@@ -63,7 +79,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 Initial public release
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.3.0...HEAD
+[v1.3.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.2.1...v1.3.0
 [v1.2.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.1.0.0...v1.2.0
 [v1.1.0.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.0.0.1...v1.1.0.0

@@ -7,6 +7,26 @@ name = "checklistfabrik"
 authors = [
     { name = "Linuxfabrik GmbH, Zurich, Switzerland", email = "info@linuxfabrik.ch" },
 ]
+classifiers = [
+    "Development Status :: 6 - Mature",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Other Audience",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Telecommunications Industry",
+    "License :: OSI Approved :: The Unlicense (Unlicense)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business",
+    "Topic :: Utilities",
+]
 description = "ChecklistFabrik is a Python 3 tool to simplify and automate process management using HTML checklists backed by YAML files."
 dynamic = [
     "dependencies",

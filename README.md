@@ -25,13 +25,10 @@
 
 <br />
 
-# ChecklistFabrik
+# ChecklistFabrik - Open Source Checklist Maker Tool
 
 ChecklistFabrik (clf-play) is a Python 3 tool designed to manage your team's recurring checklists,
-processes, and procedures.
-It leverages simple yet powerful YAML templates to create interactive HTML forms for an enhanced user experience.
-Utilize variables and logic through the Jinja templating language to define adaptive procedures,
-and enjoy seamless progress tracking with Git—supported by plain YAML files.
+processes, and procedures. It leverages simple yet powerful YAML templates to create interactive HTML forms for an enhanced user experience. Utilize variables and logic through the Jinja templating language to define adaptive procedures, and enjoy seamless progress tracking.
 
 
 ## Features

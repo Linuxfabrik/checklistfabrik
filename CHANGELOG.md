@@ -19,7 +19,6 @@ Nothing yet.
 ### Changed
 
 * core: split on_page URL route into separate functions for GET/POST
-* deps: update libraries
 
 ### Fixed
 
@@ -27,10 +26,6 @@ Nothing yet.
 
 
 ## [v1.2.1] - 2025-07-16
-
-### Changed
-
-* deps: update libraries
 
 ### Fixed
 

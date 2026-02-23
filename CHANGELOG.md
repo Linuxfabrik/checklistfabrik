@@ -2,81 +2,77 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 
 ## [Unreleased]
 
-tbd
+Nothing yet.
 
 
 ## [v1.3.0] - 2025-10-31
 
-### Added ("feat")
+### Added
 
 * core: implicitly save when jumping through pages
 
+### Changed
 
-### Fixed ("fix")
+* core: split on_page URL route into separate functions for GET/POST
+* deps: update libraries
+
+### Fixed
 
 * core: also skip n/a pages with the previous button
 
 
-### Changed ("refactor", "chore" etc.)
-
-* split on_page url route into separate functions for GET/POST
-* update libraries
-
-
 ## [v1.2.1] - 2025-07-16
 
-### Fixed ("fix")
+### Changed
 
-* templates: only show the 'Pages' progress indicator if there is more than one page available
+* deps: update libraries
 
+### Fixed
 
-### Changed ("refactor", "chore" etc.)
-
-* update libraries
-
+* templates: only show the "Pages" progress indicator if there is more than one page available
 
 
 ## [v1.2.0] - 2025-05-15
 
-### Added ("feat")
+### Added
 
-* core: also save form with the 'previous' button
+* core: also save form with the "previous" button
 * core: support Jinja in page titles
 
+### Changed
 
-### Fixed ("fix")
+* modules: rename text_output module to html
 
-* make html/css layout and design consistent
-* core: allow loading from data urls
+### Fixed
+
+* core: allow loading from data URLs
 * core: fix incorrect detection of HTML form checkbox/radio changed state
 * core: add missing copy buttons to Markdown generated code blocks
 * core: fix optical alignment of multiline HTML lists
 * core: minor visual clarity improvements to inline code style
-
+* templates: make HTML/CSS layout and design consistent
 
 
 ## [v1.1.0.0] - 2025-05-07
 
-### Added ("feat")
+### Added
 
 * core: auto-select free port for the HTTP server
 
+### Fixed
 
-### Fixed ("fix")
-
-* core: generate Windows compatible fallback filenames
+* core: generate Windows-compatible fallback filenames
 * core: don't validate HTML form on "Save and Exit" (so that one does not need to complete a page before saving)
-
 
 
 ## [v1.0.0.1] - 2025-05-02
 
-Initial public release
+Initial public release.
 
 
 [Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.3.0...HEAD

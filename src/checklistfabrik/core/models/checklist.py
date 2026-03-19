@@ -1,11 +1,12 @@
 class Checklist:
     """Models a ChecklistFabrik checklist."""
 
-    def __init__(self, title, pages, facts, report_path=None, version=None):
-        self.title = title
-        self.pages = pages
+    def __init__(self, title, pages, facts, description=None, report_path=None, version=None):
+        self.description = description
         self.facts = facts
+        self.pages = pages
         self.report_path = report_path
+        self.title = title
         self.version = version
 
     def __len__(self):

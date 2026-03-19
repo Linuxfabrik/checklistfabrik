@@ -48,7 +48,7 @@ class ChecklistDataMapper:
     def save_checklist(self, file, checklist, overwrite=True):
         """Save a checklist and its pages, tasks and facts to a YAML file."""
 
-        logger.info('Saving checklist data to "%s"', file)
+        logger.info('Saving checklist data to "%s"', file.resolve())
 
         # Before writing the file, dump to a separate stream instead and check if we have an output.
         # This prevents saving an empty file if for some reason the dump fails.
@@ -96,7 +96,7 @@ class ChecklistDataMapper:
         valid, message = utils.validate_dict_keys(
             checklist,
             {'title', 'pages'},
-            {'report_path', 'version'},
+            {'description', 'report_path', 'version'},
             disallow_extra_keys=True,
         )
 
@@ -118,6 +118,10 @@ class ChecklistDataMapper:
             logger.critical('Checklist "%s" does not contain any pages', title)
             raise ChecklistLoadError
 
+        if 'description' in checklist and not isinstance(checklist['description'], str):
+            logger.critical('Description field of checklist "%s" is not a string', title)
+            raise ChecklistLoadError
+
         if 'report_path' in checklist and not isinstance(checklist['report_path'], str):
             logger.critical('Report path field of checklist "%s" is not a string', title)
             raise ChecklistLoadError
@@ -130,8 +134,9 @@ class ChecklistDataMapper:
             title,
             self.process_page_list(page_list, workdir, facts),
             facts,
-            checklist.get('report_path'),
-            checklist.get('version'),
+            description=checklist.get('description'),
+            report_path=checklist.get('report_path'),
+            version=checklist.get('version'),
         )
 
     def process_page_list(self, page_list, workdir, facts):

@@ -11,24 +11,16 @@ EXAMPLE:
 """
 
 TEMPLATE_STRING = '''
-<fieldset>
-    <div class="form-label d-flex">
-        {% if required %}
-        {% include "required_indicator.html.j2" %}
-        {% endif %}
-    
-        <div id="{{ fact_name }}-label" style="flex-grow: 1;">
-            {% if not templated_label and required %}
-            <i>An input is required</i>
-            {% endif %}
-            {{ templated_label }}
-        </div>
+<div class="form-group">
+    <div class="form-label" id="{{ fact_name }}-label">
+        {% if required %}{% include "required_indicator.html.j2" %}{% endif %}
+        <div>{% if not templated_label and required %}<i>An input is required</i>{% endif %}{{ templated_label }}</div>
     </div>
-    
-    <input class="form-input" id="{{ fact_name }}" name="{{ fact_name }}" type="text" aria-labelledby="{{ fact_name }}-label"
-        {%- if required %} required="required" {%- endif %}
-        {%- if fact_value %} value="{{ fact_value }}" {%- endif %} />
-</fieldset>
+    <input class="form-input" id="{{ fact_name }}" name="{{ fact_name }}" type="text"
+        aria-labelledby="{{ fact_name }}-label"
+        {%- if required %} required{%- endif %}
+        {%- if fact_value %} value="{{ fact_value }}"{%- endif %} />
+</div>
 '''
 
 

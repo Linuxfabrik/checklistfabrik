@@ -8,7 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+* core: `clf-play` without arguments opens a dashboard listing available templates and reports
+* core: new optional `description` field for checklist templates, displayed in the dashboard
+
+### Changed
+
+* core: log the full path when auto-generating report filenames
+* modules: HTML improvements (accessible labels, semantic markup, HTML5 boolean attributes)
+
+### Fixed
+
+* core: also check page 0 for `when` conditions when navigating backwards
+* core: escape code block language attribute to prevent XSS
+* core: fix port validation allowing invalid port 65536
+* core: remove unused import
 
 
 ## [v1.3.0] - 2025-10-31

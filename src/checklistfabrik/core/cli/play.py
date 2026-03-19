@@ -9,11 +9,13 @@ from .. import __version__
 from .. import checklist_data_mapper
 from .. import checklist_wsgi_app
 from .. import checklist_wsgi_server
+from .. import dashboard_wsgi_app
 from .. import templates
 
 DESCRIPTION = (
     'Interactive CLI for launching dynamic, web-based checklists. '
-    'Leverage YAML templates with Jinja logic to create, run, and track recurring procedures.'
+    'Leverage YAML templates with Jinja logic to create, run, and track recurring procedures. '
+    'Run without arguments to open the dashboard.'
 )
 HOST = '127.0.0.1'
 
@@ -58,7 +60,8 @@ class PlayCli(BaseCli):
                 'If you want to create a new report from an existing checklist/template, '
                 'provide a non-existent file path and use the `--template` option. '
                 'This option may be left empty to auto-generate the file path '
-                'based on the template\'s `report_path` (if provided) or simply a timestamp.'
+                'based on the template\'s `report_path` (if provided) or simply a timestamp. '
+                'If omitted entirely (along with `--template`), the dashboard is opened.'
             ),
             nargs='?',
             type=pathlib.Path,
@@ -85,7 +88,14 @@ class PlayCli(BaseCli):
             '--port',
             help='Port to use for the HTTP server. Using "0" will auto-select an available port. Default: %(default)d',
             default=0,
-            type=IntRange(0, 65536),
+            type=IntRange(0, 65535),
+        )
+
+        self.arg_parser.add_argument(
+            '--reports-dir',
+            help='Directory to scan for report files (dashboard mode). Default: %(default)s',
+            type=pathlib.Path,
+            default=pathlib.Path('.'),
         )
 
         self.arg_parser.add_argument(
@@ -98,7 +108,23 @@ class PlayCli(BaseCli):
             type=pathlib.Path,
         )
 
+        self.arg_parser.add_argument(
+            '--templates-dir',
+            help='Directory to scan for checklist templates (dashboard mode). Default: %(default)s',
+            type=pathlib.Path,
+            default=pathlib.Path('.'),
+        )
+
     def validate_args(self):
+        if self.args.report_file is None and self.args.template is None:
+            # Dashboard mode.
+            # Auto-detect well-known subdirectories if the user did not override.
+            if self.args.reports_dir == pathlib.Path('.') and pathlib.Path('reports').is_dir():
+                self.args.reports_dir = pathlib.Path('reports')
+            if self.args.templates_dir == pathlib.Path('.') and pathlib.Path('templates').is_dir():
+                self.args.templates_dir = pathlib.Path('templates')
+            return
+
         if self.args.template is not None:
             if self.args.report_file and self.args.report_file.is_file() and not self.args.force:
                 self.arg_parser.error('--template may only be specified if the report file does not exist')
@@ -111,6 +137,8 @@ class PlayCli(BaseCli):
                 self.arg_parser.error('report file must exist')
 
     def run(self):
+        if self.args.report_file is None and self.args.template is None:
+            return self.run_dashboard()
 
         checklist_app = checklist_wsgi_app.ChecklistWsgiApp(
             self.args.report_file,
@@ -125,6 +153,23 @@ class PlayCli(BaseCli):
         checklist_server.serve(open_browser=self.args.open)
 
         checklist_app.save_checklist()
+
+        return 0
+
+    def run_dashboard(self):
+        dashboard_app = dashboard_wsgi_app.DashboardWsgiApp(
+            self.args.templates_dir.resolve(),
+            self.args.reports_dir.resolve(),
+            self.data_mapper,
+            templates.get_template_loader(),
+            templates.get_assets_path(),
+        )
+
+        dashboard_server = checklist_wsgi_server.ChecklistWsgiServer(HOST, self.args.port, dashboard_app)
+
+        dashboard_server.serve(open_browser=self.args.open)
+
+        dashboard_app.cleanup()
 
         return 0
 

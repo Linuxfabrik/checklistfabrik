@@ -6,6 +6,14 @@ div.form-label:last-child > :last-child {
   margin-bottom: 0;
 }
 
+/* Remove excess margins from Markdown-generated <p> tags inside form labels, legends and input labels. */
+.form-checkbox p,
+.form-label p,
+.form-radio p,
+legend p {
+  margin: 0;
+}
+
 /*
 Spectre removes the fieldset border, bring it back for the outermost fieldset
 (and also integrate it with Spectre's design).
@@ -29,12 +37,48 @@ pre > code:only-child {
   display: block;
 }
 
+.clf-content-block {
+  margin-block: 0.8rem;
+}
+
+/* Width of the required indicator (icon + gap). Used to align inputs with the label text. */
+:root {
+  --clf-required-indent: 1rem;
+}
+
 .clf-fa-required {
   --fa: "\f621";
-  display: flex;
   align-items: center;
+  display: inline-flex;
+  flex-shrink: 0;
   font-size: 0.625em;
-  margin-right: 0.3rem;
+  width: var(--clf-required-indent);
+}
+
+/* Align required indicator side-by-side with label text (which may contain block-level <p> from Markdown). */
+.form-checkbox > span:has(.clf-fa-required),
+.form-label:has(> .clf-fa-required),
+legend:has(> .clf-fa-required) {
+  display: flex;
+  align-items: baseline;
+}
+
+/*
+ * When a required indicator is present, indent the entire form-group / fieldset
+ * so that labels, inputs, radios and checkboxes all align with the label text.
+ * The indicator uses negative margin to sit in the indent space.
+ */
+.form-group:has(.clf-fa-required) {
+  padding-left: var(--clf-required-indent);
+}
+
+fieldset:has(> legend > .clf-fa-required) {
+  padding-left: var(--clf-required-indent);
+}
+
+.form-group .clf-fa-required,
+legend > .clf-fa-required {
+  margin-left: calc(-1 * var(--clf-required-indent));
 }
 
 .clf-code-copy-btn {
@@ -140,4 +184,9 @@ pre:has(code) {
 :is(ol, ul):not([class]) li {
   list-style-position: outside;
   margin-left: 0.8rem;
+}
+
+.clf-sortable {
+  cursor: pointer;
+  user-select: none;
 }

@@ -8,7 +8,7 @@ class ClfHtmlRenderer(mistune.HTMLRenderer):
         attributes = ''
 
         if info:
-            attributes += f' data-lang="{info.split(None, 1)[0]}"'
+            attributes += f' data-lang="{mistune.util.escape(info.split(None, 1)[0])}"'
 
         return (
             # DO NOT include line breaks / other whitespace in the `pre`-element as whitespace is displayed for `pre`-elements.

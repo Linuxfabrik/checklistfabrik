@@ -9,16 +9,12 @@ EXAMPLE::
         content: 'This is an example text with Jinja expressions, for example {{ host }}.'
 """
 
-TEMPLATE_FORMAT_STRING = '''\
-<div style="margin-block: 0.8rem;">{content}</div>
-'''
-
 
 def main(**kwargs):
     clf_jinja_env = kwargs['clf_jinja_env']
 
+    rendered_content = clf_jinja_env.from_string(kwargs['content']).render(**kwargs)
+
     return {
-        'html': clf_jinja_env.from_string(
-            TEMPLATE_FORMAT_STRING.format(content=kwargs['content']),
-        ).render(**kwargs)
+        'html': f'<div class="clf-content-block">{rendered_content}</div>',
     }

@@ -24,61 +24,37 @@ EXAMPLE::
 import uuid
 
 TEMPLATE_MULTI_CHECK_STRING = '''\
-<fieldset {%- if templated_label %} aria-labelledby="{{ fact_name }}-label" {%- endif %}>
+<fieldset>
     {% if templated_label %}
-    <div class="form-label" id="{{ fact_name }}-label">
-        {{ templated_label }}
-    </div>
+    <legend>
+        {% if required %}{% include "required_indicator.html.j2" %}{% endif %}
+        <span>{{ templated_label }}</span>
+    </legend>
     {% endif %}
 
     {% for check in templated_checks %}
-    <div class="d-flex">
-        <label class="form-checkbox">
-            <input name="{{ fact_name }}[]" type="checkbox" value="{{ check.value }}" aria-labelledby="{{ check.value }}-label"
-                {%- if check.value in fact_value %} checked="checked" {%- endif %}
-                {%- if check.required or required %} required="required" {%- endif %} />
-            <i class="form-icon"></i>
-        </label>
-        
-        <div class="form-group d-flex" style="flex-grow: 1;">
-            {% if check.required %}
-            {% include "required_indicator.html.j2" %}
-            {% endif %}
-            
-            <div id="{{ check.value }}-label" class="form-label" style="flex-grow: 1;">
-                {{ check.templated_label | default(check.value, true) }}
-            </div>
-        </div>
-    </div>
+    <label class="form-checkbox">
+        <input name="{{ fact_name }}[]" type="checkbox" value="{{ check.value }}"
+            {%- if check.value in fact_value %} checked{%- endif %}
+            {%- if check.required or required %} required{%- endif %} />
+        <i class="form-icon"></i>
+        <span>{% if check.required and not required %}{% include "required_indicator.html.j2" %}{% endif %}{{ check.templated_label | default(check.value, true) }}</span>
+    </label>
     {% endfor %}
-    
+
     {# Hidden field to allow unchecking all checkboxes, since an HTML form does not send unchecked checkboxes. #}
     <input type="hidden" name="{{ fact_name }}[]" value="" />
 </fieldset>
 '''
 
 TEMPLATE_SINGLE_CHECK_STRING = '''\
-<fieldset class="d-flex">
-    <label class="form-checkbox">
-        <input name="{{ fact_name }}" type="checkbox" aria-labelledby="{{ fact_name }}-label"
-            {%- if fact_value %} checked="checked" {%- endif %}
-            {%- if required %} required="required" {%- endif %} />
-        <i class="form-icon"></i>
-    </label>
-    
-    <div class="form-group d-flex" style="flex-grow: 1;">
-        {% if required %}
-        {% include "required_indicator.html.j2" %}
-        {% endif %}
-    
-        <div id="{{ fact_name }}-label" class="form-label" style="flex-grow: 1;">
-            {% if not templated_label and required %}
-            <i>An input is required</i>
-            {% endif %}
-            {{ templated_label }}
-        </div>
-    </div>
-</fieldset>
+<label class="form-checkbox">
+    <input name="{{ fact_name }}" type="checkbox"
+        {%- if fact_value %} checked{%- endif %}
+        {%- if required %} required{%- endif %} />
+    <i class="form-icon"></i>
+    <span>{% if required %}{% include "required_indicator.html.j2" %}{% endif %}{% if not templated_label and required %}<i>An input is required</i>{% endif %}{{ templated_label }}</span>
+</label>
 
 {# Hidden field to allow unchecking a checkbox, since an HTML form does not send unchecked checkboxes. #}
 <input type="hidden" name="{{ fact_name }}" value="" />

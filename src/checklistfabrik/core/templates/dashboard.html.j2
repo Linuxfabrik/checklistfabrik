@@ -1,0 +1,140 @@
+{% extends 'base.html.j2' %}
+
+{% block title %}ChecklistFabrik{% endblock %}
+
+{% block body %}
+    <div class="container grid-lg py-2">
+        <h2>ChecklistFabrik</h2>
+
+        <ul>
+            <li><a href="#templates">Templates</a> ({{ templates | length }})</li>
+            <li><a href="#reports">Reports</a> ({{ reports | length }})</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3 id="templates" style="margin-top: 3rem;">Templates</h3>
+        <p>Click "Run" to create a new checklist from a template.</p>
+        {% if templates %}
+        <table class="table table-striped table-hover" id="templates-table">
+            <thead>
+                <tr>
+                    <th class="clf-sortable" onclick="sortTable('templates-table', 0)">Filename <i class="fa-solid fa-sort"></i></th>
+                    <th class="clf-sortable" onclick="sortTable('templates-table', 1)">Title <i class="fa-solid fa-sort"></i></th>
+                    <th class="clf-sortable" onclick="sortTable('templates-table', 2)">Description <i class="fa-solid fa-sort"></i></th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in templates %}
+                <tr>
+                    <td><code>{{ item.filename | e }}</code></td>
+                    <td>{{ item.title | e }}</td>
+                    <td>{{ item.description | e }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" data-action="run" data-path="{{ item.path | e }}">
+                            <i class="fa-solid fa-play"></i> Run
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-gray">No templates found.</p>
+        {% endif %}
+
+        <h3 id="reports" style="margin-top: 3rem;">Reports</h3>
+        <p>Click "View" to re-open a previously saved checklist.</p>
+        {% if reports %}
+        <table class="table table-striped table-hover" id="reports-table">
+            <thead>
+                <tr>
+                    <th class="clf-sortable" onclick="sortTable('reports-table', 0)">Filename <i class="fa-solid fa-sort"></i></th>
+                    <th class="clf-sortable" onclick="sortTable('reports-table', 1)">Title <i class="fa-solid fa-sort"></i></th>
+                    <th class="clf-sortable" onclick="sortTable('reports-table', 2)">Description <i class="fa-solid fa-sort"></i></th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in reports %}
+                <tr>
+                    <td><code>{{ item.filename | e }}</code></td>
+                    <td>{{ item.title | e }}</td>
+                    <td>{{ item.description | e }}</td>
+                    <td>
+                        <button class="btn btn-sm" data-action="view" data-path="{{ item.path | e }}">
+                            <i class="fa-solid fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-gray">No reports found.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function sortTable(tableId, columnIndex) {
+            const table = document.getElementById(tableId);
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            const header = table.tHead.rows[0].cells[columnIndex];
+
+            const ascending = header.dataset.sortDir !== 'asc';
+            header.dataset.sortDir = ascending ? 'asc' : 'desc';
+
+            /* Reset all sort icons in this table. */
+            Array.from(table.tHead.rows[0].cells).forEach(cell => {
+                const icon = cell.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa-solid fa-sort';
+                }
+            });
+
+            /* Update the clicked header's icon. */
+            const icon = header.querySelector('i');
+            if (icon) {
+                icon.className = ascending ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
+            }
+
+            rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent.trim().toLowerCase();
+                const bText = b.cells[columnIndex].textContent.trim().toLowerCase();
+                return ascending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        async function launchChecklist(path, action) {
+            try {
+                const response = await fetch('/' + action, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({path: path}),
+                });
+
+                if (!response.ok) {
+                    alert('Failed to launch checklist.');
+                    return;
+                }
+
+                const data = await response.json();
+                window.open(data.url, '_blank');
+            } catch (error) {
+                alert('Failed to launch checklist: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    launchChecklist(btn.dataset.path, btn.dataset.action);
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,6 +1,7 @@
 title: 'ChecklistFabrik Feature Showcase'
-version: '2025051501'
-report_path: 'feature-showcase-{{ now().strftime("%Y%m%d") }}.yml'
+description: 'Showcases advanced features like conditional pages, Jinja templating and report paths.'
+version: '2026031901'
+report_path: '../reports/feature-showcase-{{ now().strftime("%Y%m%d") }}.yml'
 pages:
 
   - title: 'Part 1 - Storing User Input'

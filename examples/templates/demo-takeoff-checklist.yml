@@ -1,5 +1,6 @@
 title: 'Demo - Before Takeoff Checklist'
-version: '2025050101'
+description: 'A segmented before-takeoff checklist for pilots, based on AOPA guidelines.'
+version: '2026031901'
 pages:
 
   - title: 'Introduction'

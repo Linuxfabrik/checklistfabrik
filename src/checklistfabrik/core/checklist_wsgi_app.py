@@ -1,5 +1,4 @@
 import datetime
-import functools
 import json
 import logging
 import os.path
@@ -105,10 +104,10 @@ class ChecklistWsgiApp:
             )
 
             file_to_save = pathlib.Path(os.path.expandvars(clean_filename))
-            logger.info('Generated file path based on template: "%s"', file_to_save)
+            logger.info('Generated file path based on template: "%s"', file_to_save.resolve())
         else:
             file_to_save = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
-            logger.warning('No file name set. Falling back to "%s"', file_to_save)
+            logger.info('No report path configured. Using "%s"', file_to_save.resolve())
 
         # Saving to the file with the generated file name.
         # This should never overwrite already existing files with the same name.
@@ -213,11 +212,14 @@ class ChecklistWsgiApp:
     def on_prev_page(self, request, **kwargs):
         # Find the last previously applicable page.
         prev_page_id = kwargs['id'] - 1
-        while prev_page_id > 0:
+        while prev_page_id >= 0:
             if self.checklist.pages[prev_page_id].eval_when(self.checklist.facts)[0]:
                 break
 
             prev_page_id -= 1
+        else:
+            # All previous pages are hidden; stay on the first page.
+            prev_page_id = 0
 
         return werkzeug.utils.redirect(f'/page/{prev_page_id}')
 

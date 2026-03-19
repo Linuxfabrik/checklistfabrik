@@ -36,21 +36,24 @@ processes, and procedures. It leverages simple yet powerful YAML templates to cr
 
 ## Features
 
-* **Enhanced User Experience with an HTML Interface and Local Web Server:**  
+* **Dashboard:**
+  Run `clf-play` without arguments to open a web dashboard that lists all your templates and reports. Start new checklists or re-open previous ones with a single click.
+
+* **Dynamic Item Exclusion:**
+  Automatically mark pages or tasks as inapplicable using conditional `when` expressions.
+  (See the [User Guide](docs/user_guide.md#conditional-pages-and-tasks) for details.)
+
+* **HTML Interface with Built-In Web Server:**
   View and complete checklists via a user-friendly HTML interface powered by a built-in local web server.
 
-* **Simple YAML Checklists:**  
-  Define templates and generate reports with plain YAML, making version control with systems such as Git straightforward.
-
-* **Template Includes for Rapid Checklist Generation:**  
-  Reuse checklist templates to quickly generate multiple checklists from a single file, eliminating the need to start from scratch each time.
-
-* **Jinja Templating Support:**  
+* **Jinja Templating Support:**
   Create dynamic checklists using variables and Boolean expressions enabled by the Jinja templating language.
 
-* **Dynamic Item Exclusion:**  
-  Automatically mark pages or tasks as inapplicable using conditional 'when' expressions.  
-  (See our [examples](examples/README.md) for more details—search for "when:")
+* **Simple YAML Checklists:**
+  Define templates and generate reports with plain YAML, making version control with systems such as Git straightforward.
+
+* **Template Includes for Rapid Checklist Generation:**
+  Reuse checklist templates to quickly generate multiple checklists from a single file, eliminating the need to start from scratch each time.
 
 
 ## Definitions and Terms
@@ -64,19 +67,19 @@ processes, and procedures. It leverages simple yet powerful YAML templates to cr
 * **Report:**  
   The output of a checklist run—a YAML file generated from a template.
 
-* **Task:**  
+* **Task:**
   A description of work to be performed.
   Tasks can appear in various forms, such as text fields, checkboxes, radio buttons,
-  or non-interactive text blocks (see the Task Module section below).
+  or non-interactive text blocks (see the [User Guide](docs/user_guide.md#task-modules) for details).
 
-* **Checklist Template:**  
+* **Checklist Template:**
   A YAML file used to create checklists, intended for reuse rather than direct execution.
 
-* **Task Module:**  
+* **Task Module:**
   To support an extensible architecture, ChecklistFabrik delegates task rendering to separate,
-  pluggable Python modules.  
+  pluggable Python modules.
   A valid task module is any Python module within the `checklistfabrik.modules` namespace
-  that provides a main method—returning a dictionary that includes an `html` key with the rendered HTML as its value.
+  that provides a `main` method returning a dictionary that includes an `html` key with the rendered HTML as its value.
 
 
 ## Installation
@@ -110,16 +113,83 @@ For development use `--editable` to install ChecklistFabrik in
 The usage of a virtual environment is *strongly recommended*.
 
 
-## Creating a Checklist Template
+## Quick Start
 
-For documentation on the YAML format used by ChecklistFabrik, see the [checklist template syntax documentation](docs/checklist_syntax.md).
-Example checklist templates can be found in the [examples](https://github.com/Linuxfabrik/checklistfabrik/tree/main/examples) folder of this project.
+A checklist template is a simple YAML file:
 
+```yaml
+title: 'Server Maintenance'
+description: 'Monthly maintenance procedure for production servers.'
+version: '2025031901'
 
-## Creating a New Checklist From a Template
+pages:
+  - title: 'Preparation'
+    tasks:
+      - linuxfabrik.clf.text_input:
+          label: 'Ticket number'
+          required: true
+        fact_name: 'ticket'
+
+      - linuxfabrik.clf.checkbox_input:
+          values:
+            - label: 'Notify users about the maintenance window'
+            - label: 'Create a full backup'
+          required: true
+
+  - title: 'Maintenance'
+    tasks:
+      - linuxfabrik.clf.markdown:
+          content: 'Working on ticket **{{ ticket }}**.'
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Apply updates and reboot'
+          required: true
+```
+
+Run it:
 
 ```shell
-clf-play --template path/to/template.yml path/to/checklist_to_create.yml
+# Open the dashboard (auto-detects templates/ and reports/ subdirectories):
+clf-play
+
+# Or run a template directly:
+clf-play --template server-maintenance.yml
+```
+
+To explore the bundled examples in a dashboard, run:
+
+```shell
+cd examples/
+clf-play
+```
+
+For the full guide on creating checklists—including conditional pages, imports, and all task modules—see the [User Guide](docs/user_guide.md).
+
+
+## Usage
+
+### Open the Dashboard
+
+```shell
+clf-play
+```
+
+The dashboard scans for `*.yml` files and lists them as templates and reports:
+
+1. If `templates/` and/or `reports/` subdirectories exist in the current working directory, they are used automatically.
+2. If only one of them exists, the other falls back to the current directory.
+3. If both point to the same directory, all files are shown in both sections — use "Run" to start a new checklist or "View" to re-open an existing one.
+
+You can override this with explicit paths:
+
+```shell
+clf-play --templates-dir ./my-templates --reports-dir ./my-reports
+```
+
+### Create a New Checklist From a Template
+
+```shell
+clf-play --template path/to/template.yml path/to/report.yml
 ```
 
 The destination file may be omitted; in that case:
@@ -127,8 +197,7 @@ The destination file may be omitted; in that case:
 - If the template specifies a `report_path`, then that field is used to generate a new filename.
 - Otherwise, a generic, timestamped filename is generated.
 
-
-## Re-Running an Existing Checklist
+### Re-Open an Existing Checklist
 
 ```shell
 clf-play path/to/existing_checklist.yml

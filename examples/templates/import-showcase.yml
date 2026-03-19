@@ -1,5 +1,6 @@
 title: 'ChecklistFabrik Import Showcase'
-version: '2025041401'
+description: 'Demonstrates importing pages and tasks from external YAML files.'
+version: '2026031901'
 pages:
 
   - title: 'Importing Tasks'

@@ -84,9 +84,15 @@ processes, and procedures. It leverages simple yet powerful YAML templates to cr
 
 ## Installation
 
-### From PyPI (Recommended)
+### From PyPI
 
 ChecklistFabrik releases are available from [PyPI](https://pypi.org/project/checklistfabrik/).
+
+Using [uv](https://docs.astral.sh/uv/) (recommended):
+
+```shell
+uv tool install checklistfabrik
+```
 
 Using [pipx](https://pipx.pypa.io):
 
@@ -94,23 +100,22 @@ Using [pipx](https://pipx.pypa.io):
 pipx install checklistfabrik
 ```
 
-Using standard pip (user install):
+Using pip:
 
 ```shell
 pip install --user checklistfabrik
 ```
 
-Please note that on certain Linux systems `--break-system-packages`
-might need to be added when using the system's Python/Pip.
+On certain Linux distributions that protect the system Python environment, you may need to add the `--break-system-packages` flag.
 
 
-### From Git (For Development or Power Users)
+### From Git (For Development)
 
-Clone this repository and run `pip install .` at the root of the repo to install ChecklistFabrik.
-
-For development use `--editable` to install ChecklistFabrik in
-[Development/Editable Mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
-The usage of a virtual environment is *strongly recommended*.
+```shell
+git clone https://github.com/Linuxfabrik/checklistfabrik.git
+cd checklistfabrik
+pip install --editable .
+```
 
 
 ## Quick Start

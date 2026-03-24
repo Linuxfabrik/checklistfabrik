@@ -91,6 +91,12 @@ ChecklistFabrik releases are available from [PyPI](https://pypi.org/project/chec
 Using [uv](https://docs.astral.sh/uv/) (recommended):
 
 ```shell
+uvx checklistfabrik
+```
+
+Or install it permanently:
+
+```shell
 uv tool install checklistfabrik
 ```
 

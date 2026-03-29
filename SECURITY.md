@@ -13,7 +13,7 @@ vulnerabilities to us. All reports are thoroughly investigated by our team.
 Vulnerabilities are reported privately via GitHub's
 [Security Advisories](https://docs.github.com/en/code-security/security-advisories)
 feature. Please use the following link to submit your vulnerability:
-[Report a vulnerability](https://github.com/Linuxfabrik/monitoring-plugins/security/advisories/new)
+[Report a vulnerability](https://github.com/Linuxfabrik/checklistfabrik/security/advisories/new)
 
 Please see
 [Privately reporting a security vulnerability](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability)
@@ -22,16 +22,16 @@ for more information on how to submit a vulnerability using GitHub's interface.
 
 ### When Should I Report a Vulnerability?
 
-- You think you discovered a potential security vulnerability
-- You are unsure how a vulnerability affects your system
-- You think you discovered a vulnerability in another project that this project depends on
+* You think you discovered a potential security vulnerability
+* You are unsure how a vulnerability affects your system
+* You think you discovered a vulnerability in another project that this project depends on
   - For projects with their own vulnerability reporting and disclosure process, please report it directly there
 
 ### When Should I NOT Report a Vulnerability?
 
-- You need help tuning your System for security
-- You need help applying security related updates
-- Your issue is not security related
+* You need help tuning your System for security
+* You need help applying security related updates
+* Your issue is not security related
 
 
 ### Vulnerability Response
@@ -66,7 +66,7 @@ that are private from the general public if deemed necessary.
 ### Public Disclosure
 
 Vulnerabilities are disclosed publicly as GitHub [Security
-Advisories](https://github.com/Linuxfabrik/monitoring-plugins/security/advisories).
+Advisories](https://github.com/Linuxfabrik/checklistfabrik/security/advisories).
 
 A public disclosure date is negotiated by our team
 and the bug submitter. We prefer to fully disclose the bug as soon as possible

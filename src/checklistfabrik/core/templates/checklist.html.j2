@@ -97,6 +97,16 @@
         });
     </script>
     <script>
+        /* Detect wrapped code lines and add a class for the wrap indicator icon. */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.clf-code-line').forEach((line) => {
+                const lineHeight = parseFloat(getComputedStyle(line).lineHeight);
+                line.classList.toggle('clf-wrapped', line.getBoundingClientRect().height > lineHeight * 1.1);
+            });
+        });
+    </script>
+    <script>
         /* Heartbeat script to show an error message if disconnected from the server. */
 
         async function checkHeartBeat(url, server_id) {

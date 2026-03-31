@@ -81,6 +81,37 @@ legend > .clf-fa-required {
   margin-left: calc(-1 * var(--clf-required-indent));
 }
 
+/* Prevent code blocks from expanding beyond their container. */
+.code {
+  overflow: hidden;
+}
+
+/* Wrap long lines instead of horizontal scroll. */
+.code code {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* Each logical line is a block with a hanging indent for visual distinction of wrapped continuations. */
+.clf-code-line {
+  display: block;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+
+/* Preserve height of empty lines. */
+.clf-code-line:empty {
+  min-height: 1.5em;
+}
+
+/* Show wrap indicator icon on continuation lines when wrapping has occurred. */
+.clf-code-line.clf-wrapped {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='16'><text x='0' y='13' font-size='13' fill='%23bcc3ce' font-family='sans-serif'>↳</text></svg>");
+  background-position: 0.1em 1.5em;
+  background-size: 0.9em 1.5em;
+  background-repeat: repeat-y;
+}
+
 .clf-code-copy-btn {
   position: absolute;
   right: 0.2rem;

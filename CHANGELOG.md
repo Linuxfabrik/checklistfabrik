@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add CONTRIBUTING
 * Add pre-commit hooks
+* core: wrap long lines in code blocks with hanging indent and a visual wrap indicator
 
 
 ## [v1.4.0] - 2026-03-19

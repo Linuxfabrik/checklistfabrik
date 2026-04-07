@@ -8,7 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Added
+
+* Add automated test suite (pytest) covering core utilities, data models, data mapper, all task modules, and the WSGI application
+* Add GitHub Actions workflow for running tests and linting on every push and pull request
+* Add linting and testing sections to CONTRIBUTING
+* Add ruff linter and formatter to pre-commit hooks
+
+### Fixed
+
+* core: fix `not ... in` style to idiomatic `... not in`
+* core: fix f-string without placeholders
+* core: fix type comparison using `==` instead of `isinstance()`
 
 
 ## [v1.5.0] - 2026-04-01

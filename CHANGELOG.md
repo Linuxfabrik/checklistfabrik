@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* core: fix copying code blocks losing empty lines
 * core: fix `not ... in` style to idiomatic `... not in`
 * core: fix f-string without placeholders
 * core: fix type comparison using `==` instead of `isinstance()`

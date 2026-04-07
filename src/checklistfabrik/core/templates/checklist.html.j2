@@ -70,10 +70,31 @@
     <script>
         /* Script to inject copy functionality into code block copy buttons. */
 
+        /**
+         * Reconstruct the original code text from clf-code-line spans.
+         *
+         * Each logical line of a code block is wrapped in a
+         * <span class="clf-code-line"> for line-wrap styling. Empty code
+         * lines produce empty spans, and the browser's innerText algorithm
+         * silently drops empty display:block elements, losing blank lines.
+         * This function reads each span's textContent individually and
+         * joins them with newlines to preserve the original whitespace.
+         *
+         * Falls back to innerText for code blocks without clf-code-line
+         * spans (e.g. from other renderers).
+         */
+        function getCodeText(codeElement) {
+            const lines = codeElement.querySelectorAll('.clf-code-line');
+            if (lines.length === 0) {
+                return codeElement.innerText;
+            }
+            return Array.from(lines).map((line) => line.textContent).join('\n');
+        }
+
         async function copyCode(sender) {
             const code = sender.parentElement.querySelector('code');
 
-            navigator.clipboard.writeText(code.innerText).then(() => {
+            navigator.clipboard.writeText(getCodeText(code)).then(() => {
                 sender.textContent = 'Copied!';
 
                 setTimeout(() => {
@@ -94,6 +115,44 @@
                     });
                 },
             );
+        });
+
+        /*
+         * Override native copy (Ctrl+C) within code blocks to preserve
+         * empty lines (same problem as described in getCodeText).
+         *
+         * Only intercepts multi-line selections so that copying a partial
+         * text selection within a single line still uses default browser
+         * behavior.
+         */
+        document.addEventListener('copy', (event) => {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) {
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const ancestor = range.commonAncestorContainer;
+            const codeBlock = ancestor.nodeType === Node.ELEMENT_NODE
+                ? ancestor.closest('.code code')
+                : ancestor.parentElement?.closest('.code code');
+
+            if (!codeBlock) {
+                return;
+            }
+
+            const lines = Array.from(codeBlock.querySelectorAll('.clf-code-line'));
+            if (lines.length === 0) {
+                return;
+            }
+
+            const selectedLines = lines.filter((line) => range.intersectsNode(line));
+            if (selectedLines.length <= 1) {
+                return;
+            }
+
+            event.clipboardData.setData('text/plain', selectedLines.map((line) => line.textContent).join('\n'));
+            event.preventDefault();
         });
     </script>
     <script>

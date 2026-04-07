@@ -16,7 +16,7 @@ EXAMPLE::
       fact_name: 'backup_datacenter_location'
 """
 
-TEMPLATE_MULTI_SELECT_STRING = '''\
+TEMPLATE_MULTI_SELECT_STRING = """\
 <div class="form-group">
     <div class="form-label" id="{{ fact_name }}-label">
         {% if required %}{% include "required_indicator.html.j2" %}{% endif %}
@@ -32,9 +32,9 @@ TEMPLATE_MULTI_SELECT_STRING = '''\
     {# Hidden input to allow selecting no option, since an HTML form does not send empty selections. #}
     <input type="hidden" name="{{ fact_name }}[]" value="" />
 </div>
-'''
+"""
 
-TEMPLATE_SINGLE_SELECT_STRING = '''\
+TEMPLATE_SINGLE_SELECT_STRING = """\
 <div class="form-group">
     <div class="form-label" id="{{ fact_name }}-label">
         {% if required %}{% include "required_indicator.html.j2" %}{% endif %}
@@ -49,42 +49,53 @@ TEMPLATE_SINGLE_SELECT_STRING = '''\
         {% endfor %}
     </select>
 </div>
-'''
+"""
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs['clf_jinja_env']
-    clf_markdown = kwargs['clf_markdown']
-    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+    clf_jinja_env = kwargs["clf_jinja_env"]
+    clf_markdown = kwargs["clf_markdown"]
+    fact_name = kwargs["fact_name" if "fact_name" in kwargs else "auto_fact_name"]
 
-    templated_label = clf_markdown(clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs))
+    templated_label = clf_markdown(
+        clf_jinja_env.from_string(kwargs.get("label", "")).render(**kwargs)
+    )
 
-    templated_values = [clf_jinja_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])]
+    templated_values = [
+        clf_jinja_env.from_string(value).render(**kwargs)
+        for value in kwargs.get("values", [""])
+    ]
 
-    if kwargs.get('multiple'):
+    if kwargs.get("multiple"):
         html = clf_jinja_env.from_string(
             TEMPLATE_MULTI_SELECT_STRING,
         ).render(
-            **(kwargs | {
-                'fact_name': fact_name,
-                'fact_value': kwargs.get(fact_name, []),
-                'templated_label': templated_label,
-                'templated_values': templated_values,
-            }),
+            **(
+                kwargs
+                | {
+                    "fact_name": fact_name,
+                    "fact_value": kwargs.get(fact_name, []),
+                    "templated_label": templated_label,
+                    "templated_values": templated_values,
+                }
+            ),
         )
     else:
         html = clf_jinja_env.from_string(
             TEMPLATE_SINGLE_SELECT_STRING,
         ).render(
-            **(kwargs | {
-                'fact_name': fact_name,
-                'fact_value': kwargs.get(fact_name),
-                'templated_label': templated_label,
-                'templated_values': templated_values,
-            }),
+            **(
+                kwargs
+                | {
+                    "fact_name": fact_name,
+                    "fact_value": kwargs.get(fact_name),
+                    "templated_label": templated_label,
+                    "templated_values": templated_values,
+                }
+            ),
         )
 
     return {
-        'html': html,
-        'fact_name': fact_name,
+        "html": html,
+        "fact_name": fact_name,
     }

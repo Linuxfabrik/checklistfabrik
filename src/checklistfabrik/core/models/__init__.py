@@ -5,7 +5,7 @@ from .page import Page
 from .task import Task
 
 __all__ = (
-    'Checklist',
-    'Page',
-    'Task',
+    "Checklist",
+    "Page",
+    "Task",
 )

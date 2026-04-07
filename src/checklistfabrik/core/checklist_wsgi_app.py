@@ -14,25 +14,32 @@ import werkzeug.utils
 
 from . import markdown
 
-TEMPLATE_STRING = '''\
+TEMPLATE_STRING = """\
 {% extends "checklist.html.j2" %}
 {% block form_content %}
 {{data}}
 {% endblock %}
-'''
+"""
 
 logger = logging.getLogger(__name__)
 
 # Global Jinja variables for use in templates
 jinja_globals = {
-    'now': datetime.datetime.now,
+    "now": datetime.datetime.now,
 }
 
 
 class ChecklistWsgiApp:
     """The WSGI app that powers the ChecklistFabrik HTML interface."""
 
-    def __init__(self, checklist_file, checklist_mapper, template_loader, assets_dir, checklist_template=None):
+    def __init__(
+        self,
+        checklist_file,
+        checklist_mapper,
+        template_loader,
+        assets_dir,
+        checklist_template=None,
+    ):
         self.checklist_file = checklist_file
         self.checklist_mapper = checklist_mapper
         self.checklist_template = checklist_template
@@ -46,22 +53,35 @@ class ChecklistWsgiApp:
 
         self.url_map = werkzeug.routing.Map(
             [
-                werkzeug.routing.Rule('/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
-                werkzeug.routing.Rule('/done', endpoint=self.on_done),
-                werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
-                werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
-                werkzeug.routing.Rule('/page/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')),
-                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page_get, methods=['GET']),
-                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page_post, methods=['POST']),
-                werkzeug.routing.Rule('/page/<int:id>/next', endpoint=self.on_next_page),
-                werkzeug.routing.Rule('/page/<int:id>/prev', endpoint=self.on_prev_page),
+                werkzeug.routing.Rule(
+                    "/", endpoint=lambda request: werkzeug.utils.redirect("/page/0")
+                ),
+                werkzeug.routing.Rule("/done", endpoint=self.on_done),
+                werkzeug.routing.Rule("/exit", endpoint=self.on_exit),
+                werkzeug.routing.Rule("/heartbeat", endpoint=self.on_heartbeat),
+                werkzeug.routing.Rule(
+                    "/page/",
+                    endpoint=lambda request: werkzeug.utils.redirect("/page/0"),
+                ),
+                werkzeug.routing.Rule(
+                    "/page/<int:id>", endpoint=self.on_page_get, methods=["GET"]
+                ),
+                werkzeug.routing.Rule(
+                    "/page/<int:id>", endpoint=self.on_page_post, methods=["POST"]
+                ),
+                werkzeug.routing.Rule(
+                    "/page/<int:id>/next", endpoint=self.on_next_page
+                ),
+                werkzeug.routing.Rule(
+                    "/page/<int:id>/prev", endpoint=self.on_prev_page
+                ),
             ],
         )
 
         self.wsgi_app = werkzeug.middleware.shared_data.SharedDataMiddleware(
             self.application,
             {
-                '/assets': str(assets_dir),
+                "/assets": str(assets_dir),
             },
         )
 
@@ -71,7 +91,11 @@ class ChecklistWsgiApp:
         return self.wsgi_app(environ, start_response)
 
     def load_checklist(self):
-        file_to_load = self.checklist_template if self.checklist_template is not None else self.checklist_file
+        file_to_load = (
+            self.checklist_template
+            if self.checklist_template is not None
+            else self.checklist_file
+        )
 
         return self.checklist_mapper.load_checklist(file_to_load)
 
@@ -85,33 +109,40 @@ class ChecklistWsgiApp:
 
         # Try to generate a filename based on the template's report path.
         if self.checklist.report_path:
-            generated_filename = self.templ_env.from_string(self.checklist.report_path).render(self.checklist.facts)
+            generated_filename = self.templ_env.from_string(
+                self.checklist.report_path
+            ).render(self.checklist.facts)
 
             # Remove well-known invalid characters for the most commonly used operating systems and filesystems.
             clean_filename = generated_filename.translate(
                 str.maketrans(
-                    {
-                        ctrl_char: None for ctrl_char in range(0, 32)
-                    } | {
+                    {ctrl_char: None for ctrl_char in range(0, 32)}
+                    | {
                         '"': None,
-                        '*': None,
-                        ':': None,
-                        '<': None,
-                        '>': None,
-                        '?': None,
+                        "*": None,
+                        ":": None,
+                        "<": None,
+                        ">": None,
+                        "?": None,
                     }
                 )
             )
 
             file_to_save = pathlib.Path(os.path.expandvars(clean_filename))
-            logger.info('Generated file path based on template: "%s"', file_to_save.resolve())
+            logger.info(
+                'Generated file path based on template: "%s"', file_to_save.resolve()
+            )
         else:
-            file_to_save = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
+            file_to_save = pathlib.Path(
+                f"checklist_{datetime.date.today().isoformat()}.yml"
+            )
             logger.info('No report path configured. Using "%s"', file_to_save.resolve())
 
         # Saving to the file with the generated file name.
         # This should never overwrite already existing files with the same name.
-        self.checklist_mapper.save_checklist(file_to_save, self.checklist, overwrite=False)
+        self.checklist_mapper.save_checklist(
+            file_to_save, self.checklist, overwrite=False
+        )
 
     @werkzeug.Request.application
     def application(self, request):
@@ -124,12 +155,16 @@ class ChecklistWsgiApp:
             return exception
 
     def on_page_get(self, request, **kwargs):
-        page_id = kwargs['id']
+        page_id = kwargs["id"]
 
-        if page_id >= len(self.checklist):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
+        if (
+            page_id >= len(self.checklist)
+        ):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
 
-        page_data = self.checklist.pages[page_id].render(self.checklist.facts, self.templ_env, self.markdown)
+        page_data = self.checklist.pages[page_id].render(
+            self.checklist.facts, self.templ_env, self.markdown
+        )
 
         return werkzeug.Response(
             self.templ_env.from_string(TEMPLATE_STRING).render(
@@ -139,31 +174,33 @@ class ChecklistWsgiApp:
                 data=page_data,
                 pages=[
                     {
-                        'id': id,
-                        'title': page.title,
-                        'eval_when': page.eval_when(self.checklist.facts)[0],
+                        "id": id,
+                        "title": page.title,
+                        "eval_when": page.eval_when(self.checklist.facts)[0],
                     }
                     for id, page in enumerate(self.checklist.pages)
                 ],
                 server_id=self.server_id,
             ),
-            mimetype='text/html',
+            mimetype="text/html",
         )
 
     def on_page_post(self, request, **kwargs):
-        page_id = kwargs['id']
+        page_id = kwargs["id"]
 
-        if page_id >= len(self.checklist):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
+        if (
+            page_id >= len(self.checklist)
+        ):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
 
-        redirect = ''
+        redirect = ""
 
         for key in request.form.keys():
-            if key == 'submit_action':
-                redirect = request.form.get(key, '').lower()
+            if key == "submit_action":
+                redirect = request.form.get(key, "").lower()
                 continue
 
-            if key.endswith('[]'):
+            if key.endswith("[]"):
                 # List keys are marked with '[]' to differentiate them from single value keys,
                 # otherwise it would be impossible to differentiate single values from lists with exactly one value (due to how HTML forms work).
                 self.checklist.facts[key[:-2]] = [
@@ -182,36 +219,38 @@ class ChecklistWsgiApp:
                 # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
                 self.checklist.facts[key] = value if value else None
 
-        if redirect.startswith('page '):
-            return werkzeug.utils.redirect(f'/page/{redirect.split(" ", maxsplit=1)[1]}')
+        if redirect.startswith("page "):
+            return werkzeug.utils.redirect(
+                f"/page/{redirect.split(' ', maxsplit=1)[1]}"
+            )
 
-        if redirect == 'next':
-            return werkzeug.utils.redirect(f'/page/{page_id}/next')
+        if redirect == "next":
+            return werkzeug.utils.redirect(f"/page/{page_id}/next")
 
-        if redirect == 'previous':
-            return werkzeug.utils.redirect(f'/page/{page_id}/prev')
+        if redirect == "previous":
+            return werkzeug.utils.redirect(f"/page/{page_id}/prev")
 
-        if redirect == 'save and exit':
-            return werkzeug.utils.redirect('/exit')
+        if redirect == "save and exit":
+            return werkzeug.utils.redirect("/exit")
 
-        return werkzeug.Response(response='OK', status=200)
+        return werkzeug.Response(response="OK", status=200)
 
     def on_next_page(self, request, **kwargs):
         # Find the next applicable page.
-        next_page_id = kwargs['id'] + 1
+        next_page_id = kwargs["id"] + 1
         while next_page_id < len(self.checklist):
             if self.checklist.pages[next_page_id].eval_when(self.checklist.facts)[0]:
                 break
 
             next_page_id += 1
         else:
-            return werkzeug.utils.redirect(f'/done')
+            return werkzeug.utils.redirect("/done")
 
-        return werkzeug.utils.redirect(f'/page/{next_page_id}')
+        return werkzeug.utils.redirect(f"/page/{next_page_id}")
 
     def on_prev_page(self, request, **kwargs):
         # Find the last previously applicable page.
-        prev_page_id = kwargs['id'] - 1
+        prev_page_id = kwargs["id"] - 1
         while prev_page_id >= 0:
             if self.checklist.pages[prev_page_id].eval_when(self.checklist.facts)[0]:
                 break
@@ -221,14 +260,14 @@ class ChecklistWsgiApp:
             # All previous pages are hidden; stay on the first page.
             prev_page_id = 0
 
-        return werkzeug.utils.redirect(f'/page/{prev_page_id}')
+        return werkzeug.utils.redirect(f"/page/{prev_page_id}")
 
     def on_done(self, request, **kwargs):
         return werkzeug.Response(
-            self.templ_env.get_template('done.html.j2').render(
+            self.templ_env.get_template("done.html.j2").render(
                 last_page_id=len(self.checklist) - 1,
             ),
-            mimetype='text/html',
+            mimetype="text/html",
         )
 
     def on_exit(self, request, **kwargs):
@@ -237,7 +276,12 @@ class ChecklistWsgiApp:
 
         self.server_exit_callback()
 
-        return werkzeug.Response(self.templ_env.get_template('shutdown.html.j2').render(), mimetype='text/html')
+        return werkzeug.Response(
+            self.templ_env.get_template("shutdown.html.j2").render(),
+            mimetype="text/html",
+        )
 
     def on_heartbeat(self, request, **kwargs):
-        return werkzeug.Response(json.dumps({'server_id': self.server_id}), mimetype='application/json')
+        return werkzeug.Response(
+            json.dumps({"server_id": self.server_id}), mimetype="application/json"
+        )

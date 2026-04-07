@@ -9,7 +9,7 @@ class ChecklistWsgiRequestHandler(wsgiref.simple_server.WSGIRequestHandler):
     """A variant of the WSGIRequestHandler that logs messages using the logging package."""
 
     def log_message(self, format, *args):
-        if not 'GET /heartbeat HTTP/1.1' in args:
+        if "GET /heartbeat HTTP/1.1" not in args:
             logger.debug(format, *args)
 
 
@@ -33,10 +33,10 @@ class ChecklistWsgiServer(wsgiref.simple_server.WSGIServer):
 
         logger.info('Starting server on "http://%s:%d"', host, port)
 
-        print('Press Ctrl+C to shutdown the server and save the checklist to disk.')
+        print("Press Ctrl+C to shutdown the server and save the checklist to disk.")
 
         if open_browser:
-            webbrowser.open(f'http://{host}:{port}')
+            webbrowser.open(f"http://{host}:{port}")
 
         try:
             while not self.exit_flag:
@@ -44,5 +44,5 @@ class ChecklistWsgiServer(wsgiref.simple_server.WSGIServer):
         except KeyboardInterrupt:
             pass
         finally:
-            logger.info('Shutting down server')
+            logger.info("Shutting down server")
             self.server_close()

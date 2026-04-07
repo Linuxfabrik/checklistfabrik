@@ -14,13 +14,13 @@ EXAMPLE::
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs['clf_jinja_env']
-    clf_markdown = kwargs['clf_markdown']
+    clf_jinja_env = kwargs["clf_jinja_env"]
+    clf_markdown = kwargs["clf_markdown"]
 
     rendered_html = clf_markdown(
-        clf_jinja_env.from_string(kwargs['content']).render(**kwargs),
+        clf_jinja_env.from_string(kwargs["content"]).render(**kwargs),
     )
 
     return {
-        'html': f'<div class="form-label">{rendered_html}</div>',
+        "html": f'<div class="form-label">{rendered_html}</div>',
     }

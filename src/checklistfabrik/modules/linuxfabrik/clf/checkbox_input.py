@@ -23,7 +23,7 @@ EXAMPLE::
 
 import uuid
 
-TEMPLATE_MULTI_CHECK_STRING = '''\
+TEMPLATE_MULTI_CHECK_STRING = """\
 <fieldset>
     {% if templated_label %}
     <legend>
@@ -45,9 +45,9 @@ TEMPLATE_MULTI_CHECK_STRING = '''\
     {# Hidden field to allow unchecking all checkboxes, since an HTML form does not send unchecked checkboxes. #}
     <input type="hidden" name="{{ fact_name }}[]" value="" />
 </fieldset>
-'''
+"""
 
-TEMPLATE_SINGLE_CHECK_STRING = '''\
+TEMPLATE_SINGLE_CHECK_STRING = """\
 <label class="form-checkbox">
     <input name="{{ fact_name }}" type="checkbox"
         {%- if fact_value %} checked{%- endif %}
@@ -58,46 +58,55 @@ TEMPLATE_SINGLE_CHECK_STRING = '''\
 
 {# Hidden field to allow unchecking a checkbox, since an HTML form does not send unchecked checkboxes. #}
 <input type="hidden" name="{{ fact_name }}" value="" />
-'''
+"""
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs['clf_jinja_env']
-    clf_markdown= kwargs['clf_markdown']
-    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+    clf_jinja_env = kwargs["clf_jinja_env"]
+    clf_markdown = kwargs["clf_markdown"]
+    fact_name = kwargs["fact_name" if "fact_name" in kwargs else "auto_fact_name"]
 
-    templated_label = clf_markdown(clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs))
+    templated_label = clf_markdown(
+        clf_jinja_env.from_string(kwargs.get("label", "")).render(**kwargs)
+    )
 
     task_context_update = None
 
-    if kwargs.get('values'):
+    if kwargs.get("values"):
         templated_checks = [
             {
-                'label': check.get('label'),
-                'templated_label': clf_markdown(clf_jinja_env.from_string(check['label']).render(**kwargs)) if check.get('label') else None,
-                'value': check.get('value', uuid.uuid4().hex),
-                'required': check.get('required'),
+                "label": check.get("label"),
+                "templated_label": clf_markdown(
+                    clf_jinja_env.from_string(check["label"]).render(**kwargs)
+                )
+                if check.get("label")
+                else None,
+                "value": check.get("value", uuid.uuid4().hex),
+                "required": check.get("required"),
             }
-            for check in kwargs['values']
+            for check in kwargs["values"]
         ]
 
         html = clf_jinja_env.from_string(
             TEMPLATE_MULTI_CHECK_STRING,
         ).render(
-            **(kwargs | {
-                'fact_name': fact_name,
-                'fact_value': kwargs.get(fact_name, []),
-                'templated_label': templated_label,
-                'templated_checks': templated_checks,
-            }),
+            **(
+                kwargs
+                | {
+                    "fact_name": fact_name,
+                    "fact_value": kwargs.get(fact_name, []),
+                    "templated_label": templated_label,
+                    "templated_checks": templated_checks,
+                }
+            ),
         )
 
         task_context_update = {
-            'values': [
+            "values": [
                 {
                     key: value
                     for key, value in check.items()
-                    if key in ('label', 'value', 'required') and value is not None
+                    if key in ("label", "value", "required") and value is not None
                 }
                 for check in templated_checks
             ]
@@ -107,15 +116,18 @@ def main(**kwargs):
         html = clf_jinja_env.from_string(
             TEMPLATE_SINGLE_CHECK_STRING,
         ).render(
-            **(kwargs | {
-                'fact_name': fact_name,
-                'fact_value': kwargs.get(fact_name),
-                'templated_label': templated_label,
-            }),
+            **(
+                kwargs
+                | {
+                    "fact_name": fact_name,
+                    "fact_value": kwargs.get(fact_name),
+                    "templated_label": templated_label,
+                }
+            ),
         )
 
     return {
-        'html': html,
-        'fact_name': fact_name,
-        'task_context_update': task_context_update,
+        "html": html,
+        "fact_name": fact_name,
+        "task_context_update": task_context_update,
     }

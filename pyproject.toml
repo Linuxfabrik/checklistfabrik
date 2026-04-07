@@ -52,5 +52,13 @@ version = { attr = "checklistfabrik.core.__version__" }
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
 [project.scripts]
 clf-play = "checklistfabrik.core.cli.play:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

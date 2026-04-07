@@ -61,6 +61,29 @@ Document all changes in `CHANGELOG.md` following [Keep a Changelog](https://keep
 Code, comments, commit messages, and documentation must be written in English.
 
 
+### Testing
+
+All major new functionality must include corresponding tests. The project uses [pytest](https://docs.pytest.org/) as its test framework. Tests are located in the `tests/` directory.
+
+Run the test suite:
+
+```bash
+python -m pytest tests/ --verbose
+```
+
+Before submitting a pull request, make sure all tests pass. The CI pipeline runs the test suite automatically on every push and pull request.
+
+
+### Linting
+
+The project uses [ruff](https://docs.astral.sh/ruff/) for linting and formatting, enforced via pre-commit hooks. Run manually:
+
+```bash
+ruff check src/ tests/
+ruff format --check src/ tests/
+```
+
+
 ### Coding Conventions
 
 - Sort variables, parameters, lists, and similar items alphabetically where possible.

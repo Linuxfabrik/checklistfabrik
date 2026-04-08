@@ -57,7 +57,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install ruff
-        run: 'pip install --require-hashes --requirement /dev/stdin <<< "ruff==0.15.9 --hash=sha256:6efbe303983441c51975c243e26dff328aca11f94b70992f35b093c2e71801e1"'
+        run: 'pip install ruff==0.15.9'
 
       - name: Run ruff check
         run: ruff check src/ tests/

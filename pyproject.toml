@@ -94,3 +94,7 @@ docstring-code-format = true
 # for graceful degradation.
 # B311 (pseudo-random): not used for cryptographic purposes.
 skips = ["B110", "B112", "B311"]
+
+[tool.bandit.assert_used]
+# pytest relies on the `assert` statement, so B101 does not apply to test files.
+skips = ["*/test_*.py", "*/conftest.py"]

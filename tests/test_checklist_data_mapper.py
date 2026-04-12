@@ -46,7 +46,7 @@ class TestProcessChecklist:
         data = {
             'title': 'Test',
             'description': 'A test checklist',
-            'report_path': '/tmp/report.yml',
+            'report_path': 'reports/report.yml',
             'version': '1.0',
             'pages': [
                 {
@@ -59,7 +59,7 @@ class TestProcessChecklist:
         }
         checklist = data_mapper.process_checklist(data, '.')
         assert checklist.description == 'A test checklist'
-        assert checklist.report_path == '/tmp/report.yml'
+        assert checklist.report_path == 'reports/report.yml'
         assert checklist.version == '1.0'
 
     def test_empty_checklist_raises(self, data_mapper):

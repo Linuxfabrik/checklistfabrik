@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Enforce single-quote string style and a consistent set of Ruff lint rules (`B`, `C4`, `E`, `F`, `I`, `RUF`, `SIM`, `UP`, `W`) across the whole codebase ([#96](https://github.com/Linuxfabrik/checklistfabrik/issues/96))
+* Triage Bandit findings: exclude pytest `assert` statements in test files from the `assert_used` check and clean up a false-positive hardcoded temporary path in a test fixture so routine commits are no longer blocked ([#100](https://github.com/Linuxfabrik/checklistfabrik/issues/100))
 
 ### Fixed
 

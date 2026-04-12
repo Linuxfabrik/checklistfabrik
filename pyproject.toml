@@ -62,3 +62,9 @@ clf-play = "checklistfabrik.core.cli.play:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.bandit]
+# B110 (try/except/pass) and B112 (try/except/continue): intentional patterns
+# for graceful degradation.
+# B311 (pseudo-random): not used for cryptographic purposes.
+skips = ["B110", "B112", "B311"]

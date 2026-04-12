@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Add bandit (security) and vulture (dead code) to pre-commit hooks
+
 ### Fixed
 
 * Fix `--require-hashes` pip installs in CI workflows by using pinned versions instead

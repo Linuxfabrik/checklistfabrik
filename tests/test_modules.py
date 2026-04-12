@@ -17,7 +17,12 @@ from .conftest import TEMPLATES_DIR
 
 def _make_kwargs(**extra):
     """Build kwargs dict as modules expect it."""
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)))
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=jinja2.select_autoescape(
+            enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+        ),
+    )
     md = create_markdown()
     base = {
         "clf_jinja_env": env,

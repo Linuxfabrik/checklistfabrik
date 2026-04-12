@@ -172,3 +172,39 @@ class TestChecklistWsgiApp:
         response = client.get("/exit")
         assert response.status_code == 200
         assert len(exit_called) == 1
+
+    def test_checklist_title_is_html_escaped(self, tmp_path):
+        """Malicious YAML with a script tag in the checklist title must be escaped."""
+        payload = "<script>alert('xss')</script>"
+        checklist_yaml = textwrap.dedent(f"""\
+            title: "{payload}"
+            pages:
+              - title: Safe Page
+                tasks:
+                  - linuxfabrik.clf.html:
+                        content: Safe content
+        """)
+        app = _create_app(tmp_path, checklist_yaml=checklist_yaml)
+        client = werkzeug.test.Client(app)
+        response = client.get("/page/0")
+        body = response.get_data(as_text=True)
+        assert payload not in body
+        assert "&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;" in body
+
+    def test_page_title_is_html_escaped(self, tmp_path):
+        """Malicious YAML with a script tag in a page title must be escaped."""
+        payload = "<script>alert('xss')</script>"
+        checklist_yaml = textwrap.dedent(f"""\
+            title: Test
+            pages:
+              - title: "{payload}"
+                tasks:
+                  - linuxfabrik.clf.html:
+                        content: Safe content
+        """)
+        app = _create_app(tmp_path, checklist_yaml=checklist_yaml)
+        client = werkzeug.test.Client(app)
+        response = client.get("/page/0")
+        body = response.get_data(as_text=True)
+        assert payload not in body
+        assert "&lt;script&gt;" in body

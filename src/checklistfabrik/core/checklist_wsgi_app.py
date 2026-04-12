@@ -17,7 +17,8 @@ from . import markdown
 TEMPLATE_STRING = """\
 {% extends "checklist.html.j2" %}
 {% block form_content %}
-{{data}}
+{# Task/page HTML is server-generated and already escaped where needed. #}
+{{ data | safe }}
 {% endblock %}
 """
 
@@ -46,7 +47,12 @@ class ChecklistWsgiApp:
         self.server_exit_callback = None
 
         self.server_id = uuid.uuid4().hex
-        self.templ_env = jinja2.Environment(loader=template_loader)
+        self.templ_env = jinja2.Environment(
+            loader=template_loader,
+            autoescape=jinja2.select_autoescape(
+                enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+            ),
+        )
         self.markdown = markdown.create_markdown()
 
         self.templ_env.globals.update(jinja_globals)

@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fix `--require-hashes` pip installs in CI workflows by using pinned versions instead
 
+### Security
+
+* core: enable Jinja2 HTML autoescaping in the checklist and dashboard web interfaces, and escape interpolated values in server-generated error messages to prevent cross-site scripting via malicious checklist YAML files ([#99](https://github.com/Linuxfabrik/checklistfabrik/issues/99))
+
 ## [v1.6.0] - 2026-04-07
 
 

@@ -32,7 +32,12 @@ class DashboardWsgiApp:
         self.template_loader = template_loader
         self.templates_dir = templates_dir
 
-        self.templ_env = jinja2.Environment(loader=template_loader)
+        self.templ_env = jinja2.Environment(
+            loader=template_loader,
+            autoescape=jinja2.select_autoescape(
+                enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+            ),
+        )
 
         self.url_map = werkzeug.routing.Map(
             [

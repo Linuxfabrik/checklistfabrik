@@ -4,6 +4,7 @@ import logging
 import uuid
 
 import jinja2
+import markupsafe
 
 from .. import utils
 
@@ -47,9 +48,11 @@ class Task:
             result = utils.eval_when(facts, self.when)
         except jinja2.exceptions.TemplateSyntaxError as error:
             logger.error('Syntax error at "%s": %s', self.when, error.message)
+            safe_when = markupsafe.escape(self.when)
+            safe_message = markupsafe.escape(error.message)
             return (
                 False,
-                f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>',
+                f'<div class="toast toast-error">Syntax error at "{safe_when}": {safe_message}</div>',
             )
 
         return result, None
@@ -68,7 +71,8 @@ class Task:
             loaded_module = importlib.import_module(f"{MODULE_NAMESPACE}.{self.module}")
         except ModuleNotFoundError:
             logger.error('Task rendering error: Cannot find module "%s"', self.module)
-            return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{self.module}</em>. Is it installed?</div>'
+            safe_module = markupsafe.escape(self.module)
+            return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{safe_module}</em>. Is it installed?</div>'
 
         render_context = facts.copy()
         render_context["clf_jinja_env"] = template_env
@@ -93,7 +97,8 @@ class Task:
                 'Task rendering error: Module "%s" is not a valid ChecklistFabrik module as it has no callable "main"',
                 self.module,
             )
-            return f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> is not a valid ChecklistFabrik module.</div>'
+            safe_module = markupsafe.escape(self.module)
+            return f'<div class="toast toast-error">Task rendering error: Module <em>{safe_module}</em> is not a valid ChecklistFabrik module.</div>'
 
         main_signature = inspect.signature(loaded_module.main)
 
@@ -104,8 +109,9 @@ class Task:
                 'Task rendering error: Module "%s" looks like a ChecklistFabrik module but is malformed as its signature does not allow variadic keyword arguments',
                 self.module,
             )
+            safe_module = markupsafe.escape(self.module)
             return TEMPLATE_FORMAT_STRING.format(
-                html=f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> looks like a ChecklistFabrik module but is malformed.</div>',
+                html=f'<div class="toast toast-error">Task rendering error: Module <em>{safe_module}</em> looks like a ChecklistFabrik module but is malformed.</div>',
             )
 
         try:
@@ -116,8 +122,10 @@ class Task:
                 self.module,
                 exception,
             )
+            safe_module = markupsafe.escape(self.module)
+            safe_exception = markupsafe.escape(str(exception))
             return TEMPLATE_FORMAT_STRING.format(
-                html=f'<div class="toast toast-error">Task rendering error: Rendering module <em>{self.module}</em> failed: <pre>{exception}</pre></div>',
+                html=f'<div class="toast toast-error">Task rendering error: Rendering module <em>{safe_module}</em> failed: <pre>{safe_exception}</pre></div>',
             )
 
         if not isinstance(result, dict):
@@ -127,8 +135,9 @@ class Task:
                 type(result),
                 type({}),
             )
+            safe_module = markupsafe.escape(self.module)
             return TEMPLATE_FORMAT_STRING.format(
-                html=f'<div class="toast toast-error">Task rendering error: Module <em>{self.module}</em> returned an invalid output.</div>',
+                html=f'<div class="toast toast-error">Task rendering error: Module <em>{safe_module}</em> returned an invalid output.</div>',
             )
 
         if "fact_name" in result:

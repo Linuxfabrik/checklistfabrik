@@ -23,7 +23,12 @@ TEMPLATES_DIR = (
 @pytest.fixture()
 def jinja_env():
     """Jinja2 environment with project templates loaded."""
-    return jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)))
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=jinja2.select_autoescape(
+            enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+        ),
+    )
 
 
 @pytest.fixture()

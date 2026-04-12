@@ -1,6 +1,7 @@
 import logging
 
 import jinja2.exceptions
+import markupsafe
 
 from .. import utils
 
@@ -51,9 +52,11 @@ class Page:
             result = utils.eval_when(facts, self.when)
         except jinja2.exceptions.TemplateSyntaxError as error:
             logger.error('Syntax error at "%s": %s', self.when, error.message)
+            safe_when = markupsafe.escape(self.when)
+            safe_message = markupsafe.escape(error.message)
             return (
                 False,
-                f'<div class="toast toast-error">Syntax error at "{self.when}": {error.message}</div>',
+                f'<div class="toast toast-error">Syntax error at "{safe_when}": {safe_message}</div>',
             )
 
         return result, None
@@ -74,6 +77,8 @@ class Page:
             data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
 
         return TEMPLATE_FORMAT_STRING.format(
-            title=template_env.from_string(self.title).render(**facts),
+            title=markupsafe.escape(
+                template_env.from_string(self.title).render(**facts)
+            ),
             data=data,
         )

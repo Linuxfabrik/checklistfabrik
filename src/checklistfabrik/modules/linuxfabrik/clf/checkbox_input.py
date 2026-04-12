@@ -62,29 +62,29 @@ TEMPLATE_SINGLE_CHECK_STRING = """\
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs["clf_jinja_env"]
-    clf_markdown = kwargs["clf_markdown"]
-    fact_name = kwargs["fact_name" if "fact_name" in kwargs else "auto_fact_name"]
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     templated_label = clf_markdown(
-        clf_jinja_env.from_string(kwargs.get("label", "")).render(**kwargs)
+        clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs)
     )
 
     task_context_update = None
 
-    if kwargs.get("values"):
+    if kwargs.get('values'):
         templated_checks = [
             {
-                "label": check.get("label"),
-                "templated_label": clf_markdown(
-                    clf_jinja_env.from_string(check["label"]).render(**kwargs)
+                'label': check.get('label'),
+                'templated_label': clf_markdown(
+                    clf_jinja_env.from_string(check['label']).render(**kwargs)
                 )
-                if check.get("label")
+                if check.get('label')
                 else None,
-                "value": check.get("value", uuid.uuid4().hex),
-                "required": check.get("required"),
+                'value': check.get('value', uuid.uuid4().hex),
+                'required': check.get('required'),
             }
-            for check in kwargs["values"]
+            for check in kwargs['values']
         ]
 
         html = clf_jinja_env.from_string(
@@ -93,20 +93,20 @@ def main(**kwargs):
             **(
                 kwargs
                 | {
-                    "fact_name": fact_name,
-                    "fact_value": kwargs.get(fact_name, []),
-                    "templated_label": templated_label,
-                    "templated_checks": templated_checks,
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name, []),
+                    'templated_label': templated_label,
+                    'templated_checks': templated_checks,
                 }
             ),
         )
 
         task_context_update = {
-            "values": [
+            'values': [
                 {
                     key: value
                     for key, value in check.items()
-                    if key in ("label", "value", "required") and value is not None
+                    if key in ('label', 'value', 'required') and value is not None
                 }
                 for check in templated_checks
             ]
@@ -119,15 +119,15 @@ def main(**kwargs):
             **(
                 kwargs
                 | {
-                    "fact_name": fact_name,
-                    "fact_value": kwargs.get(fact_name),
-                    "templated_label": templated_label,
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name),
+                    'templated_label': templated_label,
                 }
             ),
         )
 
     return {
-        "html": html,
-        "fact_name": fact_name,
-        "task_context_update": task_context_update,
+        'html': html,
+        'fact_name': fact_name,
+        'task_context_update': task_context_update,
     }

@@ -10,10 +10,9 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
-from . import checklist_wsgi_app
-from . import checklist_wsgi_server
+from . import checklist_wsgi_app, checklist_wsgi_server
 
-HOST = "127.0.0.1"
+HOST = '127.0.0.1'
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +20,7 @@ logger = logging.getLogger(__name__)
 class DashboardWsgiApp:
     """The WSGI app that powers the ChecklistFabrik dashboard."""
 
-    def __init__(
-        self, templates_dir, reports_dir, data_mapper, template_loader, assets_dir
-    ):
+    def __init__(self, templates_dir, reports_dir, data_mapper, template_loader, assets_dir):
         self.assets_dir = assets_dir
         self.data_mapper = data_mapper
         self.reports_dir = reports_dir
@@ -35,22 +32,22 @@ class DashboardWsgiApp:
         self.templ_env = jinja2.Environment(
             loader=template_loader,
             autoescape=jinja2.select_autoescape(
-                enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+                enabled_extensions=('html', 'htm', 'html.j2', 'htm.j2'),
             ),
         )
 
         self.url_map = werkzeug.routing.Map(
             [
-                werkzeug.routing.Rule("/", endpoint=self.on_dashboard),
-                werkzeug.routing.Rule("/run", endpoint=self.on_run, methods=["POST"]),
-                werkzeug.routing.Rule("/view", endpoint=self.on_view, methods=["POST"]),
+                werkzeug.routing.Rule('/', endpoint=self.on_dashboard),
+                werkzeug.routing.Rule('/run', endpoint=self.on_run, methods=['POST']),
+                werkzeug.routing.Rule('/view', endpoint=self.on_view, methods=['POST']),
             ],
         )
 
         self.wsgi_app = werkzeug.middleware.shared_data.SharedDataMiddleware(
             self.application,
             {
-                "/assets": str(assets_dir),
+                '/assets': str(assets_dir),
             },
         )
 
@@ -81,23 +78,19 @@ class DashboardWsgiApp:
         if not directory.is_dir():
             return items
 
-        for path in sorted(directory.glob("*.yml")):
+        for path in sorted(directory.glob('*.yml')):
             try:
                 data = self.data_mapper.load_yaml(path)
 
-                if (
-                    not isinstance(data, dict)
-                    or "title" not in data
-                    or "pages" not in data
-                ):
+                if not isinstance(data, dict) or 'title' not in data or 'pages' not in data:
                     continue
 
                 items.append(
                     {
-                        "description": str(data.get("description", "")),
-                        "filename": path.name,
-                        "path": str(path.resolve()),
-                        "title": str(data.get("title", "")),
+                        'description': str(data.get('description', '')),
+                        'filename': path.name,
+                        'path': str(path.resolve()),
+                        'title': str(data.get('title', '')),
                     }
                 )
             except Exception:
@@ -117,11 +110,11 @@ class DashboardWsgiApp:
             reports_list = self.scan_directory(self.reports_dir)
 
         return werkzeug.Response(
-            self.templ_env.get_template("dashboard.html.j2").render(
+            self.templ_env.get_template('dashboard.html.j2').render(
                 reports=reports_list,
                 templates=templates_list,
             ),
-            mimetype="text/html",
+            mimetype='text/html',
         )
 
     def _launch_checklist(self, checklist_file, checklist_template, allowed_dir):
@@ -145,9 +138,9 @@ class DashboardWsgiApp:
             )
         except SystemExit:
             return werkzeug.Response(
-                json.dumps({"error": "Failed to load checklist"}),
+                json.dumps({'error': 'Failed to load checklist'}),
                 status=500,
-                mimetype="application/json",
+                mimetype='application/json',
             )
 
         server = checklist_wsgi_server.ChecklistWsgiServer(HOST, 0, app)
@@ -163,18 +156,18 @@ class DashboardWsgiApp:
         self.spawned_checklists.append((app, server, thread))
 
         return werkzeug.Response(
-            json.dumps({"url": f"http://{host}:{port}"}),
-            mimetype="application/json",
+            json.dumps({'url': f'http://{host}:{port}'}),
+            mimetype='application/json',
         )
 
     def _parse_path_from_request(self, request):
         """Extract and validate the path from a JSON request body."""
         try:
             data = json.loads(request.data)
-        except json.JSONDecodeError:
-            raise werkzeug.exceptions.BadRequest()
+        except json.JSONDecodeError as error:
+            raise werkzeug.exceptions.BadRequest() from error
 
-        path = data.get("path")
+        path = data.get('path')
 
         if not path:
             raise werkzeug.exceptions.BadRequest()

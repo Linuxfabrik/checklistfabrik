@@ -1,9 +1,7 @@
 class Checklist:
     """Models a ChecklistFabrik checklist."""
 
-    def __init__(
-        self, title, pages, facts, description=None, report_path=None, version=None
-    ):
+    def __init__(self, title, pages, facts, description=None, report_path=None, version=None):
         self.description = description
         self.facts = facts
         self.pages = pages
@@ -16,11 +14,11 @@ class Checklist:
 
     def to_dict(self):
         result = {
-            "title": self.title,
-            "pages": [page.to_dict(self.facts) for page in self.pages],
+            'title': self.title,
+            'pages': [page.to_dict(self.facts) for page in self.pages],
         }
 
         if self.version is not None:
-            result["version"] = self.version
+            result['version'] = self.version
 
         return result

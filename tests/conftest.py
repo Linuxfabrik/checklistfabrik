@@ -10,13 +10,12 @@ import ruamel.yaml
 from checklistfabrik.core import markdown
 from checklistfabrik.core.checklist_data_mapper import ChecklistDataMapper
 
-
 TEMPLATES_DIR = (
     pathlib.Path(__file__).resolve().parent.parent
-    / "src"
-    / "checklistfabrik"
-    / "core"
-    / "templates"
+    / 'src'
+    / 'checklistfabrik'
+    / 'core'
+    / 'templates'
 )
 
 
@@ -26,7 +25,7 @@ def jinja_env():
     return jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=jinja2.select_autoescape(
-            enabled_extensions=("html", "htm", "html.j2", "htm.j2"),
+            enabled_extensions=('html', 'htm', 'html.j2', 'htm.j2'),
         ),
     )
 
@@ -55,6 +54,6 @@ def sample_checklist_yaml(tmp_path):
               - linuxfabrik.clf.html:
                     content: Hello World
     """)
-    file = tmp_path / "checklist.yml"
-    file.write_text(content, encoding="utf-8")
+    file = tmp_path / 'checklist.yml'
+    file.write_text(content, encoding='utf-8')
     return file

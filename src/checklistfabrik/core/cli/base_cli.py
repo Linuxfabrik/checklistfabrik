@@ -15,7 +15,7 @@ class BaseCli:
         self.logger = None
 
     def init_args(self):
-        raise NotImplementedError("This method must be implemented by a subclass")
+        raise NotImplementedError('This method must be implemented by a subclass')
 
     def parse_args(self, args):
         self.arg_parser.prog = os.path.basename(args[0])
@@ -25,44 +25,32 @@ class BaseCli:
         pass
 
     def run(self):
-        raise NotImplementedError("This method must be implemented by a subclass")
+        raise NotImplementedError('This method must be implemented by a subclass')
 
-    def init_logging(
-        self, console_log_level=logging.INFO, file_log_level=logging.DEBUG
-    ):
-        root_module_name = __name__.split(".", maxsplit=1)[0]
+    def init_logging(self, console_log_level=logging.INFO, file_log_level=logging.DEBUG):
+        root_module_name = __name__.split('.', maxsplit=1)[0]
         self.logger = logging.getLogger(root_module_name)
         self.logger.setLevel(min(console_log_level, file_log_level))
 
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(console_log_level)
-        console_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+        console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 
         self.logger.addHandler(console_handler)
 
-        instance_module_name = type(self).__module__.rsplit(".", maxsplit=1)[-1]
-        log_file_name = f"{root_module_name}-{instance_module_name}.log"
+        instance_module_name = type(self).__module__.rsplit('.', maxsplit=1)[-1]
+        log_file_name = f'{root_module_name}-{instance_module_name}.log'
         os_name = platform.system()
 
-        if os_name == "Darwin":
+        if os_name == 'Darwin':
+            log_path = pathlib.Path.home() / 'Library' / 'Logs' / root_module_name / log_file_name
+        elif os_name == 'Linux':
             log_path = (
-                pathlib.Path.home()
-                / "Library"
-                / "Logs"
-                / root_module_name
+                pathlib.Path(os.getenv('XDG_DATA_HOME', pathlib.Path.home() / '.local' / 'share'))
                 / log_file_name
             )
-        elif os_name == "Linux":
-            log_path = (
-                pathlib.Path(
-                    os.getenv("XDG_DATA_HOME", pathlib.Path.home() / ".local" / "share")
-                )
-                / log_file_name
-            )
-        elif os_name == "Windows" and "APPDATA" in os.environ:
-            log_path = (
-                pathlib.Path(os.environ["APPDATA"]) / root_module_name / log_file_name
-            )
+        elif os_name == 'Windows' and 'APPDATA' in os.environ:
+            log_path = pathlib.Path(os.environ['APPDATA']) / root_module_name / log_file_name
         else:
             log_path = pathlib.Path.cwd() / log_file_name
 
@@ -79,12 +67,10 @@ class BaseCli:
         else:
             self.logger.info('Writing log to file "%s"', log_path)
 
-            file_handler = logging.FileHandler(log_path, mode="w")
+            file_handler = logging.FileHandler(log_path, mode='w')
             file_handler.setLevel(file_log_level)
             file_handler.setFormatter(
-                logging.Formatter(
-                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-                )
+                logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             )
 
             self.logger.addHandler(file_handler)
@@ -102,7 +88,7 @@ class BaseCli:
 
         cli.init_logging(
             console_log_level=logging.DEBUG
-            if getattr(cli.args, "verbose", False)
+            if getattr(cli.args, 'verbose', False)
             else logging.INFO,
         )
 
@@ -131,10 +117,10 @@ class IntRange:
                 raise ValueError
 
             return value
-        except ValueError:
-            msg = f"must be an integer in range [{self.min}, {self.max}]"
+        except ValueError as error:
+            msg = f'must be an integer in range [{self.min}, {self.max}]'
 
             if isinstance(value, int):
-                msg += f", got {value}"
+                msg += f', got {value}'
 
-            raise argparse.ArgumentTypeError(msg)
+            raise argparse.ArgumentTypeError(msg) from error

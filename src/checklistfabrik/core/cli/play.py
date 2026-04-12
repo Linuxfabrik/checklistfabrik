@@ -4,24 +4,26 @@ import pathlib
 
 import ruamel.yaml
 
+from .. import (
+    __version__,
+    checklist_data_mapper,
+    checklist_wsgi_app,
+    checklist_wsgi_server,
+    dashboard_wsgi_app,
+    templates,
+)
 from .base_cli import BaseCli, IntRange
-from .. import __version__
-from .. import checklist_data_mapper
-from .. import checklist_wsgi_app
-from .. import checklist_wsgi_server
-from .. import dashboard_wsgi_app
-from .. import templates
 
 DESCRIPTION = (
-    "Interactive CLI for launching dynamic, web-based checklists. "
-    "Leverage YAML templates with Jinja logic to create, run, and track recurring procedures. "
-    "Run without arguments to open the dashboard."
+    'Interactive CLI for launching dynamic, web-based checklists. '
+    'Leverage YAML templates with Jinja logic to create, run, and track recurring procedures. '
+    'Run without arguments to open the dashboard.'
 )
-HOST = "127.0.0.1"
+HOST = '127.0.0.1'
 
 logger = logging.getLogger(__name__)
 
-__author__ = "Linuxfabrik GmbH, Zurich/Switzerland"
+__author__ = 'Linuxfabrik GmbH, Zurich/Switzerland'
 
 
 class PlayCli(BaseCli):
@@ -41,114 +43,104 @@ class PlayCli(BaseCli):
 
     def init_args(self):
         self.arg_parser.add_argument(
-            "-V",
-            "--version",
+            '-V',
+            '--version',
             help="Display the program's version information and exit.",
-            action="version",
-            version=f"%(prog)s: v{__version__} by {__author__}",
+            action='version',
+            version=f'%(prog)s: v{__version__} by {__author__}',
         )
 
         self.arg_parser.add_argument(
-            "-v",
-            "--verbose",
-            action="store_true",
-            help="Optional: Also log debug messages on console.",
+            '-v',
+            '--verbose',
+            action='store_true',
+            help='Optional: Also log debug messages on console.',
         )
 
         self.arg_parser.add_argument(
-            "report_file",
+            'report_file',
             help=(
-                "Path to the report file. If the file exists, it will be loaded for re-running. "
-                "If you want to create a new report from an existing checklist/template, "
-                "provide a non-existent file path and use the `--template` option. "
-                "This option may be left empty to auto-generate the file path "
+                'Path to the report file. If the file exists, it will be loaded for re-running. '
+                'If you want to create a new report from an existing checklist/template, '
+                'provide a non-existent file path and use the `--template` option. '
+                'This option may be left empty to auto-generate the file path '
                 "based on the template's `report_path` (if provided) or simply a timestamp. "
-                "If omitted entirely (along with `--template`), the dashboard is opened."
+                'If omitted entirely (along with `--template`), the dashboard is opened.'
             ),
-            nargs="?",
+            nargs='?',
             type=pathlib.Path,
         )
 
         self.arg_parser.add_argument(
-            "--force",
-            action="store_true",
+            '--force',
+            action='store_true',
             help=(
-                "Allow creating a checklist from a template even if the report checklist file "
-                "(the `report_file` argument) already exists. "
-                "WARNING: THE REPORT FILE WILL BE OVERWRITTEN."
+                'Allow creating a checklist from a template even if the report checklist file '
+                '(the `report_file` argument) already exists. '
+                'WARNING: THE REPORT FILE WILL BE OVERWRITTEN.'
             ),
         )
 
         self.arg_parser.add_argument(
-            "--open",
+            '--open',
             action=argparse.BooleanOptionalAction,
-            help="Control whether to open the checklist page the default browser.",
+            help='Control whether to open the checklist page the default browser.',
             default=True,
         )
 
         self.arg_parser.add_argument(
-            "--port",
+            '--port',
             help='Port to use for the HTTP server. Using "0" will auto-select an available port. Default: %(default)d',
             default=0,
             type=IntRange(0, 65535),
         )
 
         self.arg_parser.add_argument(
-            "--reports-dir",
-            help="Directory to scan for report files (dashboard mode). Default: %(default)s",
+            '--reports-dir',
+            help='Directory to scan for report files (dashboard mode). Default: %(default)s',
             type=pathlib.Path,
-            default=pathlib.Path("."),
+            default=pathlib.Path('.'),
         )
 
         self.arg_parser.add_argument(
-            "--template",
+            '--template',
             help=(
-                "Optional: Path to a YAML template file for creating a new report. "
-                "This option may only be used when the report file (the `report_file` "
-                "argument) does not already exist or the `--force` option is used."
+                'Optional: Path to a YAML template file for creating a new report. '
+                'This option may only be used when the report file (the `report_file` '
+                'argument) does not already exist or the `--force` option is used.'
             ),
             type=pathlib.Path,
         )
 
         self.arg_parser.add_argument(
-            "--templates-dir",
-            help="Directory to scan for checklist templates (dashboard mode). Default: %(default)s",
+            '--templates-dir',
+            help='Directory to scan for checklist templates (dashboard mode). Default: %(default)s',
             type=pathlib.Path,
-            default=pathlib.Path("."),
+            default=pathlib.Path('.'),
         )
 
     def validate_args(self):
         if self.args.report_file is None and self.args.template is None:
             # Dashboard mode.
             # Auto-detect well-known subdirectories if the user did not override.
-            if (
-                self.args.reports_dir == pathlib.Path(".")
-                and pathlib.Path("reports").is_dir()
-            ):
-                self.args.reports_dir = pathlib.Path("reports")
-            if (
-                self.args.templates_dir == pathlib.Path(".")
-                and pathlib.Path("templates").is_dir()
-            ):
-                self.args.templates_dir = pathlib.Path("templates")
+            if self.args.reports_dir == pathlib.Path('.') and pathlib.Path('reports').is_dir():
+                self.args.reports_dir = pathlib.Path('reports')
+            if self.args.templates_dir == pathlib.Path('.') and pathlib.Path('templates').is_dir():
+                self.args.templates_dir = pathlib.Path('templates')
             return
 
         if self.args.template is not None:
-            if (
-                self.args.report_file
-                and self.args.report_file.is_file()
-                and not self.args.force
-            ):
+            if self.args.report_file and self.args.report_file.is_file() and not self.args.force:
                 self.arg_parser.error(
-                    "--template may only be specified if the report file does not exist"
+                    '--template may only be specified if the report file does not exist'
                 )
 
             if not self.args.template.is_file():
-                self.arg_parser.error("--template must be a file")
+                self.arg_parser.error('--template must be a file')
 
         else:
             if not (self.args.report_file and self.args.report_file.is_file()):
-                self.arg_parser.error("report file must exist")
+                self.arg_parser.error('report file must exist')
 
     def run(self):
         if self.args.report_file is None and self.args.template is None:

@@ -8,20 +8,16 @@ def eval_conditional(facts, conditional):
 
     # Uses spaces around True/False to ensure the result is still a string in case of rendering with jinja's NativeEnvironment.
     condition_template = jinja2.Template(
-        f"{{% if {conditional} %}} True {{% else %}} False {{% endif %}}"
+        f'{{% if {conditional} %}} True {{% else %}} False {{% endif %}}'
     )
 
-    return condition_template.render(**facts).strip() == "True"
+    return condition_template.render(**facts).strip() == 'True'
 
 
 def eval_all_conditionals(facts, conditionals):
     """Conjunctive evaluation of a list of jinja conditional statements."""
 
-    for conditional in conditionals:
-        if not eval_conditional(facts, conditional):
-            return False
-
-    return True
+    return all(eval_conditional(facts, conditional) for conditional in conditionals)
 
 
 def eval_when(facts, when):
@@ -57,7 +53,7 @@ def validate_dict_keys(
     missing_keys = required_keys - dictionary.keys()
 
     if len(missing_keys) > 0:
-        return False, f"Missing the following required keys: {', '.join(missing_keys)}"
+        return False, f'Missing the following required keys: {", ".join(missing_keys)}'
 
     if disallow_extra_keys:
         extra_keys = dictionary.keys() - required_keys - optional_keys
@@ -65,4 +61,4 @@ def validate_dict_keys(
         if len(extra_keys) > 0:
             return False, f'Unexpected extra keys: "{", ".join(extra_keys)}"'
 
-    return True, "Valid"
+    return True, 'Valid'

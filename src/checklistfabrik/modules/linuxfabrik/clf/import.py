@@ -18,5 +18,5 @@ HTML = """\
 
 def main(**kwargs):
     return {
-        "html": HTML,
+        'html': HTML,
     }

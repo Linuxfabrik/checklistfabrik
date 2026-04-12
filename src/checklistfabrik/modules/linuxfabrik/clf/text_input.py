@@ -25,26 +25,26 @@ TEMPLATE_STRING = """
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs["clf_jinja_env"]
-    clf_markdown = kwargs["clf_markdown"]
-    fact_name = kwargs["fact_name" if "fact_name" in kwargs else "auto_fact_name"]
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     templated_label = clf_markdown(
-        clf_jinja_env.from_string(kwargs.get("label", "")).render(**kwargs)
+        clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs)
     )
 
     return {
-        "html": clf_jinja_env.from_string(
+        'html': clf_jinja_env.from_string(
             TEMPLATE_STRING,
         ).render(
             **(
                 kwargs
                 | {
-                    "fact_name": fact_name,
-                    "fact_value": kwargs.get(fact_name),
-                    "templated_label": templated_label,
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name),
+                    'templated_label': templated_label,
                 }
             ),
         ),
-        "fact_name": fact_name,
+        'fact_name': fact_name,
     }

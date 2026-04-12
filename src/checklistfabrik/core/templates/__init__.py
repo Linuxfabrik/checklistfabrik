@@ -6,11 +6,11 @@ import jinja2
 
 
 def get_assets_path():
-    return pathlib.Path(__file__).parent / "assets"
+    return pathlib.Path(__file__).parent / 'assets'
 
 
 def get_template_loader():
-    return jinja2.PackageLoader(__name__, ".")
+    return jinja2.PackageLoader(__name__, '.')
 
 
 def get_template_path():

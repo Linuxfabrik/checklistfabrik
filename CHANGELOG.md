@@ -12,9 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add bandit (security) and vulture (dead code) to pre-commit hooks
 
+### Changed
+
+* Enforce single-quote string style and a consistent set of Ruff lint rules (`B`, `C4`, `E`, `F`, `I`, `RUF`, `SIM`, `UP`, `W`) across the whole codebase ([#96](https://github.com/Linuxfabrik/checklistfabrik/issues/96))
+
 ### Fixed
 
 * Fix `--require-hashes` pip installs in CI workflows by using pinned versions instead
+* core: chain re-raised exceptions with `raise ... from ...` so the original error is preserved in tracebacks
 
 ### Security
 

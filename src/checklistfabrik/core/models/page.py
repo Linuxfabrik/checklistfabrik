@@ -36,12 +36,12 @@ class Page:
 
     def to_dict(self, facts):
         result = {
-            "title": self.title,
-            "tasks": [task.to_dict(facts) for task in self.tasks],
+            'title': self.title,
+            'tasks': [task.to_dict(facts) for task in self.tasks],
         }
 
         if self.when is not None:
-            result["when"] = self.when
+            result['when'] = self.when
 
         return result
 
@@ -67,9 +67,7 @@ class Page:
         show_page, error = self.eval_when(facts)
 
         if show_page:
-            data = "".join(
-                [task.render(facts, template_env, markdown) for task in self.tasks]
-            )
+            data = ''.join([task.render(facts, template_env, markdown) for task in self.tasks])
             data = remove_last_divider(data)
         elif error:
             data = error
@@ -77,8 +75,6 @@ class Page:
             data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
 
         return TEMPLATE_FORMAT_STRING.format(
-            title=markupsafe.escape(
-                template_env.from_string(self.title).render(**facts)
-            ),
+            title=markupsafe.escape(template_env.from_string(self.title).render(**facts)),
             data=data,
         )

@@ -53,30 +53,29 @@ TEMPLATE_SINGLE_SELECT_STRING = """\
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs["clf_jinja_env"]
-    clf_markdown = kwargs["clf_markdown"]
-    fact_name = kwargs["fact_name" if "fact_name" in kwargs else "auto_fact_name"]
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     templated_label = clf_markdown(
-        clf_jinja_env.from_string(kwargs.get("label", "")).render(**kwargs)
+        clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs)
     )
 
     templated_values = [
-        clf_jinja_env.from_string(value).render(**kwargs)
-        for value in kwargs.get("values", [""])
+        clf_jinja_env.from_string(value).render(**kwargs) for value in kwargs.get('values', [''])
     ]
 
-    if kwargs.get("multiple"):
+    if kwargs.get('multiple'):
         html = clf_jinja_env.from_string(
             TEMPLATE_MULTI_SELECT_STRING,
         ).render(
             **(
                 kwargs
                 | {
-                    "fact_name": fact_name,
-                    "fact_value": kwargs.get(fact_name, []),
-                    "templated_label": templated_label,
-                    "templated_values": templated_values,
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name, []),
+                    'templated_label': templated_label,
+                    'templated_values': templated_values,
                 }
             ),
         )
@@ -87,15 +86,15 @@ def main(**kwargs):
             **(
                 kwargs
                 | {
-                    "fact_name": fact_name,
-                    "fact_value": kwargs.get(fact_name),
-                    "templated_label": templated_label,
-                    "templated_values": templated_values,
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name),
+                    'templated_label': templated_label,
+                    'templated_values': templated_values,
                 }
             ),
         )
 
     return {
-        "html": html,
-        "fact_name": fact_name,
+        'html': html,
+        'fact_name': fact_name,
     }

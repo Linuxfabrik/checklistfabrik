@@ -8,23 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.6.1] - 2026-04-12
+
 ### Added
 
-* Add bandit (security) and vulture (dead code) to pre-commit hooks
+* Add bandit (security scanning) and vulture (dead code detection) to pre-commit hooks
 
 ### Changed
 
-* Enforce single-quote string style and a consistent set of Ruff lint rules (`B`, `C4`, `E`, `F`, `I`, `RUF`, `SIM`, `UP`, `W`) across the whole codebase ([#96](https://github.com/Linuxfabrik/checklistfabrik/issues/96))
-* Triage Bandit findings: exclude pytest `assert` statements in test files from the `assert_used` check and clean up a false-positive hardcoded temporary path in a test fixture so routine commits are no longer blocked ([#100](https://github.com/Linuxfabrik/checklistfabrik/issues/100))
+* Enforce a consistent Python code style (single-quoted strings, ruff lint rules) across the whole codebase ([#96](https://github.com/Linuxfabrik/checklistfabrik/issues/96))
+* Silence false-positive bandit findings in test files so routine commits are no longer blocked ([#100](https://github.com/Linuxfabrik/checklistfabrik/issues/100))
 
 ### Fixed
 
-* Fix `--require-hashes` pip installs in CI workflows by using pinned versions instead
-* core: chain re-raised exceptions with `raise ... from ...` so the original error is preserved in tracebacks
+* ci: fix `--require-hashes` pip installs in CI workflows by using pinned versions instead
+* core: preserve the original error cause in tracebacks when re-raising exceptions
 
 ### Security
 
-* core: enable Jinja2 HTML autoescaping in the checklist and dashboard web interfaces, and escape interpolated values in server-generated error messages to prevent cross-site scripting via malicious checklist YAML files ([#99](https://github.com/Linuxfabrik/checklistfabrik/issues/99))
+* core: prevent cross-site scripting in the checklist and dashboard web interfaces by enabling Jinja2 HTML autoescaping and escaping interpolated values in server-generated error messages. Users running untrusted checklist YAML files are strongly encouraged to upgrade ([#99](https://github.com/Linuxfabrik/checklistfabrik/issues/99))
+
 
 ## [v1.6.0] - 2026-04-07
 
@@ -133,7 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.1...HEAD
+[v1.6.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.0...v1.6.1
 [v1.6.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.5.0...v1.6.0
 [v1.5.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.4.0...v1.5.0
 [v1.4.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.3.0...v1.4.0

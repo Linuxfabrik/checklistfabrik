@@ -63,6 +63,32 @@ clf-play = "checklistfabrik.core.cli.play:main"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "B",    # flake8-bugbear (potential bugs)
+    "C4",   # flake8-comprehensions
+    "E",    # pycodestyle errors
+    "F",    # pyflakes (logic errors)
+    "I",    # isort (import sorting)
+    "RUF",  # Ruff-specific rules
+    "SIM",  # flake8-simplify
+    "UP",   # pyupgrade (modernize syntax for py39+)
+    "W",    # pycodestyle warnings
+]
+ignore = [
+    "E501",   # line too long (handled by code review, not auto-enforcement)
+    "UP009",  # UTF-8 encoding declaration (we keep our standard file header)
+    "UP015",  # redundant open() mode (we keep explicit modes for clarity)
+]
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+
 [tool.bandit]
 # B110 (try/except/pass) and B112 (try/except/continue): intentional patterns
 # for graceful degradation.

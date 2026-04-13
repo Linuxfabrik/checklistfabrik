@@ -1,3 +1,4 @@
+import markupsafe
 import mistune
 
 
@@ -37,8 +38,17 @@ class ClfHtmlRenderer(mistune.HTMLRenderer):
 
 
 def create_markdown():
-    return mistune.create_markdown(
+    # Wrap the mistune callable so its output is marked as safe HTML. Without this,
+    # markdown-rendered labels (e.g. `<strong>...</strong>`) would be HTML-escaped
+    # when interpolated into `from_string` Jinja templates, which default to
+    # autoescape=True.
+    render = mistune.create_markdown(
         escape=False,
         renderer=ClfHtmlRenderer(),
         plugins=['strikethrough', 'table', 'speedup'],
     )
+
+    def clf_markdown(text):
+        return markupsafe.Markup(render(text))
+
+    return clf_markdown

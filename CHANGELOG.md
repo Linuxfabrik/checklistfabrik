@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 tbd
 
 
+## [v1.6.2] - 2026-04-13
+
+### Fixed
+
+* modules: render Markdown in input labels as HTML again instead of showing the raw tags (e.g. `<strong>`) in the browser. Regression introduced in v1.6.1 by enabling Jinja2 HTML autoescape ([#99](https://github.com/Linuxfabrik/checklistfabrik/issues/99))
+
+
 ## [v1.6.1] - 2026-04-12
 
 ### Added
@@ -139,7 +146,8 @@ tbd
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.2...HEAD
+[v1.6.2]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.1...v1.6.2
 [v1.6.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.0...v1.6.1
 [v1.6.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.5.0...v1.6.0
 [v1.5.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.4.0...v1.5.0

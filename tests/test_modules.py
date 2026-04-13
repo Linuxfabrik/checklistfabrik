@@ -75,6 +75,18 @@ class TestTextInputModule:
         assert 'Enter value' in result['html']
         assert result['fact_name'] == 'my_input'
 
+    def test_markdown_label_not_escaped(self):
+        # Regression: with Jinja autoescape enabled, markdown-rendered labels
+        # must not be HTML-escaped when interpolated into the module template.
+        result = text_input.main(
+            **_make_kwargs(
+                fact_name='my_input',
+                label='**bold**',
+            )
+        )
+        assert '<strong>bold</strong>' in result['html']
+        assert '&lt;strong&gt;' not in result['html']
+
     def test_required(self):
         result = text_input.main(
             **_make_kwargs(
@@ -146,6 +158,23 @@ class TestCheckboxInputModule:
         )
         assert 'required' in result['html']
 
+    def test_markdown_labels_not_escaped(self):
+        # Regression: both the group legend and individual checkbox labels
+        # must render markdown as HTML, not as escaped text.
+        result = checkbox_input.main(
+            **_make_kwargs(
+                fact_name='choices',
+                label='**Pick**',
+                values=[
+                    {'label': '*italic*', 'value': 'a'},
+                ],
+            )
+        )
+        assert '<strong>Pick</strong>' in result['html']
+        assert '<em>italic</em>' in result['html']
+        assert '&lt;strong&gt;' not in result['html']
+        assert '&lt;em&gt;' not in result['html']
+
 
 # --- radio_input module ---
 
@@ -191,6 +220,23 @@ class TestRadioInputModule:
         )
         assert 'task_context_update' in result
         assert len(result['task_context_update']['values']) == 1
+
+    def test_markdown_labels_not_escaped(self):
+        # Regression: group label and radio labels must render markdown as
+        # HTML instead of being escaped by Jinja autoescape.
+        result = radio_input.main(
+            **_make_kwargs(
+                fact_name='choice',
+                label='**Group**',
+                values=[
+                    {'label': '*option*', 'value': 'a'},
+                ],
+            )
+        )
+        assert '<strong>Group</strong>' in result['html']
+        assert '<em>option</em>' in result['html']
+        assert '&lt;strong&gt;' not in result['html']
+        assert '&lt;em&gt;' not in result['html']
 
 
 # --- select_input module ---
@@ -243,3 +289,16 @@ class TestSelectInputModule:
             )
         )
         assert 'required' in result['html']
+
+    def test_markdown_label_not_escaped(self):
+        # Regression: select label must render markdown as HTML instead of
+        # being escaped by Jinja autoescape.
+        result = select_input.main(
+            **_make_kwargs(
+                fact_name='country',
+                label='**Country**',
+                values=['CH', 'DE'],
+            )
+        )
+        assert '<strong>Country</strong>' in result['html']
+        assert '&lt;strong&gt;' not in result['html']

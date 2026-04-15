@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.6.3] - 2026-04-15
+
+### Added
+
+* core: `clf-play` now prints the product name and version as the first line on the console (e.g. `INFO - ChecklistFabrik v1.6.3`) so the running version is immediately visible in logs and bug reports
+
+### Changed
+
+* core: checkbox and radio group labels now blend in with the surrounding text input labels instead of inheriting the larger, bolder Spectre default style for `<legend>`
+* core: standalone Markdown task blocks (`linuxfabrik.clf.markdown`) now keep the normal paragraph spacing. Previously a CSS rule intended for compact input labels also squashed the paragraphs inside standalone Markdown blocks
+
+### Fixed
+
+* core: Jinja expressions in template `value:` defaults (e.g. `value: '{{ now().strftime("%Y%m%d") }}01'`) are now resolved once at template load time. Before, the raw expression ended up in the facts and therefore also in any later Markdown/HTML content that referenced that fact. Applies to all input modules (checkbox, radio, select, text), not only `text_input`
+* core: the line-wrap indicator (`↳`) inside code blocks no longer also appears on the first, non-wrapped visual line (caused by `background-repeat: repeat-y` wrapping the sprite above its starting position)
+* modules: fact values containing special characters such as `"` no longer get double-escaped when interpolated into Markdown content or input labels (appeared as `&amp;#34;` in the browser instead of `"`). Regression introduced in v1.6.1 by enabling Jinja2 HTML autoescape on top of Mistune's own HTML escaping
+
 ### Security
 
 * Harden the CI supply chain: the `pre-commit` install in the pre-commit-autoupdate workflow is now hash-pinned via `.github/pre-commit/requirements.txt` (generated with `pip-compile --generate-hashes --strip-extras`), and `dependabot/fetch-metadata` is pinned to a commit SHA so all GitHub Actions used in `.github/workflows/` are now pinned by hash. The policy is documented in CONTRIBUTING.md under "CI Supply Chain"
@@ -148,7 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.2...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.3...HEAD
+[v1.6.3]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.2...v1.6.3
 [v1.6.2]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.1...v1.6.2
 [v1.6.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.0...v1.6.1
 [v1.6.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.5.0...v1.6.0

@@ -53,9 +53,16 @@ class ChecklistWsgiApp:
                 enabled_extensions=('html', 'htm', 'html.j2', 'htm.j2'),
             ),
         )
+        # A sibling environment with autoescape disabled. Used by input/output modules
+        # to render content that is subsequently fed into the Markdown renderer (which
+        # does its own HTML escaping) or written as explicit raw HTML. Without this,
+        # fact values interpolated into Markdown content would be double-escaped: once
+        # by Jinja (e.g. `"` -> `&#34;`), then again by Mistune (`&` -> `&amp;`).
+        self.templ_env_plain = self.templ_env.overlay(autoescape=False)
         self.markdown = markdown.create_markdown()
 
         self.templ_env.globals.update(jinja_globals)
+        self.templ_env_plain.globals.update(jinja_globals)
 
         self.url_map = werkzeug.routing.Map(
             [
@@ -154,7 +161,7 @@ class ChecklistWsgiApp:
             raise werkzeug.exceptions.NotFound()
 
         page_data = self.checklist.pages[page_id].render(
-            self.checklist.facts, self.templ_env, self.markdown
+            self.checklist.facts, self.templ_env, self.markdown, self.templ_env_plain
         )
 
         return werkzeug.Response(

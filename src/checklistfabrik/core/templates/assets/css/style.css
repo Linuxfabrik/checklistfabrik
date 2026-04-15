@@ -6,12 +6,23 @@ div.form-label:last-child > :last-child {
   margin-bottom: 0;
 }
 
-/* Remove excess margins from Markdown-generated <p> tags inside form labels, legends and input labels. */
+/*
+ * Remove excess margins from Markdown-generated <p> tags inside form labels,
+ * legends and input labels. Standalone Markdown blocks (`.clf-markdown-block`)
+ * are intentionally excluded so that their paragraphs keep the default spacing.
+ */
 .form-checkbox p,
 .form-label p,
 .form-radio p,
 legend p {
   margin: 0;
+}
+
+/* Remove the last trailing paragraph margin inside a standalone Markdown block
+ * so the block sits flush with the following divider.
+ */
+.clf-markdown-block > :last-child {
+  margin-bottom: 0;
 }
 
 /*
@@ -31,6 +42,19 @@ form > fieldset > hr:last-child {
 
 form fieldset > legend {
   padding-inline: 0.4rem;
+}
+
+/*
+ * Legends of nested fieldsets (e.g. the group labels of checkbox and radio
+ * inputs) should blend in with regular `.form-label` labels instead of using
+ * Spectre's bigger, bolder default legend style.
+ */
+form > fieldset fieldset > legend {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.2rem;
+  margin-bottom: 0;
+  padding: 0.3rem 0;
 }
 
 pre > code:only-child {
@@ -104,12 +128,17 @@ legend > .clf-fa-required {
   min-height: 1.5em;
 }
 
-/* Show wrap indicator icon on continuation lines when wrapping has occurred. */
+/*
+ * Show wrap indicator icon on the continuation of a wrapped line. `no-repeat`
+ * is important: with `repeat-y` the indicator would also be painted on the
+ * first (non-wrapped) visual line at y = 1.5em - 1.5em = 0, appearing to float
+ * above the real text.
+ */
 .clf-code-line.clf-wrapped {
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='16'><text x='0' y='13' font-size='13' fill='%23bcc3ce' font-family='sans-serif'>↳</text></svg>");
   background-position: 0.1em 1.5em;
   background-size: 0.9em 1.5em;
-  background-repeat: repeat-y;
+  background-repeat: no-repeat;
 }
 
 .clf-code-copy-btn {

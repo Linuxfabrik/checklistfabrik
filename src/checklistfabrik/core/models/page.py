@@ -61,13 +61,18 @@ class Page:
 
         return result, None
 
-    def render(self, facts, template_env, markdown):
+    def render(self, facts, template_env, markdown, template_env_plain=None):
         """Render the page with all tasks using Jinja."""
 
         show_page, error = self.eval_when(facts)
 
         if show_page:
-            data = ''.join([task.render(facts, template_env, markdown) for task in self.tasks])
+            data = ''.join(
+                [
+                    task.render(facts, template_env, markdown, template_env_plain)
+                    for task in self.tasks
+                ]
+            )
             data = remove_last_divider(data)
         elif error:
             data = error

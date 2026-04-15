@@ -54,11 +54,12 @@ TEMPLATE_SINGLE_SELECT_STRING = """\
 
 def main(**kwargs):
     clf_jinja_env = kwargs['clf_jinja_env']
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
     clf_markdown = kwargs['clf_markdown']
     fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     templated_label = clf_markdown(
-        clf_jinja_env.from_string(kwargs.get('label', '')).render(**kwargs)
+        clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs)
     )
 
     templated_values = [

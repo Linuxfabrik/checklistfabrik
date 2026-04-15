@@ -57,7 +57,7 @@ class Task:
 
         return result, None
 
-    def render(self, facts, template_env, markdown):
+    def render(self, facts, template_env, markdown, template_env_plain=None):
         """Render the task using its module."""
 
         show_task, error = self.eval_when(facts)
@@ -76,6 +76,7 @@ class Task:
 
         render_context = facts.copy()
         render_context['clf_jinja_env'] = template_env
+        render_context['clf_jinja_env_plain'] = template_env_plain or template_env
         render_context['clf_markdown'] = markdown
         if self.fact_name:
             render_context['fact_name'] = self.fact_name

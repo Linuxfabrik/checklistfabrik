@@ -23,9 +23,11 @@ def _make_kwargs(**extra):
             enabled_extensions=('html', 'htm', 'html.j2', 'htm.j2'),
         ),
     )
+    env_plain = env.overlay(autoescape=False)
     md = create_markdown()
     base = {
         'clf_jinja_env': env,
+        'clf_jinja_env_plain': env_plain,
         'clf_markdown': md,
     }
     base.update(extra)
@@ -53,11 +55,20 @@ class TestMarkdownModule:
     def test_basic_render(self):
         result = markdown.main(**_make_kwargs(content='**bold**'))
         assert '<strong>bold</strong>' in result['html']
-        assert 'form-label' in result['html']
+        assert 'clf-markdown-block' in result['html']
 
     def test_jinja_in_markdown(self):
         result = markdown.main(**_make_kwargs(content='Hello {{ name }}', name='World'))
         assert 'Hello World' in result['html']
+
+    def test_no_double_escape_of_fact_values(self):
+        # Regression: a fact value containing a double quote must pass through
+        # Mistune's HTML escaping exactly once (`"` -> `&quot;`), not twice
+        # (`"` -> `&#34;` -> `&amp;#34;`). This happened when the content went
+        # through an autoescape-enabled Jinja environment before Mistune.
+        result = markdown.main(**_make_kwargs(content='`{{ greeting }}`', greeting='say "hi"'))
+        assert '&quot;' in result['html']
+        assert '&amp;' not in result['html']
 
 
 # --- text_input module ---

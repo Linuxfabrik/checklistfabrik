@@ -14,13 +14,18 @@ EXAMPLE::
 
 
 def main(**kwargs):
-    clf_jinja_env = kwargs['clf_jinja_env']
+    # Content is rendered with the autoescape-free Jinja environment because
+    # Mistune performs its own HTML escaping on the resulting text. Rendering
+    # through the autoescape environment would double-escape fact values that
+    # contain characters such as `"` (autoescape to `&#34;`, then Mistune to
+    # `&amp;#34;`).
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
     clf_markdown = kwargs['clf_markdown']
 
     rendered_html = clf_markdown(
-        clf_jinja_env.from_string(kwargs['content']).render(**kwargs),
+        clf_jinja_env_plain.from_string(kwargs['content']).render(**kwargs),
     )
 
     return {
-        'html': f'<div class="form-label">{rendered_html}</div>',
+        'html': f'<div class="clf-markdown-block">{rendered_html}</div>',
     }

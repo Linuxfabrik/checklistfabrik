@@ -29,6 +29,8 @@ __author__ = 'Linuxfabrik GmbH, Zurich/Switzerland'
 class PlayCli(BaseCli):
     """The ChecklistFabrik play CLI."""
 
+    BANNER = f'ChecklistFabrik v{__version__}'
+
     def __init__(self):
         super().__init__(DESCRIPTION)
 

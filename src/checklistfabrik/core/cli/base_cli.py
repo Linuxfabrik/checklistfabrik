@@ -27,7 +27,12 @@ class BaseCli:
     def run(self):
         raise NotImplementedError('This method must be implemented by a subclass')
 
-    def init_logging(self, console_log_level=logging.INFO, file_log_level=logging.DEBUG):
+    def init_logging(
+        self,
+        console_log_level=logging.INFO,
+        file_log_level=logging.DEBUG,
+        banner=None,
+    ):
         root_module_name = __name__.split('.', maxsplit=1)[0]
         self.logger = logging.getLogger(root_module_name)
         self.logger.setLevel(min(console_log_level, file_log_level))
@@ -37,6 +42,9 @@ class BaseCli:
         console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 
         self.logger.addHandler(console_handler)
+
+        if banner:
+            self.logger.info(banner)
 
         instance_module_name = type(self).__module__.rsplit('.', maxsplit=1)[-1]
         log_file_name = f'{root_module_name}-{instance_module_name}.log'
@@ -90,6 +98,7 @@ class BaseCli:
             console_log_level=logging.DEBUG
             if getattr(cli.args, 'verbose', False)
             else logging.INFO,
+            banner=getattr(cli, 'BANNER', None),
         )
 
         sys.exit(cli.run())

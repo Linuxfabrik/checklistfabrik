@@ -91,11 +91,10 @@ class ChecklistWsgiApp:
         return self.wsgi_app(environ, start_response)
 
     def load_checklist(self):
-        file_to_load = (
-            self.checklist_template if self.checklist_template is not None else self.checklist_file
-        )
+        is_template = self.checklist_template is not None
+        file_to_load = self.checklist_template if is_template else self.checklist_file
 
-        return self.checklist_mapper.load_checklist(file_to_load)
+        return self.checklist_mapper.load_checklist(file_to_load, is_template=is_template)
 
     def save_checklist(self):
         if self.checklist_file:

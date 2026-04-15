@@ -154,6 +154,56 @@ class TestProcessTaskList:
         data_mapper.process_task_list(task_data, '.', facts)
         assert facts['user_name'] == 'default'
 
+    def test_template_default_rendered_with_jinja(self, data_mapper):
+        # Template `value:` defaults should be rendered through Jinja once
+        # at load time, so they end up in the facts as real values rather than
+        # raw Jinja expressions. A later task can also reference facts that
+        # were set by an earlier task.
+        task_data = [
+            {
+                'linuxfabrik.clf.text_input': {'label': 'OS'},
+                'fact_name': 'os',
+                'value': 'rocky10',
+            },
+            {
+                'linuxfabrik.clf.text_input': {'label': 'Image'},
+                'fact_name': 'image_name',
+                'value': '{{ os }}-{{ now().strftime("%Y") }}',
+            },
+        ]
+        facts = {}
+        data_mapper.process_task_list(task_data, '.', facts, is_template=True)
+        assert facts['os'] == 'rocky10'
+        assert facts['image_name'].startswith('rocky10-')
+        assert '{{' not in facts['image_name']
+
+    def test_report_default_not_rendered(self, data_mapper):
+        # Saved reports must keep literal values as-is. Otherwise a user-typed
+        # string that happens to contain `{{` would trip Jinja on reload.
+        task_data = [
+            {
+                'linuxfabrik.clf.text_input': {'label': 'x'},
+                'fact_name': 'x',
+                'value': '{{ literal }}',
+            },
+        ]
+        facts = {}
+        data_mapper.process_task_list(task_data, '.', facts, is_template=False)
+        assert facts['x'] == '{{ literal }}'
+
+    def test_template_default_render_failure_falls_back(self, data_mapper):
+        # A broken Jinja default must not prevent the checklist from loading.
+        task_data = [
+            {
+                'linuxfabrik.clf.text_input': {'label': 'x'},
+                'fact_name': 'x',
+                'value': '{{ undefined_fact.missing_attr[',
+            },
+        ]
+        facts = {}
+        data_mapper.process_task_list(task_data, '.', facts, is_template=True)
+        assert facts['x'] == '{{ undefined_fact.missing_attr['
+
     def test_task_with_when(self, data_mapper):
         task_data = [
             {

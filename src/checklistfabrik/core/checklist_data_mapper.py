@@ -1,7 +1,10 @@
+import datetime
 import io
 import logging
 import pathlib
 import sys
+
+import jinja2
 
 from . import models, utils
 
@@ -19,6 +22,12 @@ class ChecklistDataMapper:
 
     def __init__(self, yaml):
         self.yaml = yaml
+        # A minimal, autoescape-free Jinja environment used to render template
+        # default values (`value:` fields) once at load time, so that defaults
+        # like `{{ now().strftime("%Y%m%d") }}01` end up in the facts as a
+        # real string instead of a literal Jinja expression.
+        self._defaults_env = jinja2.Environment(autoescape=False)
+        self._defaults_env.globals['now'] = datetime.datetime.now
 
     def load_yaml(self, file):
         try:
@@ -34,13 +43,21 @@ class ChecklistDataMapper:
             logger.critical('Cannot open file "%s" due to insufficient permissions', file)
             raise ChecklistLoadError from error
 
-    def load_checklist(self, file):
-        """Load a checklist with all of its pages, tasks and facts from a YAML file and process all imports."""
+    def load_checklist(self, file, is_template=False):
+        """Load a checklist with all of its pages, tasks and facts from a YAML file and process all imports.
+
+        When `is_template` is True, task `value:` defaults are rendered through Jinja once
+        at load time so that Jinja expressions in defaults resolve to real values before
+        being used as facts. For saved reports, the flag must be False so that literal
+        saved values are kept as-is.
+        """
 
         logger.info('Loading checklist data from "%s"', file)
 
         try:
-            return self.process_checklist(self.load_yaml(file), file.parent)
+            return self.process_checklist(
+                self.load_yaml(file), file.parent, is_template=is_template
+            )
         except ChecklistLoadError:
             logger.critical('Loading checklist data from file failed')
             sys.exit(1)
@@ -96,7 +113,27 @@ class ChecklistDataMapper:
             stream.seek(0)
             checklist_file.write(stream.read())
 
-    def process_checklist(self, checklist, workdir):
+    def render_default(self, value, fact_name, facts):
+        """Render a template default value through Jinja using the facts gathered so far.
+
+        Falls back to the raw value if rendering fails, so that a broken default never
+        prevents a checklist from loading.
+        """
+
+        if not isinstance(value, str):
+            return value
+
+        try:
+            return self._defaults_env.from_string(value).render(**facts)
+        except jinja2.TemplateError as error:
+            logger.warning(
+                'Failed to render default for "%s": %s. Keeping raw value',
+                fact_name or '<unnamed>',
+                error,
+            )
+            return value
+
+    def process_checklist(self, checklist, workdir, is_template=False):
         facts = {}
 
         if checklist is None:
@@ -141,14 +178,14 @@ class ChecklistDataMapper:
 
         return models.Checklist(
             title,
-            self.process_page_list(page_list, workdir, facts),
+            self.process_page_list(page_list, workdir, facts, is_template=is_template),
             facts,
             description=checklist.get('description'),
             report_path=checklist.get('report_path'),
             version=checklist.get('version'),
         )
 
-    def process_page_list(self, page_list, workdir, facts):
+    def process_page_list(self, page_list, workdir, facts, is_template=False):
         pages = []
 
         for page in page_list:
@@ -183,15 +220,20 @@ class ChecklistDataMapper:
                     raise ChecklistLoadError
 
                 pages.extend(
-                    self.process_page_list(imported_page_list, computed_import_path.parent, facts)
+                    self.process_page_list(
+                        imported_page_list,
+                        computed_import_path.parent,
+                        facts,
+                        is_template=is_template,
+                    )
                 )
                 continue
 
-            pages.append(self.process_page(page, workdir, facts))
+            pages.append(self.process_page(page, workdir, facts, is_template=is_template))
 
         return pages
 
-    def process_page(self, page, workdir, facts):
+    def process_page(self, page, workdir, facts, is_template=False):
         valid, message = utils.validate_dict_keys(
             page, {'title', 'tasks'}, optional_keys={'when'}, disallow_extra_keys=True
         )
@@ -216,14 +258,14 @@ class ChecklistDataMapper:
             raise ChecklistLoadError
 
         if task_list:
-            tasks = self.process_task_list(page['tasks'], workdir, facts)
+            tasks = self.process_task_list(page['tasks'], workdir, facts, is_template=is_template)
         else:
             logger.warning('Task list on page "%s" is empty', title)
             tasks = []
 
         return models.Page(title, tasks, page.get('when'))
 
-    def process_task_list(self, task_list, workdir, facts):
+    def process_task_list(self, task_list, workdir, facts, is_template=False):
         tasks = []
 
         for task in task_list:
@@ -259,7 +301,12 @@ class ChecklistDataMapper:
                     raise ChecklistLoadError
 
                 tasks.extend(
-                    self.process_task_list(imported_task_list, computed_import_path.parent, facts)
+                    self.process_task_list(
+                        imported_task_list,
+                        computed_import_path.parent,
+                        facts,
+                        is_template=is_template,
+                    )
                 )
                 continue
 
@@ -289,8 +336,12 @@ class ChecklistDataMapper:
                     raise ChecklistLoadError
 
                 if value is not None:
+                    if is_template:
+                        value = self.render_default(value, fact_name, facts)
                     facts[fact_name] = value
             else:
+                if is_template and value is not None:
+                    value = self.render_default(value, None, facts)
                 unnamed_fact = value
 
             tasks.append(models.Task(task_module, task_context, fact_name, when, unnamed_fact))

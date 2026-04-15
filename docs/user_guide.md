@@ -499,7 +499,7 @@ Each task mapping starts with a module key, followed by optional metadata:
 |-------|------|----------|-------------|
 | `<module>` | mapping | yes | First key in the mapping. Specifies the rendering module. See [Task Modules](#task-modules). |
 | `fact_name` | string | no | Name under which user input is stored. Available as a Jinja variable on subsequent pages. Auto-generated if omitted. |
-| `value` | any | no | Saved value from a previous run (managed by `clf-play`). Can be set in templates as a default. |
+| `value` | any (Jinja) | no | Saved value from a previous run (managed by `clf-play`). Can be set in templates as a default. When set in a template, string values are rendered through Jinja once at load time, so expressions like `{{ now().strftime("%Y%m%d") }}` or references to earlier facts are resolved before the default is shown to the user. |
 | `when` | string or sequence | no | Jinja condition(s). Task is hidden if `false`. Multiple values are combined with AND. |
 
 The special module `linuxfabrik.clf.import` takes a file path string instead of a mapping and imports tasks from that file.

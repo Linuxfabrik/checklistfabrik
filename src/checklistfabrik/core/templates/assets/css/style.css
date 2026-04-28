@@ -26,35 +26,66 @@ legend p {
 }
 
 /*
-Spectre removes the fieldset border, bring it back for the outermost fieldset
-(and also integrate it with Spectre's design).
-*/
-form > fieldset {
-  border: 0.05rem solid rgb(188, 195, 206);
-  border-radius: 0.1rem;
-  padding: 0.4rem;
-}
-
-/* Don't display last hr as it is not needed and only clutters the layout. */
-form > fieldset > hr:last-child {
-  display: none;
-}
-
-form fieldset > legend {
-  padding-inline: 0.4rem;
-}
-
-/*
- * Legends of nested fieldsets (e.g. the group labels of checkbox and radio
- * inputs) should blend in with regular `.form-label` labels instead of using
- * Spectre's bigger, bolder default legend style.
+ * The page-level fieldset has been removed entirely — every task is now its
+ * own visual unit via .clf-task. Nested fieldsets (e.g. checkbox / radio
+ * groups) keep their default styling, but their legend should blend in with
+ * regular `.form-label` labels rather than the larger / bolder Spectre default.
  */
-form > fieldset fieldset > legend {
+fieldset > legend {
   font-size: inherit;
   font-weight: inherit;
   line-height: 1.2rem;
   margin-bottom: 0;
-  padding: 0.3rem 0;
+  padding: 0.3rem 0.4rem;
+}
+
+/*
+ * Checkbox / radio layout inside a task: switch from Spectre's
+ * absolute-positioned icon + padding-left to a flex layout. Long item
+ * content (code blocks, bullet lists) stays cleanly aligned with the
+ * indicator instead of the indicator being pinned at the very top edge.
+ */
+.clf-task .form-checkbox,
+.clf-task .form-radio {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.4rem;
+  padding-left: 0;
+  position: relative;
+}
+
+.clf-task .form-checkbox > .form-icon,
+.clf-task .form-radio > .form-icon {
+  flex-shrink: 0;
+  left: auto;
+  margin-top: 0.25rem;
+  position: relative;
+  top: auto;
+}
+
+.clf-task .form-checkbox > span,
+.clf-task .form-radio > span {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/*
+ * Items within a checkbox or radio group are separated by a subtle hairline
+ * so long items stay scannable and the association between the indicator and
+ * its content stays clear. The previous item's bottom-margin is zeroed via
+ * :has() so the hairline sits vertically centered between the two items.
+ */
+fieldset .form-checkbox:has(+ .form-checkbox),
+fieldset .form-radio:has(+ .form-radio) {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+fieldset .form-checkbox + .form-checkbox,
+fieldset .form-radio + .form-radio {
+  border-top: 1px solid #e7e8eb;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
 }
 
 pre > code:only-child {
@@ -65,44 +96,15 @@ pre > code:only-child {
   margin-block: 0.8rem;
 }
 
-/* Width of the required indicator (icon + gap). Used to align inputs with the label text. */
-:root {
-  --clf-required-indent: 1rem;
-}
-
-.clf-fa-required {
-  --fa: "\f621";
-  align-items: center;
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: 0.625em;
-  width: var(--clf-required-indent);
-}
-
-/* Align required indicator side-by-side with label text (which may contain block-level <p> from Markdown). */
-.form-checkbox > span:has(.clf-fa-required),
-.form-label:has(> .clf-fa-required),
-legend:has(> .clf-fa-required) {
-  display: flex;
-  align-items: baseline;
-}
-
 /*
- * When a required indicator is present, indent the entire form-group / fieldset
- * so that labels, inputs, radios and checkboxes all align with the label text.
- * The indicator uses negative margin to sit in the indent space.
+ * Required indicator and indent are no longer needed: required tasks are now
+ * communicated by the red left-border accent on .clf-task. The indicator
+ * elements are kept in the DOM so server-side templates do not have to change
+ * (and so :has(.clf-fa-required) selectors keep working for conditionals like
+ * the "Required tasks are marked red" hint), but they are visually hidden.
  */
-.form-group:has(.clf-fa-required) {
-  padding-left: var(--clf-required-indent);
-}
-
-fieldset:has(> legend > .clf-fa-required) {
-  padding-left: var(--clf-required-indent);
-}
-
-.form-group .clf-fa-required,
-legend > .clf-fa-required {
-  margin-left: calc(-1 * var(--clf-required-indent));
+.clf-fa-required {
+  display: none;
 }
 
 /* Prevent code blocks from expanding beyond their container. */
@@ -162,13 +164,29 @@ li p {
   display: inline-flex;
 }
 
-/* This styling is missing from spectre (only implemented for .form-input) */
-:is(
-  .form-checkbox:has(input:invalid) > .form-icon,
-  .form-radio:has(input:invalid) > .form-icon,
-  .form-select:invalid
-) {
-  border-color: #e85600;
+/*
+ * Suppress all of Spectre's orange `:invalid` styling (border, background,
+ * focus shadow). Required tasks are already communicated via the red
+ * left-border accent on .clf-task, so the per-input outline + tinted
+ * background is just visual noise. Focus styling falls back to the regular
+ * purple Spectre default.
+ */
+.form-input:invalid,
+.form-input:not(:placeholder-shown):invalid,
+.form-select:invalid,
+.form-checkbox:has(input:invalid) > .form-icon,
+.form-radio:has(input:invalid) > .form-icon {
+  background: #fff;
+  border-color: #bcc3ce;
+  box-shadow: none;
+}
+
+.form-input:invalid:focus,
+.form-input:not(:placeholder-shown):invalid:focus,
+.form-select:invalid:focus {
+  background: #fff;
+  border-color: #5755d9;
+  box-shadow: 0 0 0 0.1rem rgba(87, 85, 217, 0.2);
 }
 
 /* Style inline code similar to spectre's code blocks. Also fixes low contrast. */
@@ -200,6 +218,8 @@ pre:has(code) {
   border: none;
   color: #5755d9;
   display: inline-block;
+  font-size: 0.7rem;
+  line-height: 1.1;
   padding: 20px 10px 0;
   text-decoration: none;
 }
@@ -252,10 +272,131 @@ pre:has(code) {
 }
 
 /*
+ * Standard "visually hidden" technique. Used for the hidden default submit
+ * button so pressing Enter triggers Next without creating horizontal overflow
+ * (which "left: -9999px" does, adding a horizontal scrollbar on the body).
+ * Cannot use display: none — the HTML spec excludes non-rendered buttons
+ * from the implicit form submit.
+ */
+.clf-visually-hidden {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/*
+ * Some breathing room around the container on wide and narrow viewports.
+ */
+body {
+  padding-inline: 1rem;
+}
+
+/*
+ * Stepper: stronger contrast for the connector line so the "completed" part
+ * of the path visibly differs from the "still to come" part.
+ * The :not(:first-child) selector mirrors Spectre's own selector so we don't
+ * accidentally add a connector line in front of the very first step.
+ */
+.step .step-item:not(:first-child)::before {
+  background: #5755d9;
+  height: 2px;
+}
+
+.step .step-item.active ~ .step-item:not(:first-child)::before {
+  background: #dadee4;
+}
+
+/* Make the active step marker more prominent: filled, slightly larger. */
+.step .step-item.active button::before {
+  background: #5755d9;
+  border: 0.1rem solid #fff;
+  box-shadow: 0 0 0 0.1rem #5755d9;
+  height: 0.7rem;
+  width: 0.7rem;
+}
+
+/*
+ * Multi-line variant of Spectre's tooltip. Spectre defaults to `white-space: pre`
+ * with ellipsis, which truncates anything longer than ~320px. Add this class on
+ * top of `tooltip` for tooltips that need to explain behavior.
+ */
+.clf-tooltip-wide[data-tooltip]::after {
+  line-height: 1.3;
+  max-width: 24rem;
+  text-align: left;
+  text-overflow: clip;
+  white-space: normal;
+  width: max-content;
+}
+
+/*
+ * Meta row: version + required-hint side by side, both small and gray. The
+ * required-hint is hidden by default and only shown if the page actually has
+ * at least one required task (handled by the .clf-required-hint rule below).
+ */
+.clf-meta-row {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  gap: 1rem;
+  margin-top: -0.4rem;
+}
+
+.clf-version {
+  width: max-content;
+}
+
+/* Page title shown between the stepper and the navigation bar. */
+.clf-page-title {
+  font-weight: 500;
+  margin-block: 1rem 0.6rem;
+}
+
+/*
+ * Each task gets a left-border accent. Required tasks are highlighted in
+ * Spectre's error color so they stand out at a glance, optional tasks use a
+ * neutral gray. The transparent fallback keeps every task visually aligned.
+ */
+.clf-task {
+  border-left: 3px solid #bcc3ce;
+  margin-block: 0.8rem;
+  padding: 0.4rem 0 0.4rem 0.8rem;
+}
+
+.clf-task:has(.clf-fa-required) {
+  border-left-color: #e85600;
+}
+
+/*
+ * Required-fields hint: only shown when the page actually contains at least one
+ * required field. The :has() check inspects the form for any required marker.
+ */
+.clf-required-hint {
+  display: none;
+}
+
+.container:has(#checklist_form .clf-fa-required) .clf-required-hint {
+  display: flex;
+}
+
+/* Code blocks always span the full width of their containing task. */
+.clf-task .code {
+  width: 100%;
+}
+
+/*
  * Compact layout for the linuxfabrik.clf.run_template module: title on the
  * left, Run button on the right, optional description on a second line below.
  * The full target path is exposed via the button tooltip rather than rendered
- * prominently next to the title.
+ * prominently next to the title — kept the card-height roughly equal to a
+ * single text task instead of three lines.
  */
 .clf-run-template-row {
   align-items: center;

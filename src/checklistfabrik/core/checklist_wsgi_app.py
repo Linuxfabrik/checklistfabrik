@@ -192,7 +192,12 @@ class ChecklistWsgiApp:
                 pages=[
                     {
                         'id': id,
-                        'title': page.title,
+                        # Render Jinja expressions inside the title so the stepper
+                        # shows e.g. "Deploy v1.2.3" instead of "Deploy v{{ ver }}".
+                        # Plain (non-autoescape) env: the steps template autoescapes.
+                        'title': self.templ_env_plain.from_string(page.title).render(
+                            **self.checklist.facts
+                        ),
                         'eval_when': page.eval_when(self.checklist.facts)[0],
                     }
                     for id, page in enumerate(self.checklist.pages)

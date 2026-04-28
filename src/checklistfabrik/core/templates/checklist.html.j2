@@ -3,25 +3,34 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <div class="container grid-lg py-2">
-        <h2>{{ title }}</h2>
+    <div class="container grid-xl py-2">
+        {# Implicit submit for Enter. Must be the FIRST submit button in tree order
+           anywhere in the document so the browser uses it for forms submitted via
+           Enter inside a text input. The visible Next/Previous/Save buttons and the
+           steps page-jump buttons are all attached to the form via the `form`
+           attribute and would otherwise win the tree-order race. #}
+        <button type="submit" form="checklist_form" name="submit_action" value="Next"
+                tabindex="-1" aria-hidden="true" class="clf-visually-hidden">Next</button>
 
-        {% if version %}
-            <p>Version: {{ version }}</p>
-        {% endif %}
+        <h2 class="clf-checklist-title">{{ title }}</h2>
+
+        <div class="clf-meta-row text-gray">
+            {% if version %}
+                <span class="clf-version tooltip tooltip-bottom" data-tooltip="Template version (format: YYYYMMDDNN)">
+                    Version: {{ version }}
+                </span>
+            {% endif %}
+            <span class="clf-required-hint" aria-hidden="true">Required tasks are marked red.</span>
+        </div>
 
         {% include 'steps.html.j2' %}
 
-        {% include 'navigation_bar.html.j2' %}
+        <h3 class="clf-page-title">{{ pages[page_id].title }}</h3>
 
         <form id="checklist_form" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
             {% block form_content %}
             {% endblock %}
         </form>
-
-        <p class="d-flex text-gray" aria-hidden="true">
-            Required fields are marked red or with a&nbsp;<i class="fa-solid clf-fa-required"></i>
-        </p>
 
         {% include 'navigation_bar.html.j2' %}
     </div>
@@ -162,6 +171,70 @@
             document.querySelectorAll('.clf-code-line').forEach((line) => {
                 const lineHeight = parseFloat(getComputedStyle(line).lineHeight);
                 line.classList.toggle('clf-wrapped', line.getBoundingClientRect().height > lineHeight * 1.1);
+            });
+        });
+    </script>
+    <script>
+        /* Pressing Enter outside any input field also triggers Next. The browser
+           only does this implicitly when an input has focus; we extend the
+           behavior to the whole page by clicking the off-screen default submit. */
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter') return;
+
+            const target = event.target;
+            const tag = target.tagName;
+
+            /* Let the browser handle the natural cases:
+               - INPUT (text/number/etc): browser already submits via the default button
+               - TEXTAREA: Enter inserts a newline
+               - BUTTON / A / SELECT: Enter activates the focused control
+               - contenteditable: Enter inserts a newline */
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT') {
+                return;
+            }
+            if (target.isContentEditable) return;
+
+            /* Outside any actionable element: trigger the implicit default submit. */
+            const defaultBtn = document.querySelector(
+                'button[type="submit"][form="checklist_form"][value="Next"]'
+            );
+            if (defaultBtn) {
+                event.preventDefault();
+                defaultBtn.click();
+            }
+        });
+    </script>
+    <script>
+        /* Wire up the "Run" buttons rendered by linuxfabrik.clf.run_template. */
+
+        async function launchSubChecklist(path, button) {
+            try {
+                const response = await fetch('/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({path: path}),
+                });
+
+                if (!response.ok) {
+                    alert('Failed to launch checklist.');
+                    return;
+                }
+
+                const data = await response.json();
+                window.open(data.url, '_blank');
+            } catch (error) {
+                alert('Failed to launch checklist: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-action="run-template"]').forEach((btn) => {
+                btn.addEventListener('click', (event) => {
+                    /* Do not submit the surrounding checklist form. */
+                    event.preventDefault();
+                    launchSubChecklist(btn.dataset.path, btn);
+                });
             });
         });
     </script>

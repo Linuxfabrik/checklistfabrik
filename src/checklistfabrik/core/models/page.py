@@ -5,25 +5,9 @@ import markupsafe
 
 from .. import utils
 
-TEMPLATE_FORMAT_STRING = """\
-<fieldset>
-    <legend>{title}</legend>
-    {data}
-</fieldset>
-"""
+TEMPLATE_FORMAT_STRING = '{data}'
 
 logger = logging.getLogger(__name__)
-
-
-def remove_last_divider(html: str) -> str:
-    """
-    HTML hack: Remove the last horizontal line (if any) in a fieldset for aesthetic reasons.
-    """
-    divider = '<div class="divider"></div>'
-    last_index = html.rfind(divider)
-    if last_index != -1:
-        return html[:last_index] + html[last_index + len(divider) :]
-    return html
 
 
 class Page:
@@ -73,7 +57,6 @@ class Page:
                     for task in self.tasks
                 ]
             )
-            data = remove_last_divider(data)
         elif error:
             data = error
         else:

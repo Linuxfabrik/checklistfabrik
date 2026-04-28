@@ -1,7 +1,7 @@
 """Tests for checklistfabrik.core.models."""
 
 from checklistfabrik.core.models.checklist import Checklist
-from checklistfabrik.core.models.page import Page, remove_last_divider
+from checklistfabrik.core.models.page import Page
 from checklistfabrik.core.models.task import Task
 
 # --- Checklist ---
@@ -30,21 +30,6 @@ class TestChecklist:
         assert cl.description == 'Desc'
         assert cl.report_path == 'rp'
         assert cl.version == 'v1'
-
-
-# --- remove_last_divider ---
-
-
-class TestRemoveLastDivider:
-    def test_removes_last_divider(self):
-        html = '<p>A</p><div class="divider"></div><p>B</p><div class="divider"></div>'
-        result = remove_last_divider(html)
-        assert result.count('divider') == 1
-        assert result == '<p>A</p><div class="divider"></div><p>B</p>'
-
-    def test_no_divider(self):
-        html = '<p>Hello</p>'
-        assert remove_last_divider(html) == html
 
 
 # --- Page ---
@@ -94,9 +79,14 @@ class TestPage:
         assert 'not applicable' in html
 
     def test_render_visible_page(self, jinja_env, md):
+        # A visible page with no tasks now renders to an empty string (the
+        # page wrapper fieldset/legend was removed in favor of individual
+        # .clf-task wrappers per task and an h3 page title rendered by the
+        # WSGI app).
         page = Page('Visible', [], None)
         html = page.render({}, jinja_env, md)
-        assert 'Visible' in html
+        assert 'not applicable' not in html
+        assert html.strip() == ''
 
 
 # --- Task ---

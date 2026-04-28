@@ -10,7 +10,7 @@ from .. import utils
 
 MODULE_NAMESPACE = 'checklistfabrik.modules'
 
-TEMPLATE_FORMAT_STRING = '{html}\n<div class="divider"></div>'
+TEMPLATE_FORMAT_STRING = '<div class="clf-task">{html}</div>'
 
 logger = logging.getLogger(__name__)
 

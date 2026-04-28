@@ -3,8 +3,14 @@
     <ul class="step">
         {% for page in pages %}
             <li class="step-item {%- if page.id == page_id %} active {%- elif page.id < page_id and not page.eval_when %} skipped {%- endif %}">
-                <!-- NOTE: This explicitly needs to be a button and not an input! Otherwise the styling won't work as pseudo-elements only work with buttons. -->
-                <button class="tooltip" data-tooltip="{{ page.title }}" form="checklist_form" formnovalidate="formnovalidate" name="submit_action" type="submit" value="Page {{ page.id }}">Page {{ page.id + 1 }}</button>
+                {# Buttons (not inputs) so Spectre's pseudo-element step markers render correctly. #}
+                <button class="tooltip {% if page.id == page_id %}tooltip-bottom{% endif %}"
+                        data-tooltip="{% if page.id == page_id %}Step {{ page.id + 1 }} of {{ pages | length }} (current){% elif page.id < page_id and not page.eval_when %}Skipped — condition not met{% else %}Jump here (no validation){% endif %}"
+                        form="checklist_form"
+                        formnovalidate="formnovalidate"
+                        name="submit_action"
+                        type="submit"
+                        value="Page {{ page.id }}">{{ page.title }}</button>
             </li>
         {% endfor %}
     </ul>

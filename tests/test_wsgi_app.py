@@ -116,10 +116,10 @@ class TestChecklistWsgiApp:
     def test_next_page_skips_hidden(self, tmp_path):
         app = _create_app(tmp_path)
         client = werkzeug.test.Client(app)
-        # Page 2 has when condition, should be skipped -> done
+        # Page 2 has when condition, should be skipped -> end of checklist -> /exit
         response = client.get('/page/1/next')
         assert response.status_code == 302
-        assert '/done' in response.headers['Location']
+        assert '/exit' in response.headers['Location']
 
     def test_prev_page(self, tmp_path):
         app = _create_app(tmp_path)
@@ -128,11 +128,13 @@ class TestChecklistWsgiApp:
         assert response.status_code == 302
         assert '/page/0' in response.headers['Location']
 
-    def test_done_page(self, tmp_path):
+    def test_done_route_removed(self, tmp_path):
+        # The /done page was removed: the server now exits straight from the
+        # last page via /exit instead of showing a separate "completed" screen.
         app = _create_app(tmp_path)
         client = werkzeug.test.Client(app)
         response = client.get('/done')
-        assert response.status_code == 200
+        assert response.status_code == 404
 
     def test_heartbeat(self, tmp_path):
         app = _create_app(tmp_path)

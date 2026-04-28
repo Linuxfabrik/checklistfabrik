@@ -1,10 +1,23 @@
+{# A page is the last visible page if no later page has eval_when=True. #}
+{% set is_last_page = pages[page_id + 1:] | selectattr('eval_when') | list | length == 0 %}
 <div class="d-flex" style="justify-content: space-between; margin-bottom: 1.2rem;">
     <div class="d-flex" style="gap: 0.4rem;">
         {% if page_id > 0 %}
-            <input class="btn" form="checklist_form" formnovalidate="formnovalidate" name="submit_action" type="submit" value="Previous" />
+            <button class="btn" form="checklist_form" formnovalidate name="submit_action" type="submit" value="Previous">
+                <i class="fa-solid fa-arrow-left"></i> Previous
+            </button>
         {% endif %}
 
-        <input class="btn btn-primary" form="checklist_form" name="submit_action" type="submit" value="Next" />
+        <button class="btn btn-primary" form="checklist_form" name="submit_action" type="submit" value="Next">
+            {% if is_last_page %}
+                <i class="fa-solid fa-check"></i> Finish
+            {% else %}
+                <i class="fa-solid fa-arrow-right"></i> Next
+            {% endif %}
+        </button>
     </div>
-    <input class="btn btn-error" form="checklist_form" formnovalidate="formnovalidate" name="submit_action" type="submit" value="Save and Exit" />
+    <button class="btn tooltip tooltip-left clf-tooltip-wide" form="checklist_form" formnovalidate name="submit_action" type="submit" value="Save and Exit"
+            data-tooltip="Stops the local web server. Your answers are already on disk (saved on every submit). To resume, reopen the report file via the dashboard or with `clf-play <report.yml>`.">
+        <i class="fa-solid fa-pause"></i> Continue Later
+    </button>
 </div>

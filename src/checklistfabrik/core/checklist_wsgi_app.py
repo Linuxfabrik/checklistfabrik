@@ -1,3 +1,4 @@
+import atexit
 import datetime
 import json
 import logging
@@ -72,7 +73,6 @@ class ChecklistWsgiApp:
                 werkzeug.routing.Rule(
                     '/', endpoint=lambda request: werkzeug.utils.redirect('/page/0')
                 ),
-                werkzeug.routing.Rule('/done', endpoint=self.on_done),
                 werkzeug.routing.Rule('/exit', endpoint=self.on_exit),
                 werkzeug.routing.Rule('/heartbeat', endpoint=self.on_heartbeat),
                 werkzeug.routing.Rule(
@@ -98,6 +98,11 @@ class ChecklistWsgiApp:
 
         self.checklist = self.load_checklist()
 
+        # Last-resort safety net for cases where the process is terminated without
+        # going through /exit (e.g. SIGTERM): make sure whatever is in memory hits
+        # disk. The regular form-submit save path remains the primary mechanism.
+        atexit.register(self._atexit_save)
+
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
 
@@ -108,20 +113,22 @@ class ChecklistWsgiApp:
         return self.checklist_mapper.load_checklist(file_to_load, is_template=is_template)
 
     def save_checklist(self):
-        if self.checklist_file:
-            # Loaded from this file, now write to it again.
-            self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
-            return
+        # On the very first save without a pre-set checklist file, pick a fresh path
+        # (avoiding overwriting any existing report) and lock it in so subsequent
+        # saves (which run on every form submit) overwrite the same file.
+        if self.checklist_file is None:
+            self.checklist_file = self._pick_initial_save_path()
 
-        # No file was specified, neither on the CLI nor in the template file, so generate one.
+        self.checklist_mapper.save_checklist(self.checklist_file, self.checklist)
 
-        # Try to generate a filename based on the template's report path.
+    def _pick_initial_save_path(self):
         if self.checklist.report_path:
             generated_filename = self.templ_env.from_string(self.checklist.report_path).render(
                 self.checklist.facts
             )
 
-            # Remove well-known invalid characters for the most commonly used operating systems and filesystems.
+            # Remove well-known invalid characters for the most commonly used operating
+            # systems and filesystems.
             clean_filename = generated_filename.translate(
                 str.maketrans(
                     dict.fromkeys(range(0, 32))
@@ -136,15 +143,23 @@ class ChecklistWsgiApp:
                 )
             )
 
-            file_to_save = pathlib.Path(os.path.expandvars(clean_filename))
-            logger.info('Generated file path based on template: "%s"', file_to_save.resolve())
+            candidate = pathlib.Path(os.path.expandvars(clean_filename))
+            logger.info('Generated file path based on template: "%s"', candidate.resolve())
         else:
-            file_to_save = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
-            logger.info('No report path configured. Using "%s"', file_to_save.resolve())
+            candidate = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
+            logger.info('No report path configured. Using "%s"', candidate.resolve())
 
-        # Saving to the file with the generated file name.
-        # This should never overwrite already existing files with the same name.
-        self.checklist_mapper.save_checklist(file_to_save, self.checklist, overwrite=False)
+        # Find a free filename so we never overwrite an existing report on first save.
+        original = candidate
+        counter = 1
+        while candidate.exists():
+            candidate = original.with_name(f'{original.stem}_{counter}{original.suffix}')
+            counter += 1
+
+        if candidate != original:
+            logger.warning('File "%s" already exists. Saving to "%s" instead', original, candidate)
+
+        return candidate
 
     @werkzeug.Request.application
     def application(self, request):
@@ -221,6 +236,9 @@ class ChecklistWsgiApp:
                 # submitted value to be blank (e.g. unchecking a checkbox) as the HTML form does not send empty inputs.
                 self.checklist.facts[key] = value if value else None
 
+        # Persist immediately so closing the tab can no longer lose progress.
+        self.save_checklist()
+
         if redirect.startswith('page '):
             return werkzeug.utils.redirect(f'/page/{redirect.split(" ", maxsplit=1)[1]}')
 
@@ -244,7 +262,10 @@ class ChecklistWsgiApp:
 
             next_page_id += 1
         else:
-            return werkzeug.utils.redirect('/done')
+            # No more pages: shut the server down. Form data is already on disk
+            # because every form submit persists; the shutdown page is the
+            # natural endpoint for "Finish".
+            return werkzeug.utils.redirect('/exit')
 
         return werkzeug.utils.redirect(f'/page/{next_page_id}')
 
@@ -261,14 +282,6 @@ class ChecklistWsgiApp:
             prev_page_id = 0
 
         return werkzeug.utils.redirect(f'/page/{prev_page_id}')
-
-    def on_done(self, request, **kwargs):
-        return werkzeug.Response(
-            self.templ_env.get_template('done.html.j2').render(
-                last_page_id=len(self.checklist) - 1,
-            ),
-            mimetype='text/html',
-        )
 
     def on_exit(self, request, **kwargs):
         if self.server_exit_callback is None or not callable(self.server_exit_callback):
@@ -311,3 +324,9 @@ class ChecklistWsgiApp:
     def cleanup(self):
         """Shut down all spawned child checklist servers."""
         spawner.cleanup_spawned_checklists(self.spawned_checklists)
+
+    def _atexit_save(self):
+        try:
+            self.save_checklist()
+        except Exception as error:
+            logger.error('atexit save failed: %s', error)

@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * modules: new `linuxfabrik.clf.run_template` module that embeds a card for another checklist template inside a checklist page. The card shows the target template's title and description plus a "Run" button which launches the referenced checklist in a new browser tab as an independent server. Useful for breaking large procedures into reusable, self-contained sub-checklists. Both the title and description are optional overrides and support Jinja and Markdown
 
+### Changed
+
+* core: the report file is now written on every form submit, not only on a clean server shutdown. Closing the browser tab no longer loses the answers that have already been submitted, so the previous "Save and Exit" flow is no longer the only way to persist data. As before, the destination filename is fixed on the first save (template `report_path` and free-name search are evaluated once) so subsequent saves overwrite the same file
+* core: the "Checklist completed" intermediate page has been removed. After the last page the server saves and shuts down directly, ending on the existing shutdown screen which now confirms that the report has been saved and that the tab can be closed
+* core: button labels and colours have been clarified: the in-page "Save and Exit" is now the green "Save & Continue Later" with a pause icon (better matches its purpose: pausing a checklist mid-run), the last-page "Next" becomes "Finish" with a check icon, and "Previous"/"Next" carry direction arrows. The submit values stay the same, so saved reports remain compatible
+
+### Fixed
+
+* core: a `SIGTERM` (or other unclean shutdown) is now caught by an `atexit` handler that flushes the in-memory state to disk as a last-resort safety net, complementing the new save-on-submit behaviour
+
 
 ## [v1.6.3] - 2026-04-15
 

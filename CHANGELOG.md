@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Added
+
+* modules: new `linuxfabrik.clf.run_template` module that embeds a card for another checklist template inside a checklist page. The card shows the target template's title and description plus a "Run" button which launches the referenced checklist in a new browser tab as an independent server. Useful for breaking large procedures into reusable, self-contained sub-checklists. Both the title and description are optional overrides and support Jinja and Markdown
 
 
 ## [v1.6.3] - 2026-04-15

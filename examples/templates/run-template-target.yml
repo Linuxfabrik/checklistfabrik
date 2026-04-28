@@ -1,0 +1,16 @@
+title: 'Run-Template Target Example'
+description: 'A small standalone checklist used to demonstrate the linuxfabrik.clf.run_template module.'
+version: '2026042801'
+
+pages:
+
+  - title: 'Single Page'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            This checklist was launched from another checklist via the
+            `linuxfabrik.clf.run_template` module. Close this tab when done.
+
+      - linuxfabrik.clf.checkbox_input:
+          label: 'Pretend that something useful happened here'

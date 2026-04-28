@@ -18,12 +18,18 @@ logger = logging.getLogger(__name__)
 class Task:
     """Models a ChecklistFabrik checklist task."""
 
-    def __init__(self, module, context, fact_name, when, unnamed_fact=None):
+    def __init__(self, module, context, fact_name, when, unnamed_fact=None, workdir=None):
         self.module = module
         self.context = context
         self.fact_name = fact_name
         self.when = when
         self.unnamed_fact = unnamed_fact
+        # The directory of the YAML file that defined this task. Used by modules
+        # that need to resolve user-supplied relative paths against the calling
+        # template (e.g. linuxfabrik.clf.run_template). Tasks loaded from an
+        # imported file carry the imported file's parent here, mirroring how
+        # linuxfabrik.clf.import resolves nested paths.
+        self.workdir = workdir
 
     def to_dict(self, facts):
         result = {
@@ -78,6 +84,7 @@ class Task:
         render_context['clf_jinja_env'] = template_env
         render_context['clf_jinja_env_plain'] = template_env_plain or template_env
         render_context['clf_markdown'] = markdown
+        render_context['clf_task_workdir'] = self.workdir
         if self.fact_name:
             render_context['fact_name'] = self.fact_name
         else:

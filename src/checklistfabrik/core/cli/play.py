@@ -162,6 +162,7 @@ class PlayCli(BaseCli):
 
         checklist_server.serve(open_browser=self.args.open)
 
+        checklist_app.cleanup()
         checklist_app.save_checklist()
 
         return 0

@@ -8,6 +8,7 @@ from checklistfabrik.modules.linuxfabrik.clf import (
     html,
     markdown,
     radio_input,
+    run_template,
     select_input,
     text_input,
 )
@@ -313,3 +314,78 @@ class TestSelectInputModule:
         )
         assert '<strong>Country</strong>' in result['html']
         assert '&lt;strong&gt;' not in result['html']
+
+
+# --- run_template module ---
+
+
+class TestRunTemplateModule:
+    def _write_target(self, tmp_path, content):
+        target = tmp_path / 'target.yml'
+        target.write_text(content, encoding='utf-8')
+        return target
+
+    def test_renders_title_and_description_from_target(self, tmp_path):
+        target = self._write_target(
+            tmp_path,
+            'title: Database Maintenance\n'
+            'description: Restart services after the maintenance window.\n'
+            'pages: []\n',
+        )
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                path='target.yml',
+            )
+        )
+        assert 'Database Maintenance' in result['html']
+        assert 'Restart services after the maintenance window.' in result['html']
+        assert f'data-path="{target.resolve()}"' in result['html']
+        assert 'data-action="run-template"' in result['html']
+
+    def test_label_and_description_overrides(self, tmp_path):
+        self._write_target(
+            tmp_path,
+            'title: Original Title\ndescription: Original description.\npages: []\n',
+        )
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                path='target.yml',
+                label='Custom Title for {{ host }}',
+                description='Custom **bold** description.',
+                host='server01',
+            )
+        )
+        assert 'Custom Title for server01' in result['html']
+        assert '<strong>bold</strong>' in result['html']
+        assert 'Original Title' not in result['html']
+        assert 'Original description.' not in result['html']
+
+    def test_missing_path_yields_error(self, tmp_path):
+        result = run_template.main(**_make_kwargs(clf_task_workdir=tmp_path))
+        assert 'toast-error' in result['html']
+        assert 'path' in result['html']
+
+    def test_nonexistent_target_yields_error(self, tmp_path):
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                path='does-not-exist.yml',
+            )
+        )
+        assert 'toast-error' in result['html']
+        assert 'does not exist' in result['html']
+
+    def test_relative_path_resolves_against_workdir(self, tmp_path):
+        sub = tmp_path / 'shared'
+        sub.mkdir()
+        target = sub / 'sub.yml'
+        target.write_text('title: Sub\npages: []\n', encoding='utf-8')
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                path='shared/sub.yml',
+            )
+        )
+        assert f'data-path="{target.resolve()}"' in result['html']

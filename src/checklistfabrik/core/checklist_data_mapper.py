@@ -344,6 +344,10 @@ class ChecklistDataMapper:
                     value = self.render_default(value, None, facts)
                 unnamed_fact = value
 
-            tasks.append(models.Task(task_module, task_context, fact_name, when, unnamed_fact))
+            tasks.append(
+                models.Task(
+                    task_module, task_context, fact_name, when, unnamed_fact, workdir=workdir
+                )
+            )
 
         return tasks

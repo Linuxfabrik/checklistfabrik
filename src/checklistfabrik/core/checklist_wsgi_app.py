@@ -12,7 +12,7 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
-from . import markdown
+from . import markdown, spawner
 
 TEMPLATE_STRING = """\
 {% extends "checklist.html.j2" %}
@@ -41,10 +41,13 @@ class ChecklistWsgiApp:
         assets_dir,
         checklist_template=None,
     ):
+        self.assets_dir = assets_dir
         self.checklist_file = checklist_file
         self.checklist_mapper = checklist_mapper
         self.checklist_template = checklist_template
         self.server_exit_callback = None
+        self.spawned_checklists = []
+        self.template_loader = template_loader
 
         self.server_id = uuid.uuid4().hex
         self.templ_env = jinja2.Environment(
@@ -82,6 +85,7 @@ class ChecklistWsgiApp:
                 ),
                 werkzeug.routing.Rule('/page/<int:id>/next', endpoint=self.on_next_page),
                 werkzeug.routing.Rule('/page/<int:id>/prev', endpoint=self.on_prev_page),
+                werkzeug.routing.Rule('/run', endpoint=self.on_run, methods=['POST']),
             ],
         )
 
@@ -281,3 +285,29 @@ class ChecklistWsgiApp:
         return werkzeug.Response(
             json.dumps({'server_id': self.server_id}), mimetype='application/json'
         )
+
+    def on_run(self, request, **kwargs):
+        """Start a new checklist from a template referenced by linuxfabrik.clf.run_template."""
+        try:
+            data = json.loads(request.data)
+        except json.JSONDecodeError as error:
+            raise werkzeug.exceptions.BadRequest() from error
+
+        path = data.get('path')
+
+        if not path:
+            raise werkzeug.exceptions.BadRequest()
+
+        return spawner.launch_checklist(
+            checklist_file=None,
+            checklist_template=pathlib.Path(path),
+            data_mapper=self.checklist_mapper,
+            template_loader=self.template_loader,
+            assets_dir=self.assets_dir,
+            spawned_checklists=self.spawned_checklists,
+            allowed_dir=None,
+        )
+
+    def cleanup(self):
+        """Shut down all spawned child checklist servers."""
+        spawner.cleanup_spawned_checklists(self.spawned_checklists)

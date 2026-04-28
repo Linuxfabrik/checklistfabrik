@@ -71,6 +71,7 @@ Each task delegates its rendering to a **module**. ChecklistFabrik ships with th
 | `linuxfabrik.clf.html` | Static HTML content |
 | `linuxfabrik.clf.markdown` | Markdown-formatted content |
 | `linuxfabrik.clf.radio_input` | Radio button group (single selection) |
+| `linuxfabrik.clf.run_template` | Embedded card with a "Run" button that launches another checklist template in a new tab |
 | `linuxfabrik.clf.select_input` | Dropdown (single or multi-select) |
 | `linuxfabrik.clf.text_input` | Single-line text input |
 
@@ -176,6 +177,28 @@ Use `linuxfabrik.clf.markdown` to show formatted instructions:
       - The latest backup available
       - The runbook open in another tab
 ```
+
+### Linking to Other Checklists
+
+Use `linuxfabrik.clf.run_template` to embed a card that launches another checklist template in a new browser tab. Useful for breaking large procedures into independent, reusable sub-checklists that each produce their own report:
+
+```yaml
+- linuxfabrik.clf.run_template:
+    path: 'shared/db-maintenance.yml'
+```
+
+The card shows the target template's `title` and `description` fields plus a **Run** button. The path is resolved relative to the checklist file that defines the task (same as `linuxfabrik.clf.import`).
+
+Both labels are optional overrides and support Jinja and Markdown:
+
+```yaml
+- linuxfabrik.clf.run_template:
+    path: 'shared/db-maintenance.yml'
+    label: 'Run database maintenance for **{{ host }}**'
+    description: 'Restarts services after the maintenance window.'
+```
+
+Clicking **Run** starts a new server in the background and opens it in a new tab. The launched checklist is fully independent — its facts and report file are separate from the calling checklist.
 
 For raw HTML, use `linuxfabrik.clf.html`:
 
@@ -561,6 +584,19 @@ Each item in `values`:
 |-------|------|----------|-------------|
 | `label` | string | no | Radio button label. Falls back to `value`. Supports Jinja and Markdown. |
 | `value` | string | no | Value stored when selected. Auto-generated if omitted. |
+
+
+### `linuxfabrik.clf.run_template`
+
+Embeds a card that displays the target checklist template's metadata and a **Run** button. Clicking the button starts the referenced template in a new browser tab.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `description` | string | no | Override the description shown on the card. Supports Jinja and Markdown. Falls back to the target template's `description` field. |
+| `label` | string | no | Override the title shown on the card. Supports Jinja and Markdown. Falls back to the target template's `title` field. |
+| `path` | string (Jinja) | yes | Path to a YAML template file. Relative paths are resolved against the checklist file that defines the task. |
+
+The launched checklist runs as an independent server and produces its own report file. Closing the tab does not affect the calling checklist.
 
 
 ### `linuxfabrik.clf.select_input`

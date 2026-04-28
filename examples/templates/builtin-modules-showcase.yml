@@ -9,10 +9,10 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             The *linuxfabrik.clf.checkbox_input* module can be used to display single checkboxes or groups of checkboxes:
-            
+
             A group of checkboxes can be created using the `values` list.
             Each item in the `values` list has a label and a value:
-            
+
             - `label` is the label of a single checkbox, supports Jinja and Markdown for formatting;
               if `label` is omitted, `value` will be used as a fallback.
             - `value` specifies the value that the fact will be set to if this checkbox is selected;
@@ -33,7 +33,7 @@ pages:
           content: |
             You might have noticed that the checkboxes above were all optional (i.e. they did not need to be checked to be able to proceed).
             If you want to validate that a checkbox is actually checked, you can do so using `required: true`.
-            
+
             > Please note that if you use a checkbox group,
             > individual checkboxes can be marked as required by setting `required: true` on the respective item.
             >
@@ -60,7 +60,7 @@ pages:
       - linuxfabrik.clf.checkbox_input:
           label: |
             **This is** a *Markdown* formatted `checkbox` label
-            
+
             {% if true %}
             Jinja templating is supported *too*!
             {% else %}
@@ -70,7 +70,7 @@ pages:
       - linuxfabrik.clf.checkbox_input:
           label: |
             **This is** a *Markdown* formatted `checkbox group` label
-            
+
             {% if true %}
             Jinja templating is supported *too*!
             {% else %}
@@ -79,7 +79,7 @@ pages:
           values:
             - label: |
                 **Check 1**
-                
+
                 *Markdown* can be used here too!
             - label: 'Check 2'
             - label: 'Check 3'
@@ -91,14 +91,14 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             The *linuxfabrik.clf.markdown* module can be used to display Markdown formatted content:
-            
+
             In fact, this very text is formatted using the markdown module.
-            
+
             > This module uses the [Mistune Python Markdown Parser](https://mistune.lepture.com/en/latest/index.html).
             > You can refer to its documentation to see which Markdown features are supported.
-            
+
             Jinja templating is supported *too*! The following list is generated using Jinja:
-            
+
             {% for i in range(5) %}
             - List item {{ i }}
             {% endfor %}
@@ -109,9 +109,9 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             The *linuxfabrik.clf.radio_input* module can be used to display a group of radio buttons.
-            
+
             Each item in the `values` list has a label and a value:
-            
+
             - `label` is the label of a single radio, supports Jinja and Markdown for formatting; if `label` is omitted, `value` will be used as a fallback.
             - `value` specifies the value that the fact will be set to if this radio is selected; if `value` is omitted, ChecklistFabrik will auto-generate it.
 
@@ -143,7 +143,7 @@ pages:
       - linuxfabrik.clf.radio_input:
           label: |
             **This is** a *Markdown* formatted *radio group* label
-            
+
             {% if true %}
             Jinja templating is supported *too*!
             {% else %}
@@ -152,11 +152,37 @@ pages:
           values:
             - label: |
                 **Radio 1**
-                
+
                 *Markdown* can be used here too!
             - label: 'Radio 2'
             - label: 'Radio 3'
             - label: 'Radio {{ 2 + 2 }}: This label is templated using Jinja'
+
+  - title: 'linuxfabrik.clf.run_template'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.run_template* module embeds a card for another
+            checklist template. Clicking the **Run** button starts that
+            template in a new browser tab.
+
+            By default, the card displays the target template's `title` and
+            `description` fields. The path is resolved relative to the
+            checklist file that defines the task.
+
+      - linuxfabrik.clf.run_template:
+          path: 'run-template-target.yml'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            Both the title (`label`) and the `description` shown on the card
+            can be overridden. Both fields support Markdown and Jinja:
+
+      - linuxfabrik.clf.run_template:
+          path: 'run-template-target.yml'
+          label: '**Custom title** for the embedded card'
+          description: 'A custom *Markdown* description with Jinja: {{ 2 + 2 }}.'
 
   - title: 'linuxfabrik.clf.select_input'
     tasks:
@@ -183,7 +209,7 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             Using `require: true` you can ensure that:
-            
+
             - for single-selects an option is selected (i.e. not `--- Please Select ---`).
             - for multi-selects that at least one option is selected.
 
@@ -211,7 +237,7 @@ pages:
       - linuxfabrik.clf.select_input:
           label: |
             **This is** a *Markdown* formatted `select` label
-            
+
             {% if true %}
             Jinja templating is supported *too*!
             {% else %}
@@ -259,7 +285,7 @@ pages:
       - linuxfabrik.clf.text_input:
           label: |
             This **is** a *Markdown* text input label
-            
+
             {% if true %}
             Jinja templating is supported *too*!
             {% else %}
@@ -281,7 +307,7 @@ pages:
           content: |
             Jinja templating is supported and the content may include HTML tags.
             As such special attention must be paid to not break the HTML representation of the checklist.
-            
+
             > The `linuxfabrik.clf.markdown` module is most likely a better choice for the majority of formatted content.
             > This module exists mostly as a fallback for anything that Markdown does not support.
 
@@ -290,13 +316,13 @@ pages:
           content: |
             This text contains <i>HTML</i> code.
             <br/>
-            
+
             For linebreaks the <code>br</code> element needs to be used
             <br/>
-            
+
             <pre>This is a &lt;pre&gt; block</pre>
             <br/>
-            
+
             {% if true %}
             Jinja templating is supported <em>too</em>!
             {% else %}

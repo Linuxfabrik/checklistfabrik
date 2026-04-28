@@ -250,3 +250,34 @@ pre:has(code) {
   cursor: pointer;
   user-select: none;
 }
+
+/*
+ * Compact layout for the linuxfabrik.clf.run_template module: title on the
+ * left, Run button on the right, optional description on a second line below.
+ * The full target path is exposed via the button tooltip rather than rendered
+ * prominently next to the title.
+ */
+.clf-run-template-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.clf-run-template-title {
+  flex: 1 1 auto;
+  font-weight: 500;
+}
+
+.clf-run-template-title > p {
+  margin: 0;
+}
+
+.clf-run-template-description {
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.clf-run-template-description > p:last-child {
+  margin-bottom: 0;
+}

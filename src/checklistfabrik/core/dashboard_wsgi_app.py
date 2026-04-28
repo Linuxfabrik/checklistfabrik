@@ -1,7 +1,6 @@
 import json
 import logging
 import pathlib
-import threading
 
 import jinja2
 import werkzeug
@@ -10,9 +9,7 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
-from . import checklist_wsgi_app, checklist_wsgi_server
-
-HOST = '127.0.0.1'
+from . import spawner
 
 logger = logging.getLogger(__name__)
 
@@ -66,10 +63,7 @@ class DashboardWsgiApp:
 
     def cleanup(self):
         """Shut down all spawned checklist servers and save their data."""
-        for _app, server, thread in self.spawned_checklists:
-            if thread.is_alive():
-                server.exit()
-                thread.join(timeout=10)
+        spawner.cleanup_spawned_checklists(self.spawned_checklists)
 
     def scan_directory(self, directory):
         """Scan a directory for checklist YAML files and extract metadata."""
@@ -119,45 +113,14 @@ class DashboardWsgiApp:
 
     def _launch_checklist(self, checklist_file, checklist_template, allowed_dir):
         """Launch a new checklist server and return the URL as a JSON response."""
-        path = checklist_file or checklist_template
-
-        # Security: ensure path is within allowed directory.
-        if not path.resolve().is_relative_to(allowed_dir.resolve()):
-            raise werkzeug.exceptions.Forbidden()
-
-        if not path.is_file():
-            raise werkzeug.exceptions.NotFound()
-
-        try:
-            app = checklist_wsgi_app.ChecklistWsgiApp(
-                checklist_file,
-                self.data_mapper,
-                self.template_loader,
-                self.assets_dir,
-                checklist_template=checklist_template,
-            )
-        except SystemExit:
-            return werkzeug.Response(
-                json.dumps({'error': 'Failed to load checklist'}),
-                status=500,
-                mimetype='application/json',
-            )
-
-        server = checklist_wsgi_server.ChecklistWsgiServer(HOST, 0, app)
-        host, port = server.server_address
-
-        def serve_and_save():
-            server.serve(open_browser=False)
-            app.save_checklist()
-
-        thread = threading.Thread(target=serve_and_save, daemon=True)
-        thread.start()
-
-        self.spawned_checklists.append((app, server, thread))
-
-        return werkzeug.Response(
-            json.dumps({'url': f'http://{host}:{port}'}),
-            mimetype='application/json',
+        return spawner.launch_checklist(
+            checklist_file=checklist_file,
+            checklist_template=checklist_template,
+            data_mapper=self.data_mapper,
+            template_loader=self.template_loader,
+            assets_dir=self.assets_dir,
+            spawned_checklists=self.spawned_checklists,
+            allowed_dir=allowed_dir,
         )
 
     def _parse_path_from_request(self, request):

@@ -8,25 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.7.0] - 2026-04-28
+
 ### Added
 
-* modules: new `linuxfabrik.clf.run_template` module that embeds a card for another checklist template inside a checklist page. The card shows the target template's title and description plus a "Run" button which launches the referenced checklist in a new browser tab as an independent server. Useful for breaking large procedures into reusable, self-contained sub-checklists. Both the title and description are optional overrides and support Jinja and Markdown
+* modules: new `linuxfabrik.clf.run_template` module that embeds another checklist template as a card with a "Run" button. Clicking the button launches the referenced template in a new browser tab as an independent checklist with its own report file. Useful for splitting long procedures into reusable, self-contained sub-checklists. The card shows the target template's title and description by default; both can be overridden per call and support Jinja and Markdown
 
 ### Changed
 
-* core: the report file is now written on every form submit, not only on a clean server shutdown. Closing the browser tab no longer loses the answers that have already been submitted, so the previous "Save and Exit" flow is no longer the only way to persist data. As before, the destination filename is fixed on the first save (template `report_path` and free-name search are evaluated once) so subsequent saves overwrite the same file
-* core: the "Checklist completed" intermediate page has been removed. After the last page the server saves and shuts down directly, ending on the existing shutdown screen which now confirms that the report has been saved and that the tab can be closed
-* core: button labels and colours have been clarified: the in-page "Save and Exit" is now the green "Save & Continue Later" with a pause icon (better matches its purpose: pausing a checklist mid-run), the last-page "Next" becomes "Finish" with a check icon, and "Previous"/"Next" carry direction arrows. The submit values stay the same, so saved reports remain compatible
-* core: redesigned the checklist page layout. The container is now wider, the meta information (template version + required-fields hint) sits in a single small/gray line under the title (and the hint only appears when the page actually has required tasks), the page title is rendered as an `<h3>` between the stepper and the form, the outer fieldset wrapping all tasks has been removed, and the redundant top navigation bar is gone — only the bottom one remains
-* core: redesigned the stepper. It now shows the real (Jinja-rendered) page titles instead of "Page 1, 2, …", the active step marker is more prominent, the connector line between completed steps is shown in the primary colour, contextual tooltips replace the previous "page title" tooltip, and the long-standing visual offset on the very first step has been fixed
-* core: each task is now wrapped in its own `.clf-task` container with a coloured left-border accent — red for required tasks, gray for optional — replacing the previous required-asterisk + orange `:invalid` input border + horizontal dividers between tasks
-* core: items inside checkbox / radio groups now use a flex layout with a hairline separator between consecutive items so long items (with code blocks, bullet lists, etc.) stay scannable and the indicator lines up cleanly with the item content
-* core: pressing Enter inside any input or anywhere on the page now reliably submits the form as Next (a hidden default submit button + a small global keydown handler ensure this works even though the visible buttons are attached to the form via `form="…"` and Spectre's stepper page-jump buttons would otherwise win the implicit-submit race)
-* modules: `linuxfabrik.clf.run_template` now renders in a compact one-row layout (title left, Run button right). The full target path is exposed via the button tooltip rather than a separate path line, reducing the per-card height significantly
-
-### Fixed
-
-* core: a `SIGTERM` (or other unclean shutdown) is now caught by an `atexit` handler that flushes the in-memory state to disk as a last-resort safety net, complementing the new save-on-submit behaviour
+* core: progress is now saved to the report file on every page submit (Next, Previous, Page-Jump, Save & Continue Later) instead of only when the server shuts down cleanly. Closing the browser tab or losing the terminal session no longer drops already-submitted answers
+* core: the destination filename is now fixed on the first save (the template's `report_path` and the free-name search are evaluated once). Earlier versions could end up writing to a different file name on every save when `report_path` contained dynamic expressions
+* core: a `SIGTERM` or other unclean shutdown now flushes any in-memory state to disk as a last-resort safety net, complementing the new save-on-submit behaviour
+* core: the separate "Checklist completed" page is gone. After the last page the server saves and shuts down directly, ending on the existing shutdown screen which now confirms that the report has been saved
+* core: button labels in the navigation bar have been clarified. The mid-run "Save and Exit" is now "Continue Later" (with a pause icon and a tooltip explaining what it actually does — stop the local web server; the answers are already on disk thanks to save-on-submit). The last-page "Next" becomes "Finish". "Previous" and "Next" carry direction arrows. Submit values stay the same, so existing report files remain compatible
+* core: redesigned the checklist page layout. The container is wider, the redundant top navigation bar is gone (only the bottom one remains so users read tasks before navigating), the page title is shown clearly between the stepper and the form, the template version is rendered small and gray with a tooltip explaining the `YYYYMMDDNN` format, and the "Required fields are marked …" hint only appears on pages that actually contain required tasks
+* core: redesigned the page stepper. It now shows real, Jinja-rendered page titles instead of "Page 1, Page 2, …", the active step marker is more prominent, the connector line is coloured to distinguish completed steps from upcoming ones, and tooltips communicate that clicking a step jumps without validating the current page's required fields
+* core: each task is now visually framed by a coloured left-border accent — red for required, gray for optional. The previous orange asterisk + orange `:invalid` input border + horizontal divider lines between tasks have been removed
+* core: items within checkbox / radio groups are now separated by a thin hairline and aligned with their indicator via a flex layout, so groups with long items (code blocks, bullet lists, multi-line descriptions) stay scannable
+* core: pressing Enter anywhere on a checklist page (in or outside an input field) now reliably submits the form as Next. Previously this only worked while a text input was focused
+* modules: `linuxfabrik.clf.run_template` cards now use a compact single-row layout (title on the left, Run button on the right). The full target file path is shown in the Run-button tooltip rather than as a separate line, which cuts the per-card height roughly in half and keeps long lists of sub-checklists scannable
 
 
 ## [v1.6.3] - 2026-04-15
@@ -186,7 +189,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.3...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.7.0...HEAD
+[v1.7.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.3...v1.7.0
 [v1.6.3]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.2...v1.6.3
 [v1.6.2]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.1...v1.6.2
 [v1.6.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.0...v1.6.1

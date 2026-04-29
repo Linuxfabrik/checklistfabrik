@@ -26,7 +26,7 @@ Save this as `server-maintenance.yml` and run it:
 clf-play --template server-maintenance.yml
 ```
 
-A browser window opens with your checklist. Fill it out, click "Save and Exit" when done. ChecklistFabrik saves a report file with your answers.
+A browser window opens with your checklist. Fill it out and click **Finish** on the last page. ChecklistFabrik saves a report file with your answers and shuts the local server down. Your progress is also written to the report file on every page submit, so closing the tab mid-run does not lose what you already entered — re-open the report file later to continue, or click **Continue Later** to stop the server explicitly.
 
 
 ## Templates vs. Reports

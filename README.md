@@ -37,6 +37,9 @@ processes, and procedures. It leverages simple yet powerful YAML templates to cr
 
 ## Features
 
+* **Auto-Save on Every Submit:**
+  Progress is written to the report file on every page change, not only on a clean shutdown. Closing the browser tab mid-run no longer loses already-submitted answers — re-open the report later to continue.
+
 * **Dashboard:**
   Run `clf-play` without arguments to open a web dashboard that lists all your templates and reports. Start new checklists or re-open previous ones with a single click.
 
@@ -52,6 +55,9 @@ processes, and procedures. It leverages simple yet powerful YAML templates to cr
 
 * **Simple YAML Checklists:**
   Define templates and generate reports with plain YAML, making version control with systems such as Git straightforward.
+
+* **Sub-Checklists with a "Run" Button:**
+  Embed another checklist template as a card on a page. Clicking the **Run** button launches the referenced template in a new browser tab as an independent checklist with its own report file — useful for splitting long procedures into reusable, self-contained sub-checklists.
 
 * **Template Includes for Rapid Checklist Generation:**
   Reuse checklist templates to quickly generate multiple checklists from a single file, eliminating the need to start from scratch each time.

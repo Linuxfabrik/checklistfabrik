@@ -29,13 +29,8 @@ jobs:
       - name: 'Install dependencies'
         run: 'pip install mkdocs==1.6.1 mkdocs-material==9.7.6'
 
-      - name: 'Create doc symlinks'
-        run: |
-          cd docs
-          ln -sf ../CHANGELOG.md CHANGELOG.md
-          ln -sf ../CODE_OF_CONDUCT.md CODE_OF_CONDUCT.md
-          ln -sf ../CONTRIBUTING.md contributing.md
-          ln -sf ../SECURITY.md security.md
+      - name: 'Generate docs structure'
+        run: 'python3 tools/build-docs'
 
       - name: 'Build documentation'
         run: 'mkdocs build --strict'

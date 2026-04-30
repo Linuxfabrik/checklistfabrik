@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Added
+
+* docs: project website at https://linuxfabrik.github.io/checklistfabrik/, generated from the existing User Guide and the standard repository docs (README, Changelog, Contributing, Security). The site is rebuilt automatically on every push to `main`
 
 
 ## [v1.7.0] - 2026-04-28

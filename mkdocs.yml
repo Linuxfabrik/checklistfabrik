@@ -1,0 +1,61 @@
+site_name: 'Linuxfabrik ChecklistFabrik'
+site_url: 'https://linuxfabrik.github.io/checklistfabrik/'
+repo_url: 'https://github.com/Linuxfabrik/checklistfabrik'
+repo_name: 'Linuxfabrik/checklistfabrik'
+
+theme:
+  name: 'material'
+  icon:
+    logo: 'material/clipboard-check-outline'
+  palette:
+    - scheme: 'default'
+      primary: 'blue grey'
+      accent: 'orange'
+      toggle:
+        icon: 'material/brightness-7'
+        name: 'Switch to dark mode'
+    - scheme: 'slate'
+      primary: 'blue grey'
+      accent: 'orange'
+      toggle:
+        icon: 'material/brightness-4'
+        name: 'Switch to light mode'
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+validation:
+  links:
+    not_found: 'info'
+    unrecognized_links: 'info'
+  anchors: 'info'
+
+exclude_docs: |
+  README.md
+
+not_in_nav: |
+  CODE_OF_CONDUCT.md
+
+nav:
+  - 'Home': 'index.md'
+  - 'User Guide': 'user_guide.md'
+  - 'Changelog': 'CHANGELOG.md'
+  - 'Contributing': 'contributing.md'
+  - 'Security': 'security.md'

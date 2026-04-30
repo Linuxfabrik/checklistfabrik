@@ -1,0 +1,57 @@
+name: 'Linuxfabrik: Deploy Documentation'
+
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: 'read'
+  pages: 'write'
+  id-token: 'write'
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' # v6.0.2
+
+      - name: 'Set up Python'
+        uses: 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - name: 'Install dependencies'
+        run: 'pip install mkdocs==1.6.1 mkdocs-material==9.7.6'
+
+      - name: 'Create doc symlinks'
+        run: |
+          cd docs
+          ln -sf ../CHANGELOG.md CHANGELOG.md
+          ln -sf ../CODE_OF_CONDUCT.md CODE_OF_CONDUCT.md
+          ln -sf ../CONTRIBUTING.md contributing.md
+          ln -sf ../SECURITY.md security.md
+
+      - name: 'Build documentation'
+        run: 'mkdocs build --strict'
+
+      - name: 'Upload Pages artifact'
+        uses: 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9' # v5.0.0
+        with:
+          path: 'site'
+
+  deploy:
+    needs: 'build'
+    runs-on: 'ubuntu-latest'
+    environment:
+      name: 'github-pages'
+      url: '${{ steps.deployment.outputs.page_url }}'
+    steps:
+      - name: 'Deploy to GitHub Pages'
+        id: 'deployment'
+        uses: 'actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128' # v5.0.0

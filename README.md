@@ -35,6 +35,11 @@ ChecklistFabrik (clf-play) is a Python 3 tool designed to manage your team's rec
 processes, and procedures. It leverages simple yet powerful YAML templates to create interactive HTML forms for an enhanced user experience. Utilize variables and logic through the Jinja templating language to define adaptive procedures, and enjoy seamless progress tracking.
 
 
+## Documentation
+
+Full documentation is available at [linuxfabrik.github.io/checklistfabrik](https://linuxfabrik.github.io/checklistfabrik/). It is automatically built and deployed on every push to `main`.
+
+
 ## Features
 
 * **Auto-Save on Every Submit:**

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+* **ci**: Scope `GITHUB_TOKEN` permissions in the dependabot-auto-merge workflow to the job level, with top-level now `read-all`. Matches the pattern used by the other Linuxfabrik workflows and addresses the OpenSSF Scorecard `Token-Permissions` finding.
+
 ### Added
 
 * docs: project website at https://linuxfabrik.github.io/checklistfabrik/, generated from the existing User Guide and the standard repository docs (README, Changelog, Contributing, Security). The site is rebuilt automatically on every push to `main`

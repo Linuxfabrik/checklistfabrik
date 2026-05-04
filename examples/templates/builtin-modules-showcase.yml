@@ -292,6 +292,50 @@ pages:
             In real checklists you would probably use more sensible Jinja code than this. ;)
             {% endif %}
 
+  - title: 'linuxfabrik.clf.textarea_input'
+    tasks:
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            The *linuxfabrik.clf.textarea_input* module renders a multi-line text input (textarea).
+            Useful for capturing command output, log excerpts, or other multi-line content.
+
+      - linuxfabrik.clf.textarea_input:
+          label: 'This is a textarea (default 5 rows)'
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            Use `rows` to set the visible height and `placeholder` to show a hint while the textarea is empty:
+
+      - linuxfabrik.clf.textarea_input:
+          label: 'Notes for the on-call engineer'
+          placeholder: 'Anything the next shift should know?'
+          rows: 8
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            Set `monospace: true` to render the textarea in a fixed-width font.
+            Useful when alignment matters (logs, command output, configuration snippets):
+
+      - linuxfabrik.clf.textarea_input:
+          label: 'Paste the output of `dnf check-update`'
+          monospace: true
+          rows: 10
+
+      - linuxfabrik.clf.markdown:
+          content: |
+            As with the other input modules, `required: true` enforces a non-empty input to be able to proceed.
+            The label supports Markdown formatting and Jinja templating:
+
+      - linuxfabrik.clf.textarea_input:
+          label: |
+            **You must type something here** to be able to proceed.
+
+            {% if true %}
+            Jinja templating is supported *too*!
+            {% endif %}
+          required: true
+
   - title: 'linuxfabrik.clf.html'
     tasks:
 

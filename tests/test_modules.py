@@ -11,6 +11,7 @@ from checklistfabrik.modules.linuxfabrik.clf import (
     run_template,
     select_input,
     text_input,
+    textarea_input,
 )
 
 from .conftest import TEMPLATES_DIR
@@ -128,6 +129,126 @@ class TestTextInputModule:
         )
         assert result['fact_name'] == 'auto_abc123'
         assert 'name="auto_abc123"' in result['html']
+
+
+# --- textarea_input module ---
+
+
+class TestTextareaInputModule:
+    def test_basic_render(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='my_textarea',
+                label='Enter value',
+            )
+        )
+        assert '<textarea' in result['html']
+        assert 'name="my_textarea"' in result['html']
+        assert 'Enter value' in result['html']
+        assert result['fact_name'] == 'my_textarea'
+
+    def test_markdown_label_not_escaped(self):
+        # Regression: with Jinja autoescape enabled, markdown-rendered labels
+        # must not be HTML-escaped when interpolated into the module template.
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='my_textarea',
+                label='**bold**',
+            )
+        )
+        assert '<strong>bold</strong>' in result['html']
+        assert '&lt;strong&gt;' not in result['html']
+
+    def test_required(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='req_textarea',
+                label='Required',
+                required=True,
+            )
+        )
+        assert 'required' in result['html']
+
+    def test_default_rows(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+            )
+        )
+        assert 'rows="5"' in result['html']
+
+    def test_custom_rows(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+                rows=12,
+            )
+        )
+        assert 'rows="12"' in result['html']
+
+    def test_placeholder(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+                placeholder='Paste output here',
+            )
+        )
+        assert 'placeholder="Paste output here"' in result['html']
+
+    def test_monospace(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+                monospace=True,
+            )
+        )
+        assert 'clf-textarea-monospace' in result['html']
+
+    def test_no_monospace_by_default(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+            )
+        )
+        assert 'clf-textarea-monospace' not in result['html']
+
+    def test_multiline_value_preserved(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+                ta='line 1\nline 2\nline 3',
+            )
+        )
+        assert 'line 1\nline 2\nline 3' in result['html']
+
+    def test_value_is_html_escaped(self):
+        # Defense in depth: a fact value containing `</textarea>` or other HTML
+        # special chars must not break out of the textarea body.
+        result = textarea_input.main(
+            **_make_kwargs(
+                fact_name='ta',
+                label='Test',
+                ta='</textarea><script>alert(1)</script>',
+            )
+        )
+        assert '</textarea><script>' not in result['html']
+        assert '&lt;/textarea&gt;' in result['html']
+
+    def test_auto_fact_name(self):
+        result = textarea_input.main(
+            **_make_kwargs(
+                auto_fact_name='auto_xyz789',
+                label='Auto',
+            )
+        )
+        assert result['fact_name'] == 'auto_xyz789'
+        assert 'name="auto_xyz789"' in result['html']
 
 
 # --- checkbox_input module ---

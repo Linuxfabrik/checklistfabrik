@@ -189,6 +189,13 @@ li p {
   box-shadow: 0 0 0 0.1rem rgba(87, 85, 217, 0.2);
 }
 
+/* Render textareas in a monospace font when `monospace: true` is set on the
+ * linuxfabrik.clf.textarea_input task. Useful for pasting command output where
+ * fixed-width alignment matters. */
+.clf-textarea-monospace {
+  font-family: monospace;
+}
+
 /* Style inline code similar to spectre's code blocks. Also fixes low contrast. */
 :not(pre) > code {
   background-color: #f7f8f9;

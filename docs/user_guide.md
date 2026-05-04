@@ -74,6 +74,7 @@ Each task delegates its rendering to a **module**. ChecklistFabrik ships with th
 | `linuxfabrik.clf.run_template` | Embedded card with a "Run" button that launches another checklist template in a new tab |
 | `linuxfabrik.clf.select_input` | Dropdown (single or multi-select) |
 | `linuxfabrik.clf.text_input` | Single-line text input |
+| `linuxfabrik.clf.textarea_input` | Multi-line text input (textarea) |
 
 
 ### Text Inputs
@@ -88,6 +89,19 @@ Use `linuxfabrik.clf.text_input` to collect freeform text. Add `required: true` 
 ```
 
 The `fact_name` stores the user's input so it can be referenced later (for example in Jinja expressions or on other pages).
+
+For multi-line input (e.g. command output), use `linuxfabrik.clf.textarea_input`:
+
+```yaml
+- linuxfabrik.clf.textarea_input:
+    label: 'Paste the output of `dnf check-update`'
+    monospace: true
+    rows: 10
+    required: true
+  fact_name: 'dnf_output'
+```
+
+`rows` sets the visible height (default `5`). `monospace: true` renders the textarea in a fixed-width font, which is useful when alignment matters (logs, command output, configuration snippets).
 
 
 ### Checkboxes
@@ -619,6 +633,19 @@ Single-line text input.
 |-------|------|----------|-------------|
 | `label` | string | no | Label. Supports Jinja and Markdown. |
 | `required` | boolean | no | If `true`, the input must be non-empty to proceed. |
+
+
+### `linuxfabrik.clf.textarea_input`
+
+Multi-line text input (textarea). Useful for capturing command output, log excerpts, or other multi-line content.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `label` | string | no | Label. Supports Jinja and Markdown. |
+| `monospace` | boolean | no | If `true`, render the textarea in a fixed-width font. Default `false`. |
+| `placeholder` | string | no | Hint text shown while the textarea is empty. |
+| `required` | boolean | no | If `true`, the input must be non-empty to proceed. |
+| `rows` | integer | no | Visible number of rows. Default `5`. |
 
 
 ### `linuxfabrik.clf.import`

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * docs: project website at https://linuxfabrik.github.io/checklistfabrik/, generated from the existing User Guide and the standard repository docs (README, Changelog, Contributing, Security). The site is rebuilt automatically on every push to `main`
+* modules: new `linuxfabrik.clf.textarea_input` task module for multi-line text input. Useful for capturing command output, log excerpts, or other multi-line content. Supports `rows` (default `5`), `placeholder`, `required`, and `monospace: true` to render the textarea in a fixed-width font ([#110](https://github.com/Linuxfabrik/checklistfabrik/issues/110))
 
 
 ## [v1.7.0] - 2026-04-28

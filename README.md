@@ -15,6 +15,7 @@
 <div align="center" markdown="1">
 
 ![GitHub Stars](https://img.shields.io/github/stars/linuxfabrik/checklistfabrik)
+[![Star History Chart](https://api.star-history.com/svg?repos=Linuxfabrik/checklistfabrik&type=Date)](https://star-history.com/#Linuxfabrik/checklistfabrik&Date)
 ![GitHub](https://img.shields.io/github/license/linuxfabrik/checklistfabrik)
 ![Version](https://img.shields.io/github/v/release/linuxfabrik/checklistfabrik?sort=semver)
 [![PyPI](https://img.shields.io/pypi/v/checklistfabrik)](https://pypi.org/project/checklistfabrik/)
@@ -33,6 +34,8 @@
 
 ChecklistFabrik (clf-play) is a Python 3 tool designed to manage your team's recurring checklists,
 processes, and procedures. It leverages simple yet powerful YAML templates to create interactive HTML forms for an enhanced user experience. Utilize variables and logic through the Jinja templating language to define adaptive procedures, and enjoy seamless progress tracking.
+
+> If ChecklistFabrik helps you running your team's SOPs, deployments and recurring procedures, please give it a star.
 
 
 ## Documentation

@@ -208,61 +208,6 @@ pre:has(code) {
   margin-top: 0;
 }
 
-.step .step-item.skipped a::before,
-.step .step-item.skipped button::before {
-  background-color: #bcc3ce;
-}
-
-.step .step-item.skipped a,
-.step .step-item.skipped button {
-  color: #bcc3ce;
-  text-decoration: line-through;
-}
-
-/* Make inputs work in the steps component */
-.step .step-item button {
-  background: none;
-  border: none;
-  color: #5755d9;
-  display: inline-block;
-  font-size: 0.7rem;
-  line-height: 1.1;
-  padding: 20px 10px 0;
-  text-decoration: none;
-}
-
-.step .step-item button:hover {
-  cursor: pointer;
-}
-
-.step .step-item button::before {
-  background: #5755d9;
-  border: .1rem solid #fff;
-  border-radius: 50%;
-  content: "";
-  display: block;
-  height: .6rem;
-  left: 50%;
-  position: absolute;
-  top: .2rem;
-  transform: translateX(-50%);
-  width: .6rem;
-  z-index: 1;
-}
-
-.step .step-item.active button::before {
-  background: #fff;
-  border: .1rem solid #5755d9;
-}
-
-.step .step-item.active ~ .step-item button {
-  color: #bcc3ce;
-}
-
-.step .step-item.active ~ .step-item button::before {
-  background: #dadee4;
-}
-
 .toast {
   margin-block: 0.8rem;
 }
@@ -298,34 +243,130 @@ pre:has(code) {
 }
 
 /*
- * Some breathing room around the container on wide and narrow viewports.
+ * Some breathing room on narrow viewports. On wide viewports the new
+ * sidebar / main layout governs its own margins, so this is just an
+ * inset that keeps content off the very edge of the window.
  */
 body {
   padding-inline: 1rem;
 }
 
 /*
- * Stepper: stronger contrast for the connector line so the "completed" part
- * of the path visibly differs from the "still to come" part.
- * The :not(:first-child) selector mirrors Spectre's own selector so we don't
- * accidentally add a connector line in front of the very first step.
+ * Page header strip above the sidebar / main layout. Holds the checklist
+ * title and the template version, set off from the page with a dark
+ * background, similar to the top bar on the Linuxfabrik docs sites.
  */
-.step .step-item:not(:first-child)::before {
-  background: #5755d9;
-  height: 2px;
+.clf-header {
+  align-items: baseline;
+  background: #546d78;
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+  margin-bottom: 1.2rem;
+  margin-inline: -1rem;
+  padding: 0.8rem 1.2rem;
+  position: relative;
+  z-index: 1;
 }
 
-.step .step-item.active ~ .step-item:not(:first-child)::before {
-  background: #dadee4;
+.clf-header .clf-checklist-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
 }
 
-/* Make the active step marker more prominent: filled, slightly larger. */
-.step .step-item.active button::before {
-  background: #5755d9;
-  border: 0.1rem solid #fff;
-  box-shadow: 0 0 0 0.1rem #5755d9;
-  height: 0.7rem;
-  width: 0.7rem;
+.clf-header .clf-version {
+  color: #cfd8dc;
+  font-size: 0.7rem;
+}
+
+/*
+ * Checklist page layout: sticky left sidebar holding the page TOC, main
+ * column on the right taking the rest of the viewport. The main column's
+ * children get a max-width so long-form text stays readable on wide
+ * monitors while tables and code blocks can still span the full column.
+ */
+.clf-layout {
+  align-items: start;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 16rem minmax(0, 1fr);
+}
+
+.clf-sidebar {
+  max-height: calc(100vh - 1rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-block: 0.6rem;
+  position: sticky;
+  top: 0;
+}
+
+.clf-main {
+  min-width: 0;
+}
+
+.clf-main > * {
+  max-width: 80ch;
+}
+
+@media (max-width: 720px) {
+  .clf-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .clf-sidebar {
+    max-height: none;
+    position: static;
+  }
+}
+
+/*
+ * Page TOC in the sidebar. Plain vertical list; the active page gets a
+ * coloured left border accent so the current position is obvious at a
+ * glance. The buttons submit the checklist form for page-jumps, so they
+ * are styled to look like text links.
+ */
+.clf-toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.clf-toc-link {
+  background: none;
+  border: none;
+  border-left: 2px solid #e7e8eb;
+  color: #3b4351;
+  cursor: pointer;
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  text-decoration: none;
+  white-space: normal;
+  width: 100%;
+}
+
+.clf-toc-link:hover {
+  background: #f7f8f9;
+}
+
+.clf-toc-active > .clf-toc-link {
+  border-left-color: #e85600;
+  border-left-width: 3px;
+  color: #e85600;
+  font-weight: 600;
+}
+
+.clf-toc-skipped > .clf-toc-link {
+  color: #bcc3ce;
+  text-decoration: line-through;
 }
 
 /*
@@ -353,7 +394,6 @@ body {
   flex-wrap: wrap;
   font-size: 0.7rem;
   gap: 1rem;
-  margin-top: -0.4rem;
 }
 
 .clf-version {

@@ -9,7 +9,8 @@
         <link rel="stylesheet" href="/assets/css/fontawesome-solid.min.css" />
         <link rel="stylesheet" href="/assets/css/spectre.min.css" />
         <link rel="stylesheet" href="/assets/css/spectre-icons.min.css" />
-        <link rel="stylesheet" href="/assets/css/style.css" />
+        {# server_id changes on every clf-play start, defeats browser cache of stale style.css #}
+        <link rel="stylesheet" href="/assets/css/style.css?v={{ server_id | default('1') }}" />
         <meta name="viewport" content="initial-scale=1" />
         <meta http-equiv="content-security-policy" content="default-src 'self' 'unsafe-inline' data:" />
     {% endblock %}

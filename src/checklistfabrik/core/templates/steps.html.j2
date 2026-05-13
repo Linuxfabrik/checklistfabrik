@@ -1,11 +1,15 @@
 {% if pages|length > 1 %}
-<div style="margin-block: 1.2rem;">
-    <ul class="step">
+<nav class="clf-toc" aria-label="Checklist pages">
+    <ol>
         {% for page in pages %}
-            <li class="step-item {%- if page.id == page_id %} active {%- elif page.id < page_id and not page.eval_when %} skipped {%- endif %}">
-                {# Buttons (not inputs) so Spectre's pseudo-element step markers render correctly. #}
-                <button class="tooltip {% if page.id == page_id %}tooltip-bottom{% endif %}"
-                        data-tooltip="{% if page.id == page_id %}Step {{ page.id + 1 }} of {{ pages | length }} (current){% elif page.id < page_id and not page.eval_when %}Skipped — condition not met{% else %}Jump here (no validation){% endif %}"
+            {% set state = 'active' if page.id == page_id
+                           else 'skipped' if page.id < page_id and not page.eval_when
+                           else 'completed' if page.id < page_id
+                           else 'upcoming' %}
+            <li class="clf-toc-item clf-toc-{{ state }}">
+                {# Buttons (not links) so the page-jump submits the checklist form. #}
+                <button class="clf-toc-link tooltip tooltip-right clf-tooltip-wide"
+                        data-tooltip="{% if state == 'active' %}Step {{ page.id + 1 }} of {{ pages | length }} (current){% elif state == 'skipped' %}Skipped — condition not met{% else %}Jump here (no validation){% endif %}"
                         form="checklist_form"
                         formnovalidate="formnovalidate"
                         name="submit_action"
@@ -13,6 +17,6 @@
                         value="Page {{ page.id }}">{{ page.title }}</button>
             </li>
         {% endfor %}
-    </ul>
-</div>
+    </ol>
+</nav>
 {% endif %}

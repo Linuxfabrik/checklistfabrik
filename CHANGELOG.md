@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Changed
+
+* core: redesigned the checklist page layout into a two-column view. The page navigation moved from a horizontal stepper at the top to a sticky vertical table-of-contents on the left, with the current page marked by a red left-border accent. The checklist content now spans the full window width on wide screens, while task text keeps a comfortable max-width for readability
+* core: the checklist title and template version sit in a dedicated full-width header strip above the page, with a dark background and a soft drop-shadow inspired by the Linuxfabrik docs sites
+* core: the stylesheet is now reloaded on every `clf-play` start, so checklist pages always pick up the current styles even when the browser has cached an older version
 
 
 ## [v1.8.0] - 2026-05-04

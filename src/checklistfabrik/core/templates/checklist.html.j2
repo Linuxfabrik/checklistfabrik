@@ -3,36 +3,42 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <div class="container grid-xl py-2">
-        {# Implicit submit for Enter. Must be the FIRST submit button in tree order
-           anywhere in the document so the browser uses it for forms submitted via
-           Enter inside a text input. The visible Next/Previous/Save buttons and the
-           steps page-jump buttons are all attached to the form via the `form`
-           attribute and would otherwise win the tree-order race. #}
-        <button type="submit" form="checklist_form" name="submit_action" value="Next"
-                tabindex="-1" aria-hidden="true" class="clf-visually-hidden">Next</button>
+    {# Implicit submit for Enter. Must be the FIRST submit button in tree order
+       anywhere in the document so the browser uses it for forms submitted via
+       Enter inside a text input. The visible Next/Previous/Save buttons and the
+       steps page-jump buttons are all attached to the form via the `form`
+       attribute and would otherwise win the tree-order race. #}
+    <button type="submit" form="checklist_form" name="submit_action" value="Next"
+            tabindex="-1" aria-hidden="true" class="clf-visually-hidden">Next</button>
 
+    <header class="clf-header">
         <h2 class="clf-checklist-title">{{ title }}</h2>
+        {% if version %}
+            <span class="clf-version tooltip tooltip-bottom" data-tooltip="Template version (format: YYYYMMDDNN)">
+                Version: {{ version }}
+            </span>
+        {% endif %}
+    </header>
 
-        <div class="clf-meta-row text-gray">
-            {% if version %}
-                <span class="clf-version tooltip tooltip-bottom" data-tooltip="Template version (format: YYYYMMDDNN)">
-                    Version: {{ version }}
-                </span>
-            {% endif %}
-            <span class="clf-required-hint" aria-hidden="true">Required tasks are marked red.</span>
-        </div>
+    <div class="clf-layout">
+        <aside class="clf-sidebar">
+            {% include 'steps.html.j2' %}
+        </aside>
 
-        {% include 'steps.html.j2' %}
+        <main class="clf-main">
+            <div class="clf-meta-row text-gray">
+                <span class="clf-required-hint" aria-hidden="true">Required tasks are marked red.</span>
+            </div>
 
-        <h3 class="clf-page-title">{{ pages[page_id].title }}</h3>
+            <h3 class="clf-page-title">{{ pages[page_id].title }}</h3>
 
-        <form id="checklist_form" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
-            {% block form_content %}
-            {% endblock %}
-        </form>
+            <form id="checklist_form" method="post" onsubmit="window.removeEventListener('beforeunload', handleBeforeUnload);">
+                {% block form_content %}
+                {% endblock %}
+            </form>
 
-        {% include 'navigation_bar.html.j2' %}
+            {% include 'navigation_bar.html.j2' %}
+        </main>
     </div>
 
     <script>

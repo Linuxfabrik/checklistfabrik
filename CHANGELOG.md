@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.9.0] - 2026-05-13
+
 ### Changed
 
-* core: redesigned the checklist page layout into a two-column view. The page navigation moved from a horizontal stepper at the top to a sticky vertical table-of-contents on the left, with the current page marked by a red left-border accent. The checklist content now spans the full window width on wide screens, while task text keeps a comfortable max-width for readability
-* core: redesigned the dashboard to match the new checklist layout. The same dark header strip is shown across pages, and the sidebar TOC now lists "Templates" and "Reports" with counts to jump to either section
-* core: the checklist title and template version sit in a dedicated full-width header strip above the page, with a dark background and a soft drop-shadow inspired by the Linuxfabrik docs sites
+* core: browser tab titles now read "<Checklist Title> - ChecklistFabrik" on a checklist page and "ChecklistFabrik - Dashboard" on the dashboard, so multiple ChecklistFabrik tabs can be told apart at a glance
+* core: redesigned the checklist page layout into a two-column view. The page navigation moved from a horizontal stepper at the top to a sticky vertical table-of-contents on the left, with the current page marked by a red left-border accent. Task text keeps a comfortable max-width for readability
+* core: redesigned the dashboard to match the new checklist layout. The same dark header strip is shown across pages (with "by Linuxfabrik" linking to <https://www.linuxfabrik.ch>), and the sidebar TOC now lists "Templates" and "Reports" with counts to jump to either section
+* core: the checklist title and template version sit in a dedicated full-width header strip above the page, with a dark background and a soft drop-shadow inspired by the Linuxfabrik docs sites. The header stays visible while scrolling
 * core: the page navigation now also marks upcoming pages as skipped when their condition has already been evaluated to false, not only pages that were skipped in the past. Skipped pages are visibly struck-through and no longer accept a jump-to click
 * core: the stylesheet is now reloaded on every `clf-play` start, so checklist pages always pick up the current styles even when the browser has cached an older version
 
@@ -207,7 +213,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...HEAD
+[v1.9.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.7.0...v1.8.0
 [v1.7.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.3...v1.7.0
 [v1.6.3]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.2...v1.6.3

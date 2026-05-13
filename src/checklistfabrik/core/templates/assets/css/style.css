@@ -292,6 +292,15 @@ html {
   font-size: 0.7rem;
 }
 
+/* Link rendered like surrounding text (no underline, inherited color). */
+.clf-invisible-link,
+.clf-invisible-link:visited,
+.clf-invisible-link:hover,
+.clf-invisible-link:focus {
+  color: inherit;
+  text-decoration: none;
+}
+
 /*
  * Checklist page layout: sticky left sidebar holding the page TOC, main
  * column on the right taking the rest of the viewport. The main column's

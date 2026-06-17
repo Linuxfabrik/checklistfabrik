@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.10.0] - 2026-06-17
+
 ### Changed
 
 * modules: `linuxfabrik.clf.run_template` cards now include a confirmation checkbox next to the Run button, so a launched sub-checklist can be ticked off in place without a separate checkbox task. The checkbox stores its state in the report and supports `required` to block the page until it is checked
@@ -215,7 +220,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.10.0...HEAD
+[v1.10.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...v1.10.0
 [v1.9.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.7.0...v1.8.0
 [v1.7.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.6.3...v1.7.0

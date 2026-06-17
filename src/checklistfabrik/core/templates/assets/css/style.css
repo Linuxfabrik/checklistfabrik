@@ -494,10 +494,7 @@ html {
 .clf-run-template-title {
   flex: 1 1 auto;
   font-weight: 500;
-}
-
-.clf-run-template-title > p {
-  margin: 0;
+  margin-bottom: 0;
 }
 
 .clf-run-template-description {

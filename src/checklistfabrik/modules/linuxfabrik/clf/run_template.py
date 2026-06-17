@@ -2,8 +2,11 @@
 ChecklistFabrik run_template module
 
 This module renders a card with the title and description of another
-checklist template plus a "Run" button. Clicking the button starts the
-referenced checklist in a new browser tab.
+checklist template, a "Run" button, and a checkbox to confirm the
+referenced checklist has been completed. Clicking the button starts the
+referenced checklist in a new browser tab; the checkbox behaves like a
+regular `linuxfabrik.clf.checkbox_input` (it persists its state and
+supports `required`).
 
 The path is resolved relative to the file that defines this task (mirroring
 how `linuxfabrik.clf.import` resolves nested paths). Absolute paths are
@@ -13,6 +16,12 @@ EXAMPLE::
 
     - linuxfabrik.clf.run_template:
         path: 'shared/db-maintenance.yml'
+
+    # Make the confirmation checkbox mandatory and name its fact:
+    - linuxfabrik.clf.run_template:
+        path: 'shared/db-maintenance.yml'
+        required: true
+      fact_name: 'db_maintenance_done'
 
     # Override the title and description shown for the embedded card:
     - linuxfabrik.clf.run_template:
@@ -29,7 +38,13 @@ import ruamel.yaml
 TEMPLATE_STRING = """\
 <div class="clf-run-template">
     <div class="clf-run-template-row">
-        <div class="clf-run-template-title">{{ templated_title | safe }}</div>
+        <label class="form-checkbox clf-run-template-title">
+            <input name="{{ fact_name }}" type="checkbox"
+                {%- if fact_value %} checked{%- endif %}
+                {%- if required %} required{%- endif %} />
+            <i class="form-icon"></i>
+            <span>{% if required %}{% include "required_indicator.html.j2" %}{% endif %}{{ templated_title | safe }}</span>
+        </label>
         <button class="btn btn-sm btn-primary tooltip tooltip-left"
                 type="button"
                 data-tooltip="Launches {{ display_path }} in a new tab."
@@ -41,6 +56,9 @@ TEMPLATE_STRING = """\
     {% if templated_description %}
     <div class="clf-run-template-description text-gray">{{ templated_description | safe }}</div>
     {% endif %}
+
+    {# Hidden field to allow unchecking the checkbox, since an HTML form does not send unchecked checkboxes. #}
+    <input type="hidden" name="{{ fact_name }}" value="" />
 </div>
 """
 
@@ -60,6 +78,7 @@ def main(**kwargs):
     clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
     clf_markdown = kwargs['clf_markdown']
     workdir = kwargs.get('clf_task_workdir')
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     raw_path = kwargs.get('path')
 
@@ -116,10 +135,13 @@ def main(**kwargs):
                 kwargs
                 | {
                     'display_path': str(rendered_path),
+                    'fact_name': fact_name,
+                    'fact_value': kwargs.get(fact_name),
                     'resolved_path': str(target),
                     'templated_description': templated_description,
                     'templated_title': templated_title,
                 }
             ),
         ),
+        'fact_name': fact_name,
     }

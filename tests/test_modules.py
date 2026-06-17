@@ -456,6 +456,7 @@ class TestRunTemplateModule:
         result = run_template.main(
             **_make_kwargs(
                 clf_task_workdir=tmp_path,
+                fact_name='run_done',
                 path='target.yml',
             )
         )
@@ -472,6 +473,7 @@ class TestRunTemplateModule:
         result = run_template.main(
             **_make_kwargs(
                 clf_task_workdir=tmp_path,
+                fact_name='run_done',
                 path='target.yml',
                 label='Custom Title for {{ host }}',
                 description='Custom **bold** description.',
@@ -484,7 +486,7 @@ class TestRunTemplateModule:
         assert 'Original description.' not in result['html']
 
     def test_missing_path_yields_error(self, tmp_path):
-        result = run_template.main(**_make_kwargs(clf_task_workdir=tmp_path))
+        result = run_template.main(**_make_kwargs(clf_task_workdir=tmp_path, fact_name='run_done'))
         assert 'toast-error' in result['html']
         assert 'path' in result['html']
 
@@ -492,6 +494,7 @@ class TestRunTemplateModule:
         result = run_template.main(
             **_make_kwargs(
                 clf_task_workdir=tmp_path,
+                fact_name='run_done',
                 path='does-not-exist.yml',
             )
         )
@@ -506,7 +509,57 @@ class TestRunTemplateModule:
         result = run_template.main(
             **_make_kwargs(
                 clf_task_workdir=tmp_path,
+                fact_name='run_done',
                 path='shared/sub.yml',
             )
         )
         assert f'data-path="{target.resolve()}"' in result['html']
+
+    def test_renders_confirmation_checkbox(self, tmp_path):
+        self._write_target(tmp_path, 'title: Sub\npages: []\n')
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                fact_name='run_done',
+                path='target.yml',
+            )
+        )
+        assert 'type="checkbox"' in result['html']
+        assert 'name="run_done"' in result['html']
+        assert result['fact_name'] == 'run_done'
+
+    def test_required_renders_required_attr(self, tmp_path):
+        self._write_target(tmp_path, 'title: Sub\npages: []\n')
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                fact_name='run_done',
+                path='target.yml',
+                required=True,
+            )
+        )
+        assert 'required' in result['html']
+
+    def test_preselected_checkbox_is_checked(self, tmp_path):
+        self._write_target(tmp_path, 'title: Sub\npages: []\n')
+        result = run_template.main(
+            **_make_kwargs(
+                clf_task_workdir=tmp_path,
+                fact_name='run_done',
+                path='target.yml',
+                run_done='on',
+            )
+        )
+        assert 'checked' in result['html']
+
+    def test_auto_fact_name_when_unnamed(self, tmp_path):
+        self._write_target(tmp_path, 'title: Sub\npages: []\n')
+        result = run_template.main(
+            **_make_kwargs(
+                auto_fact_name='auto_deadbeef',
+                clf_task_workdir=tmp_path,
+                path='target.yml',
+            )
+        )
+        assert result['fact_name'] == 'auto_deadbeef'
+        assert 'name="auto_deadbeef"' in result['html']

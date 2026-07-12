@@ -87,7 +87,8 @@ class DashboardWsgiApp:
                         'title': str(data.get('title', '')),
                     }
                 )
-            except Exception:
+            except Exception as error:
+                logger.warning('Skipping %s: %s', path, error)
                 continue
 
         return items

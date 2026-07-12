@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 tbd
 
 
+## [v1.11.0] - 2026-07-12
+
+### Changed
+
+* dashboard: templates that fail to load are now logged with their path and the error, so a malformed file no longer silently disappears from the dashboard ([#103](https://github.com/Linuxfabrik/checklistfabrik/issues/103))
+* dashboard: the scan now also picks up templates with the `.yaml` extension, not only `.yml` ([#104](https://github.com/Linuxfabrik/checklistfabrik/issues/104))
+* pre-commit lockfile is now self-contained: build dependencies are pinned with hashes even when the build host has no `setuptools` preinstalled ([#117](https://github.com/Linuxfabrik/checklistfabrik/issues/117))
+
+
 ## [v1.10.0] - 2026-06-17
 
 ### Changed
@@ -220,7 +229,8 @@ tbd
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.11.0...HEAD
+[v1.11.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.10.0...v1.11.0
 [v1.10.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...v1.10.0
 [v1.9.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.7.0...v1.8.0

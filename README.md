@@ -15,7 +15,7 @@
 <div align="center" markdown="1">
 
 ![GitHub Stars](https://img.shields.io/github/stars/linuxfabrik/checklistfabrik)
-[![Star History Chart](https://api.star-history.com/svg?repos=Linuxfabrik/checklistfabrik&type=Date)](https://star-history.com/#Linuxfabrik/checklistfabrik&Date)
+[![Star History Chart](https://api.star-history.com/chart?repos=Linuxfabrik/checklistfabrik&type=date&legend=top-left&sealed_token=6SUm1801mnVVflh1FjdwjwI1jTKV5frTQxeT9BI5GQvcCSalOiWVA9ZX6pLrUmxtmvs1v6KGVThzjW1gGciZf7jpiQbS4713HMIMiGkG-9v7I5GQhnnPIw)](https://www.star-history.com/?repos=Linuxfabrik%2Fchecklistfabrik&type=date&legend=top-left)
 ![GitHub](https://img.shields.io/github/license/linuxfabrik/checklistfabrik)
 ![Version](https://img.shields.io/github/v/release/linuxfabrik/checklistfabrik?sort=semver)
 [![PyPI](https://img.shields.io/pypi/v/checklistfabrik)](https://pypi.org/project/checklistfabrik/)

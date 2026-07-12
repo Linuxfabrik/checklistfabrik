@@ -72,7 +72,7 @@ class DashboardWsgiApp:
         if not directory.is_dir():
             return items
 
-        for path in sorted(directory.glob('*.yml')):
+        for path in sorted(list(directory.glob('*.yml')) + list(directory.glob('*.yaml'))):
             try:
                 data = self.data_mapper.load_yaml(path)
 

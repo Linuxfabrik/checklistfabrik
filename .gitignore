@@ -141,6 +141,17 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# Symlinks created by the docs.yml workflow before mkdocs build. These live
+# under docs/ at runtime so mkdocs-material can render the top-level files as
+# documentation pages; docs/index.md and docs/user_guide.md are the only
+# tracked docs. The docs/docs/ alias lets README links like
+# `docs/user_guide.md` resolve on the rendered site as well.
+/docs/CHANGELOG.md
+/docs/CODE_OF_CONDUCT.md
+/docs/contributing.md
+/docs/docs/
+/docs/security.md
+
 # mypy
 .mypy_cache/
 .dmypy.json

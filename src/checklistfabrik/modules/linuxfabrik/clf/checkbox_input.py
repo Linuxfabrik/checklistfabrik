@@ -23,6 +23,8 @@ EXAMPLE::
 
 import uuid
 
+from checklistfabrik.core.export import blocks
+
 TEMPLATE_MULTI_CHECK_STRING = """\
 <fieldset>
     {% if templated_label %}
@@ -131,4 +133,48 @@ def main(**kwargs):
         'html': html,
         'fact_name': fact_name,
         'task_context_update': task_context_update,
+    }
+
+
+def export(**kwargs):
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+
+    label = clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs)
+
+    if not kwargs.get('values'):
+        return {
+            'blocks': [
+                blocks.checklist(
+                    [
+                        blocks.checklist_item(
+                            label,
+                            kwargs.get(fact_name),
+                            required=kwargs.get('required'),
+                        ),
+                    ],
+                ),
+            ],
+            'fact_name': fact_name,
+        }
+
+    # A group stores the values of all checked boxes as a list.
+    checked_values = kwargs.get(fact_name) or []
+
+    items = [
+        blocks.checklist_item(
+            clf_jinja_env_plain.from_string(check['label']).render(**kwargs)
+            if check.get('label')
+            else str(check.get('value', '')),
+            check.get('value') in checked_values,
+            required=check.get('required'),
+        )
+        for check in kwargs['values']
+    ]
+
+    return {
+        'blocks': [
+            blocks.checklist(items, label=label, required=kwargs.get('required')),
+        ],
+        'fact_name': fact_name,
     }

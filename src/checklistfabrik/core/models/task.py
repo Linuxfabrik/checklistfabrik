@@ -7,12 +7,19 @@ import jinja2
 import markupsafe
 
 from .. import utils
+from ..export import blocks
 
 MODULE_NAMESPACE = 'checklistfabrik.modules'
 
 TEMPLATE_FORMAT_STRING = '<div class="clf-task">{html}</div>'
 
 logger = logging.getLogger(__name__)
+
+
+def _keep_markdown(text):
+    """Stand-in for the Markdown-to-HTML renderer used while exporting."""
+
+    return text
 
 
 class Task:
@@ -63,22 +70,8 @@ class Task:
 
         return result, None
 
-    def render(self, facts, template_env, markdown, template_env_plain=None):
-        """Render the task using its module."""
-
-        show_task, error = self.eval_when(facts)
-
-        if not show_task:
-            return ''
-        elif error:
-            return TEMPLATE_FORMAT_STRING.format(html=error)
-
-        try:
-            loaded_module = importlib.import_module(f'{MODULE_NAMESPACE}.{self.module}')
-        except ModuleNotFoundError:
-            logger.error('Task rendering error: Cannot find module "%s"', self.module)
-            safe_module = markupsafe.escape(self.module)
-            return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{safe_module}</em>. Is it installed?</div>'
+    def build_context(self, facts, template_env, markdown, template_env_plain=None):
+        """Build the keyword arguments that are handed to a task module."""
 
         render_context = facts.copy()
         render_context['clf_jinja_env'] = template_env
@@ -99,6 +92,119 @@ class Task:
             if self.unnamed_fact:
                 render_context[auto_fact_name] = self.unnamed_fact
         render_context.update(self.context)
+
+        return render_context
+
+    def export(self, facts, template_env):
+        """Export the task as a list of static-document blocks.
+
+        Unlike `render`, a task that was excluded by its `when` condition is still
+        exported, but flagged as not applicable, so the static document stays a complete
+        record of the checklist run.
+        """
+
+        show_task, _error = self.eval_when(facts)
+
+        result = {
+            'applicable': show_task,
+            'blocks': [],
+            'module': self.module,
+            'when': self.when,
+        }
+
+        try:
+            loaded_module = importlib.import_module(f'{MODULE_NAMESPACE}.{self.module}')
+        except ModuleNotFoundError:
+            logger.error('Task export error: Cannot find module "%s"', self.module)
+            result['blocks'] = [
+                blocks.note(
+                    f'Cannot find task module "{self.module}". Is it installed?',
+                    level='error',
+                ),
+            ]
+            return result
+
+        export_function = getattr(loaded_module, 'export', None)
+
+        if not callable(export_function):
+            result['blocks'] = self.export_fallback(facts)
+            return result
+
+        # Export keeps Markdown as Markdown: the exporters translate it into the target
+        # markup themselves, so the HTML renderer is replaced by a pass-through.
+        context = self.build_context(facts, template_env, _keep_markdown, template_env)
+
+        try:
+            module_result = export_function(**context)
+        except Exception as exception:
+            logger.error(
+                'Task export error: Exporting module "%s" failed: %s',
+                self.module,
+                exception,
+            )
+            result['blocks'] = [
+                blocks.note(f'Exporting module "{self.module}" failed: {exception}', level='error'),
+            ]
+            return result
+
+        if not isinstance(module_result, dict):
+            logger.error(
+                'Task export error: Module "%s" returned a value of type "%s" but expected "%s"',
+                self.module,
+                type(module_result),
+                type({}),
+            )
+            result['blocks'] = [
+                blocks.note(f'Module "{self.module}" returned an invalid export.', level='error'),
+            ]
+            return result
+
+        result['blocks'] = module_result.get('blocks') or []
+
+        return result
+
+    def export_fallback(self, facts):
+        """Represent a task whose module does not implement `export`.
+
+        Third-party modules are not required to support static export. Their recorded
+        value is still written out so the report stays complete.
+        """
+
+        logger.warning('Task module "%s" does not support static export', self.module)
+
+        fallback = [
+            blocks.note(
+                f'Task module "{self.module}" does not support static export.',
+                level='warning',
+            ),
+        ]
+
+        if self.fact_name and self.fact_name in facts:
+            label = self.context.get('label') if isinstance(self.context, dict) else None
+            fallback.append(
+                blocks.field(label or self.fact_name, blocks.values_of(facts[self.fact_name]))
+            )
+
+        return fallback
+
+    def render(self, facts, template_env, markdown, template_env_plain=None):
+        """Render the task using its module."""
+
+        show_task, error = self.eval_when(facts)
+
+        if not show_task:
+            return ''
+        elif error:
+            return TEMPLATE_FORMAT_STRING.format(html=error)
+
+        try:
+            loaded_module = importlib.import_module(f'{MODULE_NAMESPACE}.{self.module}')
+        except ModuleNotFoundError:
+            logger.error('Task rendering error: Cannot find module "%s"', self.module)
+            safe_module = markupsafe.escape(self.module)
+            return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{safe_module}</em>. Is it installed?</div>'
+
+        render_context = self.build_context(facts, template_env, markdown, template_env_plain)
 
         if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):
             logger.error(

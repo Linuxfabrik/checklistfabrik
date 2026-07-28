@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* core: new `clf-export` command for exporting reports without starting a browser. It exports single files or whole directories, infers the format from the output file extension, writes to stdout on request and returns a non-zero exit code when an export fails, so it can be used in a CI pipeline. PDF export requires the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
+* core: reports can be exported as static documents in AsciiDoc, HTML, Markdown, PDF and reStructuredText. The exported document contains the complete run, including entered values, selected options, checkbox states, skipped pages and tasks, and the overall completion status. The YAML report stays untouched, so the export can be committed next to it, reviewed in a pull request or published as documentation ([#147](https://github.com/Linuxfabrik/checklistfabrik/issues/147))
+* dashboard: reports now have an "Export" dropdown next to the "View" button that downloads the report in any of the supported formats
+
 ### Fixed
 
 * core: a checklist file that is not valid YAML, or that contains a page or task list instead of a checklist, is now reported with a clear message instead of ending in a stack trace

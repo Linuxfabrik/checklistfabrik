@@ -53,11 +53,16 @@ version = { attr = "checklistfabrik.core.__version__" }
 where = ["src"]
 
 [project.optional-dependencies]
+pdf = [
+    "fpdf2",
+]
 test = [
+    "fpdf2",
     "pytest",
 ]
 
 [project.scripts]
+clf-export = "checklistfabrik.core.cli.export:main"
 clf-play = "checklistfabrik.core.cli.play:main"
 
 [tool.pytest.ini_options]

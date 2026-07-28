@@ -13,6 +13,8 @@ EXAMPLE:
       fact_name: 'dnf_output'
 """
 
+from checklistfabrik.core.export import blocks
+
 TEMPLATE_STRING = """
 <div class="form-group">
     <div class="form-label" id="{{ fact_name }}-label">
@@ -52,5 +54,22 @@ def main(**kwargs):
                 }
             ),
         ),
+        'fact_name': fact_name,
+    }
+
+
+def export(**kwargs):
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+
+    return {
+        'blocks': [
+            blocks.field(
+                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs),
+                blocks.values_of(kwargs.get(fact_name)),
+                monospace=kwargs.get('monospace'),
+                required=kwargs.get('required'),
+            ),
+        ],
         'fact_name': fact_name,
     }

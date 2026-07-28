@@ -9,7 +9,7 @@ import werkzeug.middleware.shared_data
 import werkzeug.routing
 import werkzeug.utils
 
-from . import spawner
+from . import checklist_data_mapper, export, spawner
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,7 @@ class DashboardWsgiApp:
         self.url_map = werkzeug.routing.Map(
             [
                 werkzeug.routing.Rule('/', endpoint=self.on_dashboard),
+                werkzeug.routing.Rule('/export', endpoint=self.on_export, methods=['GET']),
                 werkzeug.routing.Rule('/run', endpoint=self.on_run, methods=['POST']),
                 werkzeug.routing.Rule('/view', endpoint=self.on_view, methods=['POST']),
             ],
@@ -106,10 +107,57 @@ class DashboardWsgiApp:
 
         return werkzeug.Response(
             self.templ_env.get_template('dashboard.html.j2').render(
+                export_formats=[
+                    {'label': export.FORMATS[name]['label'], 'name': name}
+                    for name in sorted(export.FORMATS)
+                ],
                 reports=reports_list,
                 templates=templates_list,
             ),
             mimetype='text/html',
+        )
+
+    def on_export(self, request, **kwargs):
+        """Export a report as a static document and offer it as a download."""
+
+        output_format = request.args.get('format')
+        path = request.args.get('path')
+
+        if not path or output_format not in export.FORMATS:
+            raise werkzeug.exceptions.BadRequest()
+
+        report = pathlib.Path(path)
+
+        if not report.resolve().is_relative_to(self.reports_dir.resolve()):
+            raise werkzeug.exceptions.Forbidden()
+
+        if not report.is_file():
+            raise werkzeug.exceptions.NotFound()
+
+        spec = export.FORMATS[output_format]
+
+        try:
+            checklist = self.data_mapper.process_checklist(
+                self.data_mapper.load_yaml(report),
+                report.parent,
+            )
+            data = export.export_checklist(checklist, output_format, source=report.name)
+        except (ValueError, checklist_data_mapper.ChecklistLoadError, export.ExportError) as error:
+            logger.error('Cannot export "%s" as %s: %s', report, output_format, error)
+
+            return werkzeug.Response(
+                f'Cannot export "{report.name}" as {spec["label"]}: {error}\n',
+                content_type='text/plain; charset=utf-8',
+                status=500,
+            )
+
+        # Quotes would end the filename parameter of the header early.
+        filename = report.with_suffix(spec['suffix']).name.replace('"', '')
+
+        return werkzeug.Response(
+            data,
+            content_type=spec['mimetype'],
+            headers={'Content-Disposition': f'attachment; filename="{filename}"'},
         )
 
     def _launch_checklist(self, checklist_file, checklist_template, allowed_dir):

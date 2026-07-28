@@ -29,6 +29,22 @@ class Page:
 
         return result
 
+    def export(self, facts, template_env):
+        """Export the page and all of its tasks as static-document data.
+
+        A page that was excluded by its `when` condition is still exported, but flagged as
+        not applicable, so the static document stays a complete record of the run.
+        """
+
+        show_page, _error = self.eval_when(facts)
+
+        return {
+            'applicable': show_page,
+            'tasks': [task.export(facts, template_env) for task in self.tasks],
+            'title': template_env.from_string(self.title).render(**facts),
+            'when': self.when,
+        }
+
     def eval_when(self, facts):
         """Evaluate this task's "when" condition(s) using provided facts."""
 

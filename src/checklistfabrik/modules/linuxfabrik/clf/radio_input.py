@@ -18,6 +18,8 @@ EXAMPLE::
 
 import uuid
 
+from checklistfabrik.core.export import blocks
+
 TEMPLATE_STRING = """
 <fieldset>
     <legend>
@@ -86,4 +88,32 @@ def main(**kwargs):
                 for radio in templated_radios
             ]
         },
+    }
+
+
+def export(**kwargs):
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+    fact_value = kwargs.get(fact_name)
+
+    # A report stores the value of the selected radio button. The exported document shows
+    # the label the user actually selected and falls back to the raw value if the option
+    # is no longer part of the checklist.
+    selected = [
+        blocks.plain_text(clf_jinja_env_plain.from_string(radio['label']).render(**kwargs))
+        if radio.get('label')
+        else str(radio.get('value', ''))
+        for radio in kwargs.get('values', [])
+        if radio.get('value') == fact_value
+    ]
+
+    return {
+        'blocks': [
+            blocks.field(
+                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs),
+                selected or blocks.values_of(fact_value),
+                required=kwargs.get('required'),
+            ),
+        ],
+        'fact_name': fact_name,
     }

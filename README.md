@@ -64,6 +64,10 @@ Full documentation is available at [linuxfabrik.github.io/checklistfabrik](https
 * **Simple YAML Checklists:**
   Define templates and generate reports with plain YAML, making version control with systems such as Git straightforward.
 
+* **Static Report Export:**
+  Convert a completed report into AsciiDoc, HTML, Markdown, PDF or reStructuredText with `clf-export`, or straight from the dashboard. Commit the result next to the YAML source, review it in a pull request or publish it in your documentation, without installing or starting ChecklistFabrik.
+  (See the [User Guide](docs/user_guide.md#exporting-reports) for details.)
+
 * **Sub-Checklists with a "Run" Button:**
   Embed another checklist template as a card on a page. Clicking the **Run** button launches the referenced template in a new browser tab as an independent checklist with its own report file — useful for splitting long procedures into reusable, self-contained sub-checklists.
 
@@ -95,6 +99,8 @@ Full documentation is available at [linuxfabrik.github.io/checklistfabrik](https
   pluggable Python modules.
   A valid task module is any Python module within the `checklistfabrik.modules` namespace
   that provides a `main` method returning a dictionary that includes an `html` key with the rendered HTML as its value.
+  A module may additionally provide an `export` method that describes the task independently of any output format,
+  which makes it part of static report exports.
 
 
 ## Installation
@@ -213,6 +219,20 @@ The destination file may be omitted; in that case:
 
 ```shell
 clf-play path/to/existing_checklist.yml
+```
+
+### Export a Report as a Static Document
+
+```shell
+clf-export path/to/report.yml --format rst
+```
+
+Supported formats are `asciidoc`, `html`, `markdown`, `pdf` and `rst`. The document is written next to the report unless `--output` or `--output-dir` says otherwise, and the YAML report itself is left untouched. Pass a directory to export all reports in it, and `--output -` to write to stdout.
+
+PDF export needs an optional dependency:
+
+```shell
+pip install 'checklistfabrik[pdf]'
 ```
 
 

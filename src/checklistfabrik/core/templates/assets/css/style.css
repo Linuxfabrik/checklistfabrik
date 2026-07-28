@@ -505,3 +505,20 @@ html {
 .clf-run-template-description > p:last-child {
   margin-bottom: 0;
 }
+
+/*
+ * Action column of the dashboard tables: the "View" button and the export
+ * dropdown sit next to each other and stay on one line. `white-space: nowrap`
+ * keeps them together even in a narrow column.
+ */
+.clf-actions {
+  white-space: nowrap;
+}
+
+.clf-actions .dropdown {
+  margin-left: 0.2rem;
+}
+
+.clf-actions .dropdown .menu {
+  min-width: 10rem;
+}

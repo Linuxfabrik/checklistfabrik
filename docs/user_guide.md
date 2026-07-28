@@ -401,7 +401,7 @@ clf-play
 The dashboard opens in your browser and shows two sections:
 
 * **Templates** — click "Run" to start a new checklist from a template (opens in a new tab).
-* **Reports** — click "View" to re-open a previous checklist.
+* **Reports** — click "View" to re-open a previous checklist, or pick a format from the "Export" dropdown to download the report as a static document (see [Exporting Reports](#exporting-reports)).
 
 The dashboard scans for `*.yml` files and displays their `title` and `description` fields:
 
@@ -421,6 +421,93 @@ To explore the bundled examples in a dashboard:
 cd examples/
 clf-play
 ```
+
+
+## Exporting Reports
+
+A report is a YAML file, which is ideal for machines but hard to read in a pull request. `clf-export` converts a report into a static document that anyone can read without installing or starting ChecklistFabrik:
+
+```shell
+clf-export reports/release-20260727.yml --format rst
+```
+
+This writes `reports/release-20260727.rst` next to the report. The YAML file is never modified.
+
+The same conversion is available from the dashboard: the "Export" dropdown next to a report offers one entry per format and downloads the document directly.
+
+### Formats
+
+| Format | `--format` | Extension | Notes |
+|--------|-----------|-----------|-------|
+| AsciiDoc | `asciidoc` | `.adoc` | For documentation pipelines such as Antora. |
+| HTML | `html` | `.html` | Self-contained file with an embedded stylesheet, no external resources. |
+| Markdown | `markdown` | `.md` | Renders on GitHub, GitLab and similar platforms, including task lists. |
+| PDF | `pdf` | `.pdf` | Needs the optional `fpdf2` package (see below). |
+| reStructuredText | `rst` | `.rst` | For Sphinx and other docutils-based toolchains. |
+
+PDF support is optional to keep the default installation small:
+
+```shell
+pip install 'checklistfabrik[pdf]'
+```
+
+The built-in PDF fonts cover the Latin-1 character set. Characters outside it are transliterated where an obvious replacement exists and replaced by `?` otherwise.
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `report_file` | One or more report files. A directory exports every `*.yml` and `*.yaml` file inside it. |
+| `--format` | Output format. May be omitted if it can be inferred from the extension of `--output`. |
+| `--no-metadata` | Omit the generator and version metadata of ChecklistFabrik from the document. |
+| `--output` | Path of the exported document. Only valid for a single report. Use `-` to write to stdout. |
+| `--output-dir` | Directory the documents are written to. Created if it does not exist. |
+| `--template` | Treat the input as a template instead of a report, so Jinja expressions in default values are rendered. |
+| `--verbose` | Also log debug messages. |
+
+The format can be inferred from the output path:
+
+```shell
+clf-export reports/release-20260727.yml --output exports/release-20260727.adoc
+```
+
+Whole directories are exported in one run, which is what a documentation build usually needs:
+
+```shell
+clf-export reports/ --format asciidoc --output-dir documentation/modules/sop/pages/reports/
+```
+
+### Use in a Pipeline
+
+`clf-export` is non-interactive and never opens a browser. It exits with `0` when every document was written and with a non-zero status otherwise, so a failing export stops the pipeline:
+
+```shell
+clf-export reports/ --format markdown --output-dir docs/reports/ || exit 1
+```
+
+The output is deterministic: the same report produces the same document, which keeps the diff of a committed export limited to what actually changed. Only the generator metadata changes when ChecklistFabrik is updated; `--no-metadata` removes it entirely.
+
+To pipe a document into another tool, write it to stdout. Log messages go to stderr and never mix into the document:
+
+```shell
+clf-export reports/release-20260727.yml --format markdown --output - | pandoc --from markdown --to docx --output release.docx
+```
+
+### What a Static Document Contains
+
+The exported document is a complete, read-only record of the run: title, description, version, every page and task, the entered values, the selected options, the state of every checkbox and the overall completion status. Pages and tasks that were excluded by a `when` condition are kept and marked as not applicable, so nothing silently disappears from the record.
+
+Labels keep their structure. A checkbox label that consists of a sentence followed by a code block or a list is laid out with the sentence next to the checkbox and the rest below it, so commands stay copy-and-pasteable. Where such a multi-block label belongs to an input field, the label becomes ordinary document content and the captured value follows below it, introduced by "Answer".
+
+Some interactive elements cannot be reproduced exactly:
+
+* The "Run" button of `linuxfabrik.clf.run_template` becomes a reference to the target checklist together with the state of its confirmation checkbox.
+* Raw HTML from `linuxfabrik.clf.html` is reproduced verbatim in the HTML export and as a raw block in reStructuredText and AsciiDoc. The PDF export keeps only its text content.
+* The PDF export keeps headings, lists, tables, code blocks, quotes, bold, italic, strikethrough and links. An inline code span keeps its text but not its fixed-width font, and a task label is set in bold, so emphasis inside a label is dropped.
+* Headings inside task content become bold paragraphs in reStructuredText and AsciiDoc, because an arbitrary heading level inside a task would break the section hierarchy of the document.
+* Strikethrough and inline images have no equivalent in reStructuredText: struck-through text is written as-is, images become links.
+
+A task module that does not support static export is reported in the document with a note, and its recorded value is written out anyway.
 
 
 ## Putting It All Together
@@ -552,6 +639,8 @@ The special module `linuxfabrik.clf.import` takes a file path string instead of 
 
 
 ## Task Modules
+
+A task module is a Python module in the `checklistfabrik.modules` namespace with a `main` method that returns a mapping containing an `html` key. A module may additionally provide an `export` method that returns a mapping with a `blocks` key, which describes the task independently of any output format and is used by [Exporting Reports](#exporting-reports). All built-in modules provide both.
 
 
 ### `linuxfabrik.clf.checkbox_input`

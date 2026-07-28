@@ -35,6 +35,8 @@ import pathlib
 import markupsafe
 import ruamel.yaml
 
+from checklistfabrik.core.export import blocks
+
 TEMPLATE_STRING = """\
 <div class="clf-run-template">
     <div class="clf-run-template-row">
@@ -73,17 +75,21 @@ def _error(message):
     }
 
 
-def main(**kwargs):
-    clf_jinja_env = kwargs['clf_jinja_env']
+def _resolve_target(**kwargs):
+    """Resolve the referenced template and return its path, title and description.
+
+    Returns a `(target, message)` tuple. Exactly one of the two is set: `target` is a
+    dictionary on success, `message` an error message describing why the reference could
+    not be resolved.
+    """
+
     clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
-    clf_markdown = kwargs['clf_markdown']
     workdir = kwargs.get('clf_task_workdir')
-    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
 
     raw_path = kwargs.get('path')
 
     if not raw_path or not isinstance(raw_path, str):
-        return _error('A "path" field pointing to a YAML template file is required.')
+        return None, 'A "path" field pointing to a YAML template file is required.'
 
     # Render the path through Jinja so users can build it from facts.
     rendered_path = clf_jinja_env_plain.from_string(raw_path).render(**kwargs)
@@ -92,7 +98,7 @@ def main(**kwargs):
 
     if not target.is_absolute():
         if workdir is None:
-            return _error(
+            return None, (
                 f'Cannot resolve relative path "{rendered_path}" because the calling '
                 'template directory is unknown.'
             )
@@ -102,16 +108,16 @@ def main(**kwargs):
     target = target.resolve()
 
     if not target.is_file():
-        return _error(f'Template file "{target}" does not exist.')
+        return None, f'Template file "{target}" does not exist.'
 
     try:
         with open(target, mode='r', encoding='utf-8') as file_handle:
             data = ruamel.yaml.YAML().load(file_handle.read())
     except (OSError, ruamel.yaml.YAMLError) as error:
-        return _error(f'Could not read template "{target}": {error}')
+        return None, f'Could not read template "{target}": {error}'
 
     if not isinstance(data, dict):
-        return _error(f'Template "{target}" does not contain a YAML mapping.')
+        return None, f'Template "{target}" does not contain a YAML mapping.'
 
     # Field overrides win, otherwise fall back to the target template's metadata.
     raw_title = kwargs.get('label')
@@ -122,26 +128,72 @@ def main(**kwargs):
     if raw_description is None:
         raw_description = data.get('description', '')
 
-    templated_title = clf_markdown(clf_jinja_env_plain.from_string(str(raw_title)).render(**kwargs))
+    return (
+        {
+            'display_path': str(rendered_path),
+            'resolved_path': str(target),
+            'templated_description': clf_jinja_env_plain.from_string(str(raw_description)).render(
+                **kwargs
+            )
+            if raw_description
+            else '',
+            'templated_title': clf_jinja_env_plain.from_string(str(raw_title)).render(**kwargs),
+        },
+        None,
+    )
+
+
+def main(**kwargs):
+    clf_jinja_env = kwargs['clf_jinja_env']
+    clf_markdown = kwargs['clf_markdown']
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+
+    target, message = _resolve_target(**kwargs)
+
+    if target is None:
+        return _error(message)
+
+    templated_title = clf_markdown(target['templated_title'])
     templated_description = (
-        clf_markdown(clf_jinja_env_plain.from_string(str(raw_description)).render(**kwargs))
-        if raw_description
-        else ''
+        clf_markdown(target['templated_description']) if target['templated_description'] else ''
     )
 
     return {
         'html': clf_jinja_env.from_string(TEMPLATE_STRING).render(
             **(
                 kwargs
+                | target
                 | {
-                    'display_path': str(rendered_path),
                     'fact_name': fact_name,
                     'fact_value': kwargs.get(fact_name),
-                    'resolved_path': str(target),
                     'templated_description': templated_description,
                     'templated_title': templated_title,
                 }
             ),
         ),
+        'fact_name': fact_name,
+    }
+
+
+def export(**kwargs):
+    fact_name = kwargs['fact_name' if 'fact_name' in kwargs else 'auto_fact_name']
+
+    target, message = _resolve_target(**kwargs)
+
+    if target is None:
+        return {
+            'blocks': [blocks.note(f'linuxfabrik.clf.run_template: {message}', level='error')],
+        }
+
+    return {
+        'blocks': [
+            blocks.reference(
+                target['templated_title'],
+                target['display_path'],
+                checked=kwargs.get(fact_name),
+                description=target['templated_description'],
+                required=kwargs.get('required'),
+            ),
+        ],
         'fact_name': fact_name,
     }

@@ -9,6 +9,8 @@ EXAMPLE::
         content: 'This is an example text with Jinja expressions, for example {{ host }}.'
 """
 
+from checklistfabrik.core.export import blocks
+
 
 def main(**kwargs):
     # The html module is explicitly for raw HTML output. Rendering through the
@@ -21,4 +23,14 @@ def main(**kwargs):
 
     return {
         'html': f'<div class="clf-content-block">{rendered_content}</div>',
+    }
+
+
+def export(**kwargs):
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
+
+    return {
+        'blocks': [
+            blocks.html(clf_jinja_env_plain.from_string(kwargs['content']).render(**kwargs)),
+        ],
     }

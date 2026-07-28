@@ -12,6 +12,8 @@ EXAMPLE::
             ChecklistFabrik supports *Markdown*!
 """
 
+from checklistfabrik.core.export import blocks
+
 
 def main(**kwargs):
     # Content is rendered with the autoescape-free Jinja environment because
@@ -28,4 +30,14 @@ def main(**kwargs):
 
     return {
         'html': f'<div class="clf-markdown-block">{rendered_html}</div>',
+    }
+
+
+def export(**kwargs):
+    clf_jinja_env_plain = kwargs['clf_jinja_env_plain']
+
+    return {
+        'blocks': [
+            blocks.markdown(clf_jinja_env_plain.from_string(kwargs['content']).render(**kwargs)),
+        ],
     }

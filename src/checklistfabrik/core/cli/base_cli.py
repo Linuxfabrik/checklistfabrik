@@ -32,12 +32,15 @@ class BaseCli:
         console_log_level=logging.INFO,
         file_log_level=logging.DEBUG,
         banner=None,
+        console_stream=None,
     ):
         root_module_name = __name__.split('.', maxsplit=1)[0]
         self.logger = logging.getLogger(root_module_name)
         self.logger.setLevel(min(console_log_level, file_log_level))
 
-        console_handler = logging.StreamHandler(sys.stdout)
+        # A CLI that can write its result to stdout logs to stderr instead, so that piped
+        # output stays free of log messages.
+        console_handler = logging.StreamHandler(console_stream or sys.stdout)
         console_handler.setLevel(console_log_level)
         console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 

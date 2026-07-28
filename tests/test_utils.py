@@ -52,7 +52,7 @@ class TestEvalAllConditionals:
 class TestEvalWhen:
     def test_none_is_truthy(self):
         result = eval_when({}, None)
-        assert result == (True, None)
+        assert result is True
 
     def test_single_true_condition(self):
         result = eval_when({'x': 1}, 'x == 1')

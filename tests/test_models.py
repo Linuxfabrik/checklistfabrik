@@ -51,7 +51,7 @@ class TestPage:
     def test_eval_when_no_condition(self):
         page = Page('P', [], None)
         result, error = page.eval_when({})
-        assert result == (True, None)
+        assert result is True
         assert error is None
 
     def test_eval_when_true(self):
@@ -114,7 +114,7 @@ class TestTask:
     def test_eval_when_no_condition(self):
         task = Task('m', {}, None, None)
         result, error = task.eval_when({})
-        assert result == (True, None)
+        assert result is True
         assert error is None
 
     def test_eval_when_true(self):

@@ -28,7 +28,7 @@ def eval_when(facts, when):
     """
 
     if when is None:
-        return True, None
+        return True
 
     single_condition = isinstance(when, str) and eval_conditional(facts, when)
     multi_conditions = isinstance(when, list) and eval_all_conditionals(facts, when)

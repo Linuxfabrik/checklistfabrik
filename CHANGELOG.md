@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Fixed
+
+* core: a checklist file that is not valid YAML, or that contains a page or task list instead of a checklist, is now reported with a clear message instead of ending in a stack trace
+* core: reports are no longer corrupted while they are being filled in. As the report is written again on every page change, a checkbox group whose `values:` were followed by an empty line in the template lost a line break from the second write onwards, which produced a report that could no longer be opened, listed in the dashboard or exported. A report is now also verified to be readable before it replaces the file on disk
 
 
 ## [v1.11.0] - 2026-07-12

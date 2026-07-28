@@ -1,3 +1,4 @@
+import copy
 import datetime
 import io
 import logging
@@ -5,6 +6,7 @@ import pathlib
 import sys
 
 import jinja2
+import ruamel.yaml
 
 from . import models, utils
 
@@ -26,7 +28,9 @@ class ChecklistDataMapper:
         # default values (`value:` fields) once at load time, so that defaults
         # like `{{ now().strftime("%Y%m%d") }}01` end up in the facts as a
         # real string instead of a literal Jinja expression.
-        self._defaults_env = jinja2.Environment(autoescape=False)
+        # Autoescaping stays off because the result is a fact value, not markup. The
+        # templates that later display the fact escape it themselves.
+        self._defaults_env = jinja2.Environment(autoescape=False)  # nosec B701
         self._defaults_env.globals['now'] = datetime.datetime.now
 
     def load_yaml(self, file):
@@ -41,6 +45,9 @@ class ChecklistDataMapper:
             raise ChecklistLoadError from error
         except PermissionError as error:
             logger.critical('Cannot open file "%s" due to insufficient permissions', file)
+            raise ChecklistLoadError from error
+        except ruamel.yaml.YAMLError as error:
+            logger.critical('Cannot parse file "%s": %s', file, error)
             raise ChecklistLoadError from error
 
     def load_checklist(self, file, is_template=False):
@@ -70,11 +77,26 @@ class ChecklistDataMapper:
         # Before writing the file, dump to a separate stream instead and check if we have an output.
         # This prevents saving an empty file if for some reason the dump fails.
         stream = io.StringIO()
-        self.yaml.dump(checklist.to_dict(), stream)
+        # Dump a copy of the data: writing a round-trip tree consumes the formatting state
+        # that ruamel keeps on the loaded objects. As a report is written again on every
+        # page change, the second dump would otherwise lose a line break and produce a file
+        # that can no longer be read back in.
+        self.yaml.dump(copy.deepcopy(checklist.to_dict()), stream)
 
         if stream.tell() == 0:
             logger.critical(
                 'Yaml dump failed and returned an empty result. File "%s" is left untouched',
+                file,
+            )
+            sys.exit(1)
+
+        # Never replace a report with something that cannot be loaded again.
+        try:
+            self.yaml.load(stream.getvalue())
+        except ruamel.yaml.YAMLError as error:
+            logger.critical(
+                'Yaml dump produced unreadable output (%s). File "%s" is left untouched',
+                error,
                 file,
             )
             sys.exit(1)
@@ -138,6 +160,11 @@ class ChecklistDataMapper:
 
         if checklist is None:
             raise ValueError('Cannot load an empty checklist.')
+
+        if not isinstance(checklist, dict):
+            # For example a file that only holds a page or task list for an import.
+            logger.critical('Checklist data is not a mapping')
+            raise ChecklistLoadError
 
         valid, message = utils.validate_dict_keys(
             checklist,

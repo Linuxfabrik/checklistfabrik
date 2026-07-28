@@ -317,3 +317,59 @@ class TestPageImport:
         facts = {}
         page = data_mapper.process_page(page_data, tmp_path, facts)
         assert len(page.tasks) == 1
+
+
+class TestRepeatedSave:
+    """A report is written again on every page change, so saving twice must stay valid."""
+
+    CHECKLIST = textwrap.dedent("""\
+        title: 'Repeated save'
+        pages:
+          - title: 'Page'
+            tasks:
+              - linuxfabrik.clf.checkbox_input:
+                  values:
+
+                    - label: |
+                        First item
+                    - label: |
+                        Second item
+    """)
+
+    def _render(self, checklist, jinja_env, md):
+        plain_env = jinja_env.overlay(autoescape=False)
+
+        for page in checklist.pages:
+            page.render(checklist.facts, jinja_env, md, plain_env)
+
+    def test_second_save_stays_readable(self, data_mapper, jinja_env, md, tmp_path):
+        # Regression: writing the same round-trip tree twice used to lose the line break
+        # after `values:`, which put the sequence entry behind the key and produced a file
+        # that could no longer be loaded.
+        source = tmp_path / 'template.yml'
+        source.write_text(self.CHECKLIST, encoding='utf-8')
+
+        checklist = data_mapper.load_checklist(source, is_template=True)
+        self._render(checklist, jinja_env, md)
+
+        report = tmp_path / 'report.yml'
+        data_mapper.save_checklist(report, checklist)
+        data_mapper.save_checklist(report, checklist)
+
+        reloaded = data_mapper.load_checklist(report)
+
+        assert len(reloaded.pages[0].tasks) == 1
+
+    def test_saves_are_identical(self, data_mapper, jinja_env, md, tmp_path):
+        source = tmp_path / 'template.yml'
+        source.write_text(self.CHECKLIST, encoding='utf-8')
+
+        checklist = data_mapper.load_checklist(source, is_template=True)
+        self._render(checklist, jinja_env, md)
+
+        first = tmp_path / 'first.yml'
+        second = tmp_path / 'second.yml'
+        data_mapper.save_checklist(first, checklist)
+        data_mapper.save_checklist(second, checklist)
+
+        assert first.read_text() == second.read_text()

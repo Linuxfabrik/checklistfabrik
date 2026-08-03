@@ -64,9 +64,7 @@ TEMPLATE_STRING = """\
 </div>
 """
 
-ERROR_TEMPLATE = (
-    '<div class="toast toast-error"><em>linuxfabrik.clf.run_template</em>: {message}</div>'
-)
+ERROR_TEMPLATE = '<div class="toast toast-error"><em>linuxfabrik.clf.run_template</em>: {message}</div>'
 
 
 def _error(message):
@@ -132,12 +130,14 @@ def _resolve_target(**kwargs):
         {
             'display_path': str(rendered_path),
             'resolved_path': str(target),
-            'templated_description': clf_jinja_env_plain.from_string(str(raw_description)).render(
-                **kwargs
-            )
+            'templated_description': clf_jinja_env_plain.from_string(
+                str(raw_description)
+            ).render(**kwargs)
             if raw_description
             else '',
-            'templated_title': clf_jinja_env_plain.from_string(str(raw_title)).render(**kwargs),
+            'templated_title': clf_jinja_env_plain.from_string(str(raw_title)).render(
+                **kwargs
+            ),
         },
         None,
     )
@@ -155,7 +155,9 @@ def main(**kwargs):
 
     templated_title = clf_markdown(target['templated_title'])
     templated_description = (
-        clf_markdown(target['templated_description']) if target['templated_description'] else ''
+        clf_markdown(target['templated_description'])
+        if target['templated_description']
+        else ''
     )
 
     return {
@@ -182,7 +184,9 @@ def export(**kwargs):
 
     if target is None:
         return {
-            'blocks': [blocks.note(f'linuxfabrik.clf.run_template: {message}', level='error')],
+            'blocks': [
+                blocks.note(f'linuxfabrik.clf.run_template: {message}', level='error')
+            ],
         }
 
     return {

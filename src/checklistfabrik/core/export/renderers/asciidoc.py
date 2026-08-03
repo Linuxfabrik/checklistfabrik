@@ -221,4 +221,6 @@ def _reference(block, writer):
 
     extra.append(f'Checklist: `+{block["path"]}+`')
 
-    return _item(writer, block['label'], marker(block['checked']), block['required'], extra=extra)
+    return _item(
+        writer, block['label'], marker(block['checked']), block['required'], extra=extra
+    )

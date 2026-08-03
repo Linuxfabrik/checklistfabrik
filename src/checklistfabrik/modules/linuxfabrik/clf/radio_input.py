@@ -100,7 +100,9 @@ def export(**kwargs):
     # the label the user actually selected and falls back to the raw value if the option
     # is no longer part of the checklist.
     selected = [
-        blocks.plain_text(clf_jinja_env_plain.from_string(radio['label']).render(**kwargs))
+        blocks.plain_text(
+            clf_jinja_env_plain.from_string(radio['label']).render(**kwargs)
+        )
         if radio.get('label')
         else str(radio.get('value', ''))
         for radio in kwargs.get('values', [])
@@ -110,7 +112,9 @@ def export(**kwargs):
     return {
         'blocks': [
             blocks.field(
-                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs),
+                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(
+                    **kwargs
+                ),
                 selected or blocks.values_of(fact_value),
                 required=kwargs.get('required'),
             ),

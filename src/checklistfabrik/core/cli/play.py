@@ -125,14 +125,24 @@ class PlayCli(BaseCli):
         if self.args.report_file is None and self.args.template is None:
             # Dashboard mode.
             # Auto-detect well-known subdirectories if the user did not override.
-            if self.args.reports_dir == pathlib.Path('.') and pathlib.Path('reports').is_dir():
+            if (
+                self.args.reports_dir == pathlib.Path('.')
+                and pathlib.Path('reports').is_dir()
+            ):
                 self.args.reports_dir = pathlib.Path('reports')
-            if self.args.templates_dir == pathlib.Path('.') and pathlib.Path('templates').is_dir():
+            if (
+                self.args.templates_dir == pathlib.Path('.')
+                and pathlib.Path('templates').is_dir()
+            ):
                 self.args.templates_dir = pathlib.Path('templates')
             return
 
         if self.args.template is not None:
-            if self.args.report_file and self.args.report_file.is_file() and not self.args.force:
+            if (
+                self.args.report_file
+                and self.args.report_file.is_file()
+                and not self.args.force
+            ):
                 self.arg_parser.error(
                     '--template may only be specified if the report file does not exist'
                 )

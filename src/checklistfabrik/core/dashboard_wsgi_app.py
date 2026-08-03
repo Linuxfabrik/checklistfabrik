@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 class DashboardWsgiApp:
     """The WSGI app that powers the ChecklistFabrik dashboard."""
 
-    def __init__(self, templates_dir, reports_dir, data_mapper, template_loader, assets_dir):
+    def __init__(
+        self, templates_dir, reports_dir, data_mapper, template_loader, assets_dir
+    ):
         self.assets_dir = assets_dir
         self.data_mapper = data_mapper
         self.reports_dir = reports_dir
@@ -36,7 +38,9 @@ class DashboardWsgiApp:
         self.url_map = werkzeug.routing.Map(
             [
                 werkzeug.routing.Rule('/', endpoint=self.on_dashboard),
-                werkzeug.routing.Rule('/export', endpoint=self.on_export, methods=['GET']),
+                werkzeug.routing.Rule(
+                    '/export', endpoint=self.on_export, methods=['GET']
+                ),
                 werkzeug.routing.Rule('/run', endpoint=self.on_run, methods=['POST']),
                 werkzeug.routing.Rule('/view', endpoint=self.on_view, methods=['POST']),
             ],
@@ -73,11 +77,17 @@ class DashboardWsgiApp:
         if not directory.is_dir():
             return items
 
-        for path in sorted(list(directory.glob('*.yml')) + list(directory.glob('*.yaml'))):
+        for path in sorted(
+            list(directory.glob('*.yml')) + list(directory.glob('*.yaml'))
+        ):
             try:
                 data = self.data_mapper.load_yaml(path)
 
-                if not isinstance(data, dict) or 'title' not in data or 'pages' not in data:
+                if (
+                    not isinstance(data, dict)
+                    or 'title' not in data
+                    or 'pages' not in data
+                ):
                     continue
 
                 items.append(
@@ -142,7 +152,11 @@ class DashboardWsgiApp:
                 report.parent,
             )
             data = export.export_checklist(checklist, output_format, source=report.name)
-        except (ValueError, checklist_data_mapper.ChecklistLoadError, export.ExportError) as error:
+        except (
+            ValueError,
+            checklist_data_mapper.ChecklistLoadError,
+            export.ExportError,
+        ) as error:
             logger.error('Cannot export "%s" as %s: %s', report, output_format, error)
 
             return werkzeug.Response(

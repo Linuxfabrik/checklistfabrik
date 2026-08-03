@@ -40,7 +40,9 @@ def launch_checklist(
     """
     path = checklist_file or checklist_template
 
-    if allowed_dir is not None and not path.resolve().is_relative_to(allowed_dir.resolve()):
+    if allowed_dir is not None and not path.resolve().is_relative_to(
+        allowed_dir.resolve()
+    ):
         raise werkzeug.exceptions.Forbidden()
 
     if not path.is_file():

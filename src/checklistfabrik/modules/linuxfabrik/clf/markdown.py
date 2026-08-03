@@ -38,6 +38,8 @@ def export(**kwargs):
 
     return {
         'blocks': [
-            blocks.markdown(clf_jinja_env_plain.from_string(kwargs['content']).render(**kwargs)),
+            blocks.markdown(
+                clf_jinja_env_plain.from_string(kwargs['content']).render(**kwargs)
+            ),
         ],
     }

@@ -68,7 +68,9 @@ class TestMarkdownModule:
         # Mistune's HTML escaping exactly once (`"` -> `&quot;`), not twice
         # (`"` -> `&#34;` -> `&amp;#34;`). This happened when the content went
         # through an autoescape-enabled Jinja environment before Mistune.
-        result = markdown.main(**_make_kwargs(content='`{{ greeting }}`', greeting='say "hi"'))
+        result = markdown.main(
+            **_make_kwargs(content='`{{ greeting }}`', greeting='say "hi"')
+        )
         assert '&quot;' in result['html']
         assert '&amp;' not in result['html']
 
@@ -486,7 +488,9 @@ class TestRunTemplateModule:
         assert 'Original description.' not in result['html']
 
     def test_missing_path_yields_error(self, tmp_path):
-        result = run_template.main(**_make_kwargs(clf_task_workdir=tmp_path, fact_name='run_done'))
+        result = run_template.main(
+            **_make_kwargs(clf_task_workdir=tmp_path, fact_name='run_done')
+        )
         assert 'toast-error' in result['html']
         assert 'path' in result['html']
 

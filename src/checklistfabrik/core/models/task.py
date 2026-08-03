@@ -25,7 +25,9 @@ def _keep_markdown(text):
 class Task:
     """Models a ChecklistFabrik checklist task."""
 
-    def __init__(self, module, context, fact_name, when, unnamed_fact=None, workdir=None):
+    def __init__(
+        self, module, context, fact_name, when, unnamed_fact=None, workdir=None
+    ):
         self.module = module
         self.context = context
         self.fact_name = fact_name
@@ -143,7 +145,10 @@ class Task:
                 exception,
             )
             result['blocks'] = [
-                blocks.note(f'Exporting module "{self.module}" failed: {exception}', level='error'),
+                blocks.note(
+                    f'Exporting module "{self.module}" failed: {exception}',
+                    level='error',
+                ),
             ]
             return result
 
@@ -155,7 +160,9 @@ class Task:
                 type({}),
             )
             result['blocks'] = [
-                blocks.note(f'Module "{self.module}" returned an invalid export.', level='error'),
+                blocks.note(
+                    f'Module "{self.module}" returned an invalid export.', level='error'
+                ),
             ]
             return result
 
@@ -180,9 +187,13 @@ class Task:
         ]
 
         if self.fact_name and self.fact_name in facts:
-            label = self.context.get('label') if isinstance(self.context, dict) else None
+            label = (
+                self.context.get('label') if isinstance(self.context, dict) else None
+            )
             fallback.append(
-                blocks.field(label or self.fact_name, blocks.values_of(facts[self.fact_name]))
+                blocks.field(
+                    label or self.fact_name, blocks.values_of(facts[self.fact_name])
+                )
             )
 
         return fallback
@@ -204,7 +215,9 @@ class Task:
             safe_module = markupsafe.escape(self.module)
             return f'<div class="toast toast-error">Task rendering error: Cannot find module <em>{safe_module}</em>. Is it installed?</div>'
 
-        render_context = self.build_context(facts, template_env, markdown, template_env_plain)
+        render_context = self.build_context(
+            facts, template_env, markdown, template_env_plain
+        )
 
         if not hasattr(loaded_module, 'main') or not callable(loaded_module.main):
             logger.error(

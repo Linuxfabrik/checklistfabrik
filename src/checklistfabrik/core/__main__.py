@@ -11,7 +11,9 @@ def main():
         if entry_point.group == 'console_scripts'
     }
 
-    parser = argparse.ArgumentParser(prog='python -m checklistfabrik.core', add_help=False)
+    parser = argparse.ArgumentParser(
+        prog='python -m checklistfabrik.core', add_help=False
+    )
     parser.add_argument('entry_point', choices=entry_points.keys())
     args, extra = parser.parse_known_args()
 

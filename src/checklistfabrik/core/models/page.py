@@ -79,6 +79,8 @@ class Page:
             data = '<div class="toast toast-primary">This page was marked as not applicable based on previous input.</div>'
 
         return TEMPLATE_FORMAT_STRING.format(
-            title=markupsafe.escape(template_env.from_string(self.title).render(**facts)),
+            title=markupsafe.escape(
+                template_env.from_string(self.title).render(**facts)
+            ),
             data=data,
         )

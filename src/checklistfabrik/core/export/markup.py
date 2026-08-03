@@ -22,7 +22,9 @@ import mistune
 
 # Same plugin set as the HTML interface, minus `speedup` which only tunes the HTML
 # renderer and has no effect on the abstract syntax tree.
-_parse_markdown = mistune.create_markdown(renderer=None, plugins=['strikethrough', 'table'])
+_parse_markdown = mistune.create_markdown(
+    renderer=None, plugins=['strikethrough', 'table']
+)
 
 _HTML_TAG = re.compile(r'<[^>]+>')
 _TRAILING_UNDERSCORE = re.compile(r'_(?=\s|$)')
@@ -113,7 +115,11 @@ class MarkupWriter:
         return '\n\n'.join(block for block in blocks if block)
 
     def render_blocks(self, tokens):
-        return [block for block in (self.render_block(token) for token in tokens or []) if block]
+        return [
+            block
+            for block in (self.render_block(token) for token in tokens or [])
+            if block
+        ]
 
     def render_block(self, token):
         node_type = token['type']
@@ -130,7 +136,9 @@ class MarkupWriter:
             return self.render_inline(token.get('children'))
 
         if node_type == 'heading':
-            return self.heading(self.render_inline(token.get('children')), attrs.get('level', 1))
+            return self.heading(
+                self.render_inline(token.get('children')), attrs.get('level', 1)
+            )
 
         if node_type == 'thematic_break':
             return self.thematic_break()
@@ -139,7 +147,9 @@ class MarkupWriter:
             return self.code_block(token.get('raw', ''), attrs.get('info'))
 
         if node_type == 'block_quote':
-            return self.quote(self.join_blocks(self.render_blocks(token.get('children'))))
+            return self.quote(
+                self.join_blocks(self.render_blocks(token.get('children')))
+            )
 
         if node_type == 'list':
             return self.render_list(token)
@@ -188,7 +198,10 @@ class MarkupWriter:
                 ]
             elif section['type'] == 'table_body':
                 rows = [
-                    [self.render_inline(cell.get('children')) for cell in row.get('children') or []]
+                    [
+                        self.render_inline(cell.get('children'))
+                        for cell in row.get('children') or []
+                    ]
                     for row in section.get('children') or []
                 ]
 
@@ -208,16 +221,22 @@ class MarkupWriter:
             elif node_type == 'emphasis':
                 parts.append(self.emphasis(self.render_inline(token.get('children'))))
             elif node_type == 'strikethrough':
-                parts.append(self.strikethrough(self.render_inline(token.get('children'))))
+                parts.append(
+                    self.strikethrough(self.render_inline(token.get('children')))
+                )
             elif node_type == 'codespan':
                 parts.append(self.codespan(token.get('raw', '')))
             elif node_type == 'link':
                 parts.append(
-                    self.link(self.render_inline(token.get('children')), attrs.get('url', ''))
+                    self.link(
+                        self.render_inline(token.get('children')), attrs.get('url', '')
+                    )
                 )
             elif node_type == 'image':
                 parts.append(
-                    self.image(self.render_inline(token.get('children')), attrs.get('url', ''))
+                    self.image(
+                        self.render_inline(token.get('children')), attrs.get('url', '')
+                    )
                 )
             elif node_type == 'linebreak':
                 parts.append(self.linebreak())
@@ -548,10 +567,14 @@ class HtmlWriter(MarkupWriter):
     """
 
     def render_inline(self, tokens):
-        raise NotImplementedError('HtmlWriter renders whole blocks; use split_lead_html')
+        raise NotImplementedError(
+            'HtmlWriter renders whole blocks; use split_lead_html'
+        )
 
     def render_nodes(self, nodes):
-        raise NotImplementedError('HtmlWriter renders whole blocks; use split_lead_html')
+        raise NotImplementedError(
+            'HtmlWriter renders whole blocks; use split_lead_html'
+        )
 
     def __init__(self):
         # Not the renderer of the interactive interface: that one adds a JavaScript-driven

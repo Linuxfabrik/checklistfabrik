@@ -54,14 +54,24 @@ class BaseCli:
         os_name = platform.system()
 
         if os_name == 'Darwin':
-            log_path = pathlib.Path.home() / 'Library' / 'Logs' / root_module_name / log_file_name
+            log_path = (
+                pathlib.Path.home()
+                / 'Library'
+                / 'Logs'
+                / root_module_name
+                / log_file_name
+            )
         elif os_name == 'Linux':
             log_path = (
-                pathlib.Path(os.getenv('XDG_DATA_HOME', pathlib.Path.home() / '.local' / 'share'))
+                pathlib.Path(
+                    os.getenv('XDG_DATA_HOME', pathlib.Path.home() / '.local' / 'share')
+                )
                 / log_file_name
             )
         elif os_name == 'Windows' and 'APPDATA' in os.environ:
-            log_path = pathlib.Path(os.environ['APPDATA']) / root_module_name / log_file_name
+            log_path = (
+                pathlib.Path(os.environ['APPDATA']) / root_module_name / log_file_name
+            )
         else:
             log_path = pathlib.Path.cwd() / log_file_name
 
@@ -81,7 +91,9 @@ class BaseCli:
             file_handler = logging.FileHandler(log_path, mode='w')
             file_handler.setLevel(file_log_level)
             file_handler.setFormatter(
-                logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                logging.Formatter(
+                    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                )
             )
 
             self.logger.addHandler(file_handler)

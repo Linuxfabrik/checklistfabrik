@@ -36,10 +36,15 @@ class TestRstWriter:
         writer = markup.RstWriter()
         assert writer.render('**bold** and *italic*') == '**bold** and *italic*'
         assert writer.render('`code`') == '``code``'
-        assert writer.render('[text](https://example.com)') == '`text <https://example.com>`_'
+        assert (
+            writer.render('[text](https://example.com)')
+            == '`text <https://example.com>`_'
+        )
 
     def test_escapes_literal_markup_characters(self):
-        assert markup.RstWriter().render('2 * 3 and a | pipe') == r'2 \* 3 and a \| pipe'
+        assert (
+            markup.RstWriter().render('2 * 3 and a | pipe') == r'2 \* 3 and a \| pipe'
+        )
 
     def test_headings_become_bold_paragraphs(self):
         # An arbitrary heading level inside a task would break the section hierarchy of
@@ -76,7 +81,9 @@ class TestMarkdownWriter:
         assert writer.render('~~gone~~') == '~~gone~~'
 
     def test_headings_are_shifted_below_the_page_heading(self):
-        assert markup.MarkdownWriter().render('# Top\n\n## Sub\n') == '### Top\n\n#### Sub'
+        assert (
+            markup.MarkdownWriter().render('# Top\n\n## Sub\n') == '### Top\n\n#### Sub'
+        )
 
     def test_heading_shift_is_relative_to_the_topmost_heading(self):
         assert markup.MarkdownWriter().render('### Only') == '### Only'
@@ -92,7 +99,9 @@ class TestAsciiDocWriter:
         writer = markup.AsciiDocWriter()
         assert writer.render('**bold**') == '*bold*'
         assert writer.render('`code`') == '`+code+`'
-        assert writer.render('[text](https://example.com)') == 'https://example.com[text]'
+        assert (
+            writer.render('[text](https://example.com)') == 'https://example.com[text]'
+        )
 
     def test_nested_list_repeats_the_marker(self):
         # AsciiDoc reads an indented line as a literal block.
@@ -152,7 +161,11 @@ class TestDocument:
         ]
 
     def test_excluded_page_is_kept_but_flagged(self, sample_document):
-        assert [page['applicable'] for page in sample_document['pages']] == [True, True, False]
+        assert [page['applicable'] for page in sample_document['pages']] == [
+            True,
+            True,
+            False,
+        ]
 
     def test_progress_ignores_excluded_pages(self, sample_document):
         # ticket, maintenance type, two pre-flight items, command output, reboot duration.
@@ -218,7 +231,9 @@ class TestModuleExport:
         from checklistfabrik.modules.linuxfabrik.clf import text_input
 
         result = text_input.export(
-            **_export_kwargs(fact_name='host', host='server01', label='Host', required=True)
+            **_export_kwargs(
+                fact_name='host', host='server01', label='Host', required=True
+            )
         )
 
         assert result['fact_name'] == 'host'
@@ -236,7 +251,9 @@ class TestModuleExport:
         from checklistfabrik.modules.linuxfabrik.clf import textarea_input
 
         result = textarea_input.export(
-            **_export_kwargs(fact_name='out', label='Output', monospace=True, out='a\nb')
+            **_export_kwargs(
+                fact_name='out', label='Output', monospace=True, out='a\nb'
+            )
         )
 
         assert result['blocks'][0]['monospace'] is True
@@ -246,7 +263,9 @@ class TestModuleExport:
         from checklistfabrik.modules.linuxfabrik.clf import select_input
 
         result = select_input.export(
-            **_export_kwargs(fact_name='langs', label='Languages', langs=['Python', 'Go'])
+            **_export_kwargs(
+                fact_name='langs', label='Languages', langs=['Python', 'Go']
+            )
         )
 
         assert result['blocks'][0]['values'] == ['Python', 'Go']
@@ -310,7 +329,9 @@ class TestModuleExport:
         from checklistfabrik.modules.linuxfabrik.clf import checkbox_input
 
         result = checkbox_input.export(
-            **_export_kwargs(fact_name='accept', accept='on', label='Accept', required=True)
+            **_export_kwargs(
+                fact_name='accept', accept='on', label='Accept', required=True
+            )
         )
 
         assert result['blocks'][0]['items'] == [
@@ -363,7 +384,9 @@ class TestModuleExport:
         from checklistfabrik.modules.linuxfabrik.clf import run_template
 
         result = run_template.export(
-            **_export_kwargs(clf_task_workdir=tmp_path, fact_name='done', path='missing.yml')
+            **_export_kwargs(
+                clf_task_workdir=tmp_path, fact_name='done', path='missing.yml'
+            )
         )
 
         assert result['blocks'][0]['type'] == 'note'
@@ -396,7 +419,9 @@ class TestRstRenderer:
         assert 'Reboot duration\n   *not answered*' in rst.render(sample_document)
 
     def test_multiline_value_becomes_a_literal_block(self, sample_document):
-        assert '::\n\n      first line\n      second line' in rst.render(sample_document)
+        assert '::\n\n      first line\n      second line' in rst.render(
+            sample_document
+        )
 
     def test_checklist_markers(self, sample_document):
         result = rst.render(sample_document)
@@ -448,8 +473,9 @@ class TestAsciiDocRenderer:
         assert '* [x] Notify users' in asciidoc.render(sample_document)
 
     def test_excluded_page_gets_an_admonition(self, sample_document):
-        assert '[NOTE]\n====\nThis page was marked as not applicable' in asciidoc.render(
-            sample_document
+        assert (
+            '[NOTE]\n====\nThis page was marked as not applicable'
+            in asciidoc.render(sample_document)
         )
 
 
@@ -493,14 +519,18 @@ class TestHtmlRenderer:
 
 class TestPdfRenderer:
     def test_renders_a_pdf(self, sample_document):
-        pytest.importorskip('fpdf', reason='PDF export needs the optional fpdf2 package')
+        pytest.importorskip(
+            'fpdf', reason='PDF export needs the optional fpdf2 package'
+        )
 
         data = export.render(sample_document, 'pdf')
 
         assert data.startswith(b'%PDF-')
 
     def test_renders_structured_markdown(self, data_mapper, tmp_path):
-        pytest.importorskip('fpdf', reason='PDF export needs the optional fpdf2 package')
+        pytest.importorskip(
+            'fpdf', reason='PDF export needs the optional fpdf2 package'
+        )
 
         report = tmp_path / 'structure.yml'
         report.write_text(
@@ -552,7 +582,9 @@ class TestPdfRenderer:
 
         assert pdf.plain_inline(lead['children']) == 'Full update'
 
-    def test_missing_dependency_raises_an_export_error(self, monkeypatch, sample_document):
+    def test_missing_dependency_raises_an_export_error(
+        self, monkeypatch, sample_document
+    ):
         from checklistfabrik.core.export.renderers import pdf
 
         def no_fpdf():
@@ -585,12 +617,14 @@ class TestExportApi:
         assert export.format_from_suffix(path) == expected
 
     def test_output_path_replaces_the_extension(self):
-        assert export.output_path('reports/run.yml', 'rst') == pathlib.Path('reports/run.rst')
+        assert export.output_path('reports/run.yml', 'rst') == pathlib.Path(
+            'reports/run.rst'
+        )
 
     def test_output_path_honours_the_output_directory(self):
-        assert export.output_path('reports/run.yml', 'markdown', output_dir='out') == pathlib.Path(
-            'out/run.md'
-        )
+        assert export.output_path(
+            'reports/run.yml', 'markdown', output_dir='out'
+        ) == pathlib.Path('out/run.md')
 
     def test_unknown_format_raises(self, sample_document):
         with pytest.raises(export.ExportError, match='Unknown output format'):
@@ -622,7 +656,9 @@ def _run_cli(monkeypatch, tmp_path, argv):
 
 class TestExportCli:
     def test_writes_next_to_the_report(self, monkeypatch, tmp_path, sample_report_yaml):
-        code = _run_cli(monkeypatch, tmp_path, [str(sample_report_yaml), '--format', 'rst'])
+        code = _run_cli(
+            monkeypatch, tmp_path, [str(sample_report_yaml), '--format', 'rst']
+        )
 
         assert code == 0
         assert (tmp_path / 'report.rst').read_text().startswith('====')
@@ -632,25 +668,37 @@ class TestExportCli:
     ):
         target = tmp_path / 'out' / 'report.md'
         target.parent.mkdir()
-        code = _run_cli(monkeypatch, tmp_path, [str(sample_report_yaml), '--output', str(target)])
+        code = _run_cli(
+            monkeypatch, tmp_path, [str(sample_report_yaml), '--output', str(target)]
+        )
 
         assert code == 0
         assert target.read_text().startswith('# Server Maintenance')
 
     def test_writes_to_stdout(self, capsys, monkeypatch, tmp_path, sample_report_yaml):
         code = _run_cli(
-            monkeypatch, tmp_path, [str(sample_report_yaml), '--format', 'rst', '--output', '-']
+            monkeypatch,
+            tmp_path,
+            [str(sample_report_yaml), '--format', 'rst', '--output', '-'],
         )
 
         assert code == 0
         assert 'Server Maintenance INC-4711' in capsys.readouterr().out
 
-    def test_output_directory_is_created(self, monkeypatch, tmp_path, sample_report_yaml):
+    def test_output_directory_is_created(
+        self, monkeypatch, tmp_path, sample_report_yaml
+    ):
         target_dir = tmp_path / 'exports'
         code = _run_cli(
             monkeypatch,
             tmp_path,
-            [str(sample_report_yaml), '--format', 'asciidoc', '--output-dir', str(target_dir)],
+            [
+                str(sample_report_yaml),
+                '--format',
+                'asciidoc',
+                '--output-dir',
+                str(target_dir),
+            ],
         )
 
         assert code == 0
@@ -672,7 +720,9 @@ class TestExportCli:
         # A directory of checklists usually also holds files that only contain a page or
         # task list for an import.
         fragment = tmp_path / 'import-additional-tasks.yml'
-        fragment.write_text('- linuxfabrik.clf.html:\n    content: Fragment\n', encoding='utf-8')
+        fragment.write_text(
+            '- linuxfabrik.clf.html:\n    content: Fragment\n', encoding='utf-8'
+        )
 
         code = _run_cli(monkeypatch, tmp_path, [str(tmp_path), '--format', 'rst'])
 
@@ -680,9 +730,13 @@ class TestExportCli:
         assert (tmp_path / 'report.rst').is_file()
         assert not (tmp_path / 'import-additional-tasks.rst').exists()
 
-    def test_metadata_can_be_switched_off(self, monkeypatch, tmp_path, sample_report_yaml):
+    def test_metadata_can_be_switched_off(
+        self, monkeypatch, tmp_path, sample_report_yaml
+    ):
         code = _run_cli(
-            monkeypatch, tmp_path, [str(sample_report_yaml), '--format', 'rst', '--no-metadata']
+            monkeypatch,
+            tmp_path,
+            [str(sample_report_yaml), '--format', 'rst', '--no-metadata'],
         )
 
         assert code == 0
@@ -708,15 +762,25 @@ class TestExportCli:
 
     def test_named_import_fragment_exits_non_zero(self, monkeypatch, tmp_path):
         fragment = tmp_path / 'tasks.yml'
-        fragment.write_text('- linuxfabrik.clf.html:\n    content: Fragment\n', encoding='utf-8')
+        fragment.write_text(
+            '- linuxfabrik.clf.html:\n    content: Fragment\n', encoding='utf-8'
+        )
 
         assert _run_cli(monkeypatch, tmp_path, [str(fragment), '--format', 'rst']) == 1
 
-    def test_refuses_to_overwrite_the_report(self, monkeypatch, tmp_path, sample_report_yaml):
+    def test_refuses_to_overwrite_the_report(
+        self, monkeypatch, tmp_path, sample_report_yaml
+    ):
         code = _run_cli(
             monkeypatch,
             tmp_path,
-            [str(sample_report_yaml), '--format', 'rst', '--output', str(sample_report_yaml)],
+            [
+                str(sample_report_yaml),
+                '--format',
+                'rst',
+                '--output',
+                str(sample_report_yaml),
+            ],
         )
 
         assert code == 1
@@ -727,7 +791,9 @@ class TestExportCli:
     ):
         assert _run_cli(monkeypatch, tmp_path, [str(sample_report_yaml)]) == 2
 
-    def test_output_rejects_several_reports(self, monkeypatch, tmp_path, sample_report_yaml):
+    def test_output_rejects_several_reports(
+        self, monkeypatch, tmp_path, sample_report_yaml
+    ):
         second = tmp_path / 'second.yml'
         second.write_text(sample_report_yaml.read_text(), encoding='utf-8')
 
@@ -747,7 +813,12 @@ class TestExportCli:
         assert code == 2
 
     def test_missing_input_is_rejected(self, monkeypatch, tmp_path):
-        assert _run_cli(monkeypatch, tmp_path, [str(tmp_path / 'nope.yml'), '--format', 'rst']) == 2
+        assert (
+            _run_cli(
+                monkeypatch, tmp_path, [str(tmp_path / 'nope.yml'), '--format', 'rst']
+            )
+            == 2
+        )
 
 
 # --- dashboard export endpoint ---
@@ -778,21 +849,30 @@ class TestDashboardExport:
 
     def test_export_is_served_as_a_download(self, dashboard_client):
         client, report = dashboard_client
-        response = client.get('/export', query_string={'format': 'rst', 'path': str(report)})
+        response = client.get(
+            '/export', query_string={'format': 'rst', 'path': str(report)}
+        )
 
         assert response.status_code == 200
-        assert response.headers['Content-Disposition'] == 'attachment; filename="report.rst"'
+        assert (
+            response.headers['Content-Disposition']
+            == 'attachment; filename="report.rst"'
+        )
         assert 'Server Maintenance INC-4711' in response.get_data(as_text=True)
 
     def test_path_outside_the_reports_directory_is_forbidden(self, dashboard_client):
         client, _report = dashboard_client
-        response = client.get('/export', query_string={'format': 'rst', 'path': '/etc/passwd'})
+        response = client.get(
+            '/export', query_string={'format': 'rst', 'path': '/etc/passwd'}
+        )
 
         assert response.status_code == 403
 
     def test_unknown_format_is_rejected(self, dashboard_client):
         client, report = dashboard_client
-        response = client.get('/export', query_string={'format': 'docx', 'path': str(report)})
+        response = client.get(
+            '/export', query_string={'format': 'docx', 'path': str(report)}
+        )
 
         assert response.status_code == 400
 
@@ -812,7 +892,9 @@ class TestDashboardExport:
             raise export.ExportError('no renderer today')
 
         monkeypatch.setattr(export, 'export_checklist', fail)
-        response = client.get('/export', query_string={'format': 'pdf', 'path': str(report)})
+        response = client.get(
+            '/export', query_string={'format': 'pdf', 'path': str(report)}
+        )
 
         assert response.status_code == 500
         assert 'no renderer today' in response.get_data(as_text=True)

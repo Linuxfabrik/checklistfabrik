@@ -79,12 +79,18 @@ class ChecklistWsgiApp:
                     '/page/',
                     endpoint=lambda request: werkzeug.utils.redirect('/page/0'),
                 ),
-                werkzeug.routing.Rule('/page/<int:id>', endpoint=self.on_page_get, methods=['GET']),
+                werkzeug.routing.Rule(
+                    '/page/<int:id>', endpoint=self.on_page_get, methods=['GET']
+                ),
                 werkzeug.routing.Rule(
                     '/page/<int:id>', endpoint=self.on_page_post, methods=['POST']
                 ),
-                werkzeug.routing.Rule('/page/<int:id>/next', endpoint=self.on_next_page),
-                werkzeug.routing.Rule('/page/<int:id>/prev', endpoint=self.on_prev_page),
+                werkzeug.routing.Rule(
+                    '/page/<int:id>/next', endpoint=self.on_next_page
+                ),
+                werkzeug.routing.Rule(
+                    '/page/<int:id>/prev', endpoint=self.on_prev_page
+                ),
                 werkzeug.routing.Rule('/run', endpoint=self.on_run, methods=['POST']),
             ],
         )
@@ -110,7 +116,9 @@ class ChecklistWsgiApp:
         is_template = self.checklist_template is not None
         file_to_load = self.checklist_template if is_template else self.checklist_file
 
-        return self.checklist_mapper.load_checklist(file_to_load, is_template=is_template)
+        return self.checklist_mapper.load_checklist(
+            file_to_load, is_template=is_template
+        )
 
     def save_checklist(self):
         # On the very first save without a pre-set checklist file, pick a fresh path
@@ -123,9 +131,9 @@ class ChecklistWsgiApp:
 
     def _pick_initial_save_path(self):
         if self.checklist.report_path:
-            generated_filename = self.templ_env.from_string(self.checklist.report_path).render(
-                self.checklist.facts
-            )
+            generated_filename = self.templ_env.from_string(
+                self.checklist.report_path
+            ).render(self.checklist.facts)
 
             # Remove well-known invalid characters for the most commonly used operating
             # systems and filesystems.
@@ -144,20 +152,28 @@ class ChecklistWsgiApp:
             )
 
             candidate = pathlib.Path(os.path.expandvars(clean_filename))
-            logger.info('Generated file path based on template: "%s"', candidate.resolve())
+            logger.info(
+                'Generated file path based on template: "%s"', candidate.resolve()
+            )
         else:
-            candidate = pathlib.Path(f'checklist_{datetime.date.today().isoformat()}.yml')
+            candidate = pathlib.Path(
+                f'checklist_{datetime.date.today().isoformat()}.yml'
+            )
             logger.info('No report path configured. Using "%s"', candidate.resolve())
 
         # Find a free filename so we never overwrite an existing report on first save.
         original = candidate
         counter = 1
         while candidate.exists():
-            candidate = original.with_name(f'{original.stem}_{counter}{original.suffix}')
+            candidate = original.with_name(
+                f'{original.stem}_{counter}{original.suffix}'
+            )
             counter += 1
 
         if candidate != original:
-            logger.warning('File "%s" already exists. Saving to "%s" instead', original, candidate)
+            logger.warning(
+                'File "%s" already exists. Saving to "%s" instead', original, candidate
+            )
 
         return candidate
 
@@ -174,8 +190,8 @@ class ChecklistWsgiApp:
     def on_page_get(self, request, **kwargs):
         page_id = kwargs['id']
 
-        if page_id >= len(
-            self.checklist
+        if (
+            page_id >= len(self.checklist)
         ):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
 
@@ -210,8 +226,8 @@ class ChecklistWsgiApp:
     def on_page_post(self, request, **kwargs):
         page_id = kwargs['id']
 
-        if page_id >= len(
-            self.checklist
+        if (
+            page_id >= len(self.checklist)
         ):  # page_id will always be an unsigned integer due to Werkzeug's IntegerConverter.
             raise werkzeug.exceptions.NotFound()
 
@@ -245,7 +261,9 @@ class ChecklistWsgiApp:
         self.save_checklist()
 
         if redirect.startswith('page '):
-            return werkzeug.utils.redirect(f'/page/{redirect.split(" ", maxsplit=1)[1]}')
+            return werkzeug.utils.redirect(
+                f'/page/{redirect.split(" ", maxsplit=1)[1]}'
+            )
 
         if redirect == 'next':
             return werkzeug.utils.redirect(f'/page/{page_id}/next')

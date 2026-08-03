@@ -140,7 +140,9 @@ def _item(writer, label, item_marker, required, extra=()):
     if required:
         head = _required(head, True) if head else f'*({REQUIRED})*'
 
-    blocks = [block for block in [head, writer.render_nodes(rest), *extra] if block] or [NO_LABEL]
+    blocks = [
+        block for block in [head, writer.render_nodes(rest), *extra] if block
+    ] or [NO_LABEL]
     body = '\n\n'.join(blocks)
 
     if head:
@@ -212,4 +214,6 @@ def _reference(block, writer):
 
     extra.append(f'Checklist: `{block["path"]}`')
 
-    return _item(writer, block['label'], marker(block['checked']), block['required'], extra=extra)
+    return _item(
+        writer, block['label'], marker(block['checked']), block['required'], extra=extra
+    )

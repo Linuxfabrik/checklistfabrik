@@ -81,7 +81,9 @@ class InlineWriter(markup.MarkupWriter):
     def escape(self, text):
         # fpdf2 reads a marker literally when an odd number of backslashes precedes it.
         # Existing backslashes are doubled so that the added one always wins.
-        escaped = _FPDF_MARKER.sub(lambda match: f'{match.group(1) * 2}\\{match.group(2)}', text)
+        escaped = _FPDF_MARKER.sub(
+            lambda match: f'{match.group(1) * 2}\\{match.group(2)}', text
+        )
 
         # An unescaped bracket could start a link.
         return escaped.replace('[', '\\[')
@@ -181,7 +183,9 @@ def _text(text):
     encoded = text.encode('latin-1', errors='replace')
 
     if b'?' in encoded and '?' not in text:
-        logger.warning('PDF export replaced characters that the built-in fonts cannot display')
+        logger.warning(
+            'PDF export replaced characters that the built-in fonts cannot display'
+        )
 
     return encoded.decode('latin-1')
 
@@ -190,7 +194,9 @@ def _required(text, required):
     return f'{text} ({REQUIRED})' if required else text
 
 
-def _write(pdf, text, style='', size=SIZE_BODY, font=FONT, indent=0, markdown=False, fill=False):
+def _write(
+    pdf, text, style='', size=SIZE_BODY, font=FONT, indent=0, markdown=False, fill=False
+):
     """Write a block of text, wrapping it and starting a new page where needed.
 
     `markdown` hands the emphasis markers of `InlineWriter` over to fpdf2. It must stay off
@@ -359,7 +365,12 @@ def _markdown_node(pdf, node, writer, indent):
         return
 
     if node_type in ('paragraph', 'block_text'):
-        _write(pdf, writer.render_inline(node.get('children')), indent=indent, markdown=True)
+        _write(
+            pdf,
+            writer.render_inline(node.get('children')),
+            indent=indent,
+            markdown=True,
+        )
         _spacer(pdf)
     elif node_type == 'heading':
         _write(
@@ -531,5 +542,12 @@ def _reference(pdf, block, writer):
 
     extra = [description, path] if block['description'] else [path]
 
-    _item(pdf, block['label'], marker(block['checked']), block['required'], writer, extra=extra)
+    _item(
+        pdf,
+        block['label'],
+        marker(block['checked']),
+        block['required'],
+        writer,
+        extra=extra,
+    )
     _spacer(pdf)

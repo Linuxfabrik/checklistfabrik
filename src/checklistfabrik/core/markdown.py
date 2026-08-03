@@ -15,7 +15,8 @@ class ClfHtmlRenderer(mistune.HTMLRenderer):
         if lines and lines[-1] == '':
             lines = lines[:-1]
         wrapped = ''.join(
-            f'<span class="clf-code-line">{mistune.util.escape(line)}</span>' for line in lines
+            f'<span class="clf-code-line">{mistune.util.escape(line)}</span>'
+            for line in lines
         )
 
         return (

@@ -145,7 +145,9 @@ def _escape(text):
 
 
 def _required(html, required):
-    return f'{html} <span class="clf-required">({REQUIRED})</span>' if required else html
+    return (
+        f'{html} <span class="clf-required">({REQUIRED})</span>' if required else html
+    )
 
 
 def _metadata(document):
@@ -234,7 +236,9 @@ def _checklist(block, writer):
         return checklist
 
     return '{}\n{}\n{}'.format(
-        f'<div class="clf-label">{_required(head, block["required"])}</div>' if head else '',
+        f'<div class="clf-label">{_required(head, block["required"])}</div>'
+        if head
+        else '',
         rest,
         checklist,
     ).strip()
@@ -264,7 +268,11 @@ def _field(block, writer):
     if not head and not rest:
         return value
 
-    label = f'<div class="clf-label">{_required(head, block["required"])}</div>' if head else ''
+    label = (
+        f'<div class="clf-label">{_required(head, block["required"])}</div>'
+        if head
+        else ''
+    )
 
     return f'{label}\n{rest}\n<div class="clf-value">{value}</div>'.strip()
 
@@ -303,6 +311,8 @@ def _reference(block, writer):
         f'<p class="clf-reference-path">Checklist: <code>{_escape(block["path"])}</code></p>'
     )
 
-    item = _item(writer, block['label'], marker(block['checked']), block['required'], extra=extra)
+    item = _item(
+        writer, block['label'], marker(block['checked']), block['required'], extra=extra
+    )
 
     return f'<ul class="clf-checklist clf-reference">\n{item}\n</ul>'

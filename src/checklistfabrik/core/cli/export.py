@@ -118,7 +118,9 @@ class ExportCli(BaseCli):
             ),
         )
 
-    def init_logging(self, console_log_level=logging.INFO, file_log_level=logging.DEBUG, **kwargs):
+    def init_logging(
+        self, console_log_level=logging.INFO, file_log_level=logging.DEBUG, **kwargs
+    ):
         # Exported documents can go to stdout, so log messages must not.
         kwargs['console_stream'] = sys.stderr
 
@@ -132,10 +134,14 @@ class ExportCli(BaseCli):
 
         if self.args.output is not None:
             if self.args.output_dir is not None:
-                self.arg_parser.error('--output and --output-dir are mutually exclusive')
+                self.arg_parser.error(
+                    '--output and --output-dir are mutually exclusive'
+                )
 
             if len(self.sources) > 1:
-                self.arg_parser.error('--output may only be used when exporting a single file')
+                self.arg_parser.error(
+                    '--output may only be used when exporting a single file'
+                )
 
         self.output_format = self.args.format
 
@@ -163,7 +169,11 @@ class ExportCli(BaseCli):
                 found = [
                     match
                     for match in sorted(
-                        {match for pattern in REPORT_SUFFIXES for match in path.glob(pattern)}
+                        {
+                            match
+                            for pattern in REPORT_SUFFIXES
+                            for match in path.glob(pattern)
+                        }
                     )
                     if self.is_checklist(match)
                 ]
@@ -207,7 +217,9 @@ class ExportCli(BaseCli):
                 self.args.output_dir.mkdir(parents=True, exist_ok=True)
             except OSError as error:
                 logger.critical(
-                    'Cannot create output directory "%s": %s', self.args.output_dir, error
+                    'Cannot create output directory "%s": %s',
+                    self.args.output_dir,
+                    error,
                 )
                 return 1
 
@@ -221,7 +233,9 @@ class ExportCli(BaseCli):
                 failed += 1
 
         if failed:
-            logger.critical('%d of %d files failed to export', failed, len(self.sources))
+            logger.critical(
+                '%d of %d files failed to export', failed, len(self.sources)
+            )
             return 1
 
         return 0
@@ -229,7 +243,9 @@ class ExportCli(BaseCli):
     def export_source(self, source):
         """Export a single checklist file."""
 
-        logger.info('Exporting "%s" as %s', source, export.FORMATS[self.output_format]['label'])
+        logger.info(
+            'Exporting "%s" as %s', source, export.FORMATS[self.output_format]['label']
+        )
 
         checklist = self.load_checklist(source)
         data = export.export_checklist(
@@ -246,7 +262,9 @@ class ExportCli(BaseCli):
         target = (
             pathlib.Path(self.args.output)
             if self.args.output is not None
-            else export.output_path(source, self.output_format, output_dir=self.args.output_dir)
+            else export.output_path(
+                source, self.output_format, output_dir=self.args.output_dir
+            )
         )
 
         if target.resolve() in {candidate.resolve() for candidate in self.sources}:
@@ -266,7 +284,9 @@ class ExportCli(BaseCli):
 
         try:
             data = (
-                self.parsed[source] if source in self.parsed else self.data_mapper.load_yaml(source)
+                self.parsed[source]
+                if source in self.parsed
+                else self.data_mapper.load_yaml(source)
             )
 
             return self.data_mapper.process_checklist(

@@ -44,7 +44,9 @@ class ChecklistDataMapper:
             logger.critical('Cannot open file "%s" as it is a directory', file)
             raise ChecklistLoadError from error
         except PermissionError as error:
-            logger.critical('Cannot open file "%s" due to insufficient permissions', file)
+            logger.critical(
+                'Cannot open file "%s" due to insufficient permissions', file
+            )
             raise ChecklistLoadError from error
         except ruamel.yaml.YAMLError as error:
             logger.critical('Cannot parse file "%s": %s', file, error)
@@ -131,7 +133,9 @@ class ChecklistDataMapper:
                     file,
                 )
 
-        with open(file, mode='w' if overwrite else 'x', encoding='utf-8') as checklist_file:
+        with open(
+            file, mode='w' if overwrite else 'x', encoding='utf-8'
+        ) as checklist_file:
             stream.seek(0)
             checklist_file.write(stream.read())
 
@@ -192,11 +196,15 @@ class ChecklistDataMapper:
             raise ChecklistLoadError
 
         if 'description' in checklist and not isinstance(checklist['description'], str):
-            logger.critical('Description field of checklist "%s" is not a string', title)
+            logger.critical(
+                'Description field of checklist "%s" is not a string', title
+            )
             raise ChecklistLoadError
 
         if 'report_path' in checklist and not isinstance(checklist['report_path'], str):
-            logger.critical('Report path field of checklist "%s" is not a string', title)
+            logger.critical(
+                'Report path field of checklist "%s" is not a string', title
+            )
             raise ChecklistLoadError
 
         if 'version' in checklist and not isinstance(checklist['version'], str):
@@ -229,7 +237,9 @@ class ChecklistDataMapper:
 
             if page_directive == 'linuxfabrik.clf.import':
                 if not isinstance(page_context, str):
-                    logger.critical('Page import key is specified but its value is not a string')
+                    logger.critical(
+                        'Page import key is specified but its value is not a string'
+                    )
                     raise ChecklistLoadError
 
                 # Relative import paths should be relative to the checklist file.
@@ -256,7 +266,9 @@ class ChecklistDataMapper:
                 )
                 continue
 
-            pages.append(self.process_page(page, workdir, facts, is_template=is_template))
+            pages.append(
+                self.process_page(page, workdir, facts, is_template=is_template)
+            )
 
         return pages
 
@@ -285,7 +297,9 @@ class ChecklistDataMapper:
             raise ChecklistLoadError
 
         if task_list:
-            tasks = self.process_task_list(page['tasks'], workdir, facts, is_template=is_template)
+            tasks = self.process_task_list(
+                page['tasks'], workdir, facts, is_template=is_template
+            )
         else:
             logger.warning('Task list on page "%s" is empty', title)
             tasks = []
@@ -310,7 +324,9 @@ class ChecklistDataMapper:
 
             if task_module == 'linuxfabrik.clf.import':
                 if not isinstance(task_context, str):
-                    logger.critical('Task import key is specified but its value is not a string')
+                    logger.critical(
+                        'Task import key is specified but its value is not a string'
+                    )
                     raise ChecklistLoadError
 
                 # Relative import paths should be relative to the checklist file.
@@ -373,7 +389,12 @@ class ChecklistDataMapper:
 
             tasks.append(
                 models.Task(
-                    task_module, task_context, fact_name, when, unnamed_fact, workdir=workdir
+                    task_module,
+                    task_context,
+                    fact_name,
+                    when,
+                    unnamed_fact,
+                    workdir=workdir,
                 )
             )
 

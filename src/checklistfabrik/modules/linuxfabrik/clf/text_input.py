@@ -60,7 +60,9 @@ def export(**kwargs):
     return {
         'blocks': [
             blocks.field(
-                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(**kwargs),
+                clf_jinja_env_plain.from_string(kwargs.get('label', '')).render(
+                    **kwargs
+                ),
                 blocks.values_of(kwargs.get(fact_name)),
                 required=kwargs.get('required'),
             ),

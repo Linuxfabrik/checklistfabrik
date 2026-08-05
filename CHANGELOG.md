@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-tbd
+### Changed
+
+* **ci**: dependency bumps against the hash-pinned runtime requirements now need a human, and CI installs those requirements on the oldest supported Python, so an update cannot silently drop Python 3.9 support
+* **ci**: the documentation toolchain lockfile is watched by Dependabot, so it receives updates like every other lockfile in the repository
 
 
 ## [v1.12.0] - 2026-08-05

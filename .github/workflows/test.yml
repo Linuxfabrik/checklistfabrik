@@ -64,3 +64,28 @@ jobs:
 
       - name: Run ruff format check
         run: ruff format --check src/ tests/
+
+  lockfile:
+    name: Lockfile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # `requirements.txt` is hash-pinned and generated with the oldest
+      # supported Python. Dependabot does not honour `Requires-Python`, so a
+      # bump can raise a dependency past that interpreter. The test job
+      # installs from `pyproject.toml` and would not notice.
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.9"
+
+      - name: Install the pinned runtime requirements
+        run: pip install --require-hashes --requirement requirements.txt

@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.12.0] - 2026-08-05
+
 ### Added
 
 * core: new `clf-export` command for exporting reports without starting a browser. It exports single files or whole directories, infers the format from the output file extension, writes to stdout on request and returns a non-zero exit code when an export fails, so it can be used in a CI pipeline. PDF export requires the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
@@ -17,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * core: a checklist file that is not valid YAML, or that contains a page or task list instead of a checklist, is now reported with a clear message instead of ending in a stack trace
-* core: reports are no longer corrupted while they are being filled in. As the report is written again on every page change, a checkbox group whose `values:` were followed by an empty line in the template lost a line break from the second write onwards, which produced a report that could no longer be opened, listed in the dashboard or exported. A report is now also verified to be readable before it replaces the file on disk
+* core: reports are no longer corrupted while they are being filled in. A checkbox group written in a specific way could produce a report that could no longer be opened, listed in the dashboard or exported. A report is now verified to be readable before it replaces the file on disk
 
 
 ## [v1.11.0] - 2026-07-12
@@ -238,7 +243,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.12.0...HEAD
+[v1.12.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.11.0...v1.12.0
 [v1.11.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.10.0...v1.11.0
 [v1.10.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...v1.10.0
 [v1.9.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.8.0...v1.9.0

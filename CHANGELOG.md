@@ -8,22 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-* **ci**: dependency bumps against the hash-pinned runtime requirements now need a human, and CI installs those requirements on the oldest supported Python, so an update cannot silently drop Python 3.9 support
-* **ci**: the documentation toolchain lockfile is watched by Dependabot, so it receives updates like every other lockfile in the repository
-
 ### Fixed
 
-* **core**: disabled ligatures in code blocks to ensure proper monospacing. previously, `ffi` was one character wide if the monospace font had support for that ligature
+* **core**: ligatures are disabled in code blocks, so a sequence such as `ffi` is no longer rendered as one narrow character by monospace fonts that support the ligature
+
 
 ## [v1.12.0] - 2026-08-05
 
+**Highlights:** A completed run can be exported as a static AsciiDoc, HTML, Markdown, PDF or reStructuredText document, from the dashboard or from the new `clf-export` command, so it can be committed, reviewed in a pull request or published next to its YAML report. A report can no longer be corrupted while it is being filled in.
+
 ### Added
 
-* core: new `clf-export` command for exporting reports without starting a browser. It exports single files or whole directories, infers the format from the output file extension, writes to stdout on request and returns a non-zero exit code when an export fails, so it can be used in a CI pipeline. PDF export requires the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
-* core: reports can be exported as static documents in AsciiDoc, HTML, Markdown, PDF and reStructuredText. The exported document contains the complete run, including entered values, selected options, checkbox states, skipped pages and tasks, and the overall completion status. The YAML report stays untouched, so the export can be committed next to it, reviewed in a pull request or published as documentation ([#147](https://github.com/Linuxfabrik/checklistfabrik/issues/147))
-* dashboard: reports now have an "Export" dropdown next to the "View" button that downloads the report in any of the supported formats
+* core: `clf-export` exports reports without starting a browser, taking single files or whole directories, inferring the format from the output file extension, writing to stdout on request and returning a non-zero exit code on failure, so it fits into a CI pipeline. PDF export requires the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
+* core: reports can be exported as static documents in AsciiDoc, HTML, Markdown, PDF and reStructuredText, containing the complete run with entered values, selected options, checkbox states, skipped pages and tasks, and the overall completion status. The YAML report stays untouched ([#147](https://github.com/Linuxfabrik/checklistfabrik/issues/147))
+* dashboard: reports have an "Export" dropdown next to the "View" button that downloads the report in any of the supported formats
 
 ### Fixed
 
@@ -33,11 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.11.0] - 2026-07-12
 
+**Highlights:** The dashboard finds templates with the `.yaml` extension, not only `.yml`, and a template that fails to load is logged with its path instead of silently disappearing from the list.
+
 ### Changed
 
-* dashboard: templates that fail to load are now logged with their path and the error, so a malformed file no longer silently disappears from the dashboard ([#103](https://github.com/Linuxfabrik/checklistfabrik/issues/103))
-* dashboard: the scan now also picks up templates with the `.yaml` extension, not only `.yml` ([#104](https://github.com/Linuxfabrik/checklistfabrik/issues/104))
-* pre-commit lockfile is now self-contained: build dependencies are pinned with hashes even when the build host has no `setuptools` preinstalled ([#117](https://github.com/Linuxfabrik/checklistfabrik/issues/117))
+* dashboard: templates that fail to load are logged with their path and the error, so a malformed file no longer silently disappears from the dashboard ([#103](https://github.com/Linuxfabrik/checklistfabrik/issues/103))
+* dashboard: the scan also picks up templates with the `.yaml` extension, not only `.yml` ([#104](https://github.com/Linuxfabrik/checklistfabrik/issues/104))
 
 
 ## [v1.10.0] - 2026-06-17

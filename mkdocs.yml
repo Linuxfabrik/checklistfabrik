@@ -47,12 +47,12 @@ validation:
     not_found: 'info'
 
 not_in_nav: |
-  CHANGELOG.md
   CODE_OF_CONDUCT.md
   docs/user_guide.md
 
 nav:
   - 'Home': 'index.md'
   - 'User Guide': 'user_guide.md'
+  - 'Changelog': 'CHANGELOG.md'
   - 'Contributing': 'contributing.md'
   - 'Security': 'security.md'

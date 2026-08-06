@@ -123,6 +123,7 @@ pre > code:only-child {
   display: block;
   padding-left: 1.2em;
   text-indent: -1.2em;
+  font-variant-ligatures: none;
 }
 
 /* Preserve height of empty lines. */

@@ -11,23 +11,23 @@ pages:
           content: |
             ChecklistFabrik can store user input for later use.
             The `fact_name` task key controls under which name the data will be available.
-            
+
             ```yaml
             - linuxfabrik.clf.text_input:
                 label: 'Hostname'
                 required: true
               fact_name: 'hostname'
             ```
-            
+
             The user's input can then be used on subsequent pages like this:
-            
+
             {% raw %}
-            
+
             ```yaml
             - linuxfabrik.clf.checkbox_input:
                 label: 'Allow access to SSH on {{ hostname }}'
             ```
-            
+
             {% endraw %}
 
       - linuxfabrik.clf.text_input:
@@ -48,9 +48,9 @@ pages:
           content: |
             In ChecklistFabrik pages and tasks can be conditionally shown based on previous user input.
             This can be achieved by using Jinja conditional expressions in a page's or task's `when` key.
-            
+
             There is no need to surround variables in conditionals with double curly braces.
-            
+
             ```yaml
             - title: 'Example 2 - OS Selection'
               tasks:
@@ -61,26 +61,26 @@ pages:
                       - 'MacOS'
                       - 'Windows'
                     fact_name: 'install_type'
-            
+
                 - linuxfabrik.clf.select_input:
                     label: 'Variant'
                     values:
                       - 'Hardware Machine'
                       - 'Virtual Machine'
                   fact_name: 'install_variant'
-            
+
             - title: 'Example 2 - Install Linux'
               tasks:
                 - linuxfabrik.clf.markdown:
                     content: 'This page can only be seen if "Linux" has been selected.'
-            
+
                 - linuxfabrik.clf.markdown:
                     content: 'This task is only visible if "Virtual Machine" was selected'
                   when: 'install_variant | lower() == "virtual machine"'
-            
+
               when: 'install_type | lower() == "linux"'
             ```
-            
+
             See the next pages on how this example works in practice.
 
   - title: 'Example 2 - OS Selection'
@@ -117,7 +117,7 @@ pages:
           content: |
             Multiple `when` conditionals are combined with a logical `and`;
             the following example requires that both conditionals evaluate to true:
-            
+
             ```yaml
             - title: 'Example 3 - Programming Languages'
               tasks:
@@ -128,7 +128,7 @@ pages:
                       - value: 'Kotlin'
                       - value: 'Python'
                   fact_name: 'language'
-            
+
             - title: 'Example 3 - Python C Interop'
               tasks:
                 - linuxfabrik.clf.markdown:
@@ -138,9 +138,9 @@ pages:
                 - '"c" in (language | map("lower"))'
                 - '"python" in (language | map("lower"))'
             ```
-            
+
             Jinja's logical operators can also be used to combine conditions and construct more complex conditions:
-            
+
             ```yaml
             - title: 'Example 3 - JDK'
               tasks:
@@ -149,7 +149,7 @@ pages:
                       Install a suitable JDK.
               when: '"java" in (language | map("lower") or "kotlin" in (language | map("lower")'
             ```
-            
+
             See the next pages on how this example works in practice.
 
   - title: 'Example 3 - Programming Languages'
@@ -183,17 +183,17 @@ pages:
       - linuxfabrik.clf.markdown:
           content: |
             ChecklistFabrik templates can suggest where the report should be saved.
-            
+
             Using the following example, ChecklistFabrik will save the generated report to `report_path_checklist.yml`.
-            
+
             ```yaml
             title: 'report_path Example Checklist'
             report_path: 'report_path_checklist.yml'
             ```
-            
+
             The `report_path` *will only be used* if no file argument is specified,
             i.e. the file parameter was omitted from the commandline: `clf-play --template report_path_template.yml`
-            
+
             This allows users to simply override the template provided save location by specifying the file parameter on the commandline:
             `clf-play --template report_path_template.yml overridden_save_location.yml`
 
@@ -201,25 +201,25 @@ pages:
           content: |
             Environment variables (of the form `$name` or `${name}`) in `report_path` are expanded.
             Therefore, the next example would result in the report being saved under `~/report_path_checklist.yml`.
-            
+
             ```yaml
             title: 'report_path Example Checklist'
             report_path: '$HOME/report_path_checklist.yml'
             ```
-            
+
             Malformed variable names and references to non-existing variables are left unchanged.
             Windows user may also specify variables using `%name%` (this will, however, *not* be expanded on other platforms).
-            
+
       - linuxfabrik.clf.markdown:
           content: |
             For more control over the `report_path` Jinja templating can also be used.
-            
+
             This showcase, for example, uses the following Jinja templated `report_path`:
-            
+
             {% raw %}
-            
+
             ```yaml
             report_path: 'feature-showcase-{{ now().strftime("%Y%m%d") }}.yml'
             ```
-            
+
             {% endraw %}

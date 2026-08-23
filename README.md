@@ -76,13 +76,13 @@ Full documentation is available at [linuxfabrik.github.io/checklistfabrik](https
 
 ## Definitions and Terms
 
-* **Checklist:**  
+* **Checklist:**
   A series of tasks outlining a procedure, organized into pages.
 
-* **Page:**  
+* **Page:**
   A collection of tasks displayed simultaneously to the user.
 
-* **Report:**  
+* **Report:**
   The output of a checklist run—a YAML file generated from a template.
 
 * **Task:**

@@ -28,6 +28,7 @@ repos:
   - repo: 'https://github.com/jendrikseipp/vulture'
     rev: 'v2.16'
     hooks:
+      # Scope and min_confidence live in `[tool.vulture]` in pyproject.toml,
+      # because the hook runs with `pass_filenames: false`.
       - id: 'vulture'
-        args: ['--min-confidence=80']
         types_or: ['python']

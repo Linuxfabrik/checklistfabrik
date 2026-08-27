@@ -104,3 +104,13 @@ skips = ['B110', 'B112', 'B311']
 # pytest relies on the `assert` statement, so B101 does not apply under tests/.
 # bandit still scans the directory for every other finding.
 skips = ['*/tests/*.py', 'tests/*.py']
+
+[tool.vulture]
+# The upstream pre-commit hook runs with `pass_filenames: false` and expects the
+# scope to be declared here. Without `paths` vulture is invoked with no argument at
+# all and aborts with "Please pass at least one file or directory", so the hook
+# failed on every commit that staged a Python file without ever analysing one.
+# `build/` is left out on purpose: it holds copies of `src/` and would report every
+# finding twice.
+min_confidence = 80
+paths = ['src', 'tests']

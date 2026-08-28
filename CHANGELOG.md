@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* **core**: ligatures are disabled in code blocks, so a sequence such as `ffi` is no longer rendered as one narrow character by monospace fonts that support the ligature
+* core: code blocks no longer render a sequence such as `ffi` as a ligature
 
 
 ## [v1.12.0] - 2026-08-05
@@ -19,14 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* core: `clf-export` exports reports without starting a browser, taking single files or whole directories, inferring the format from the output file extension, writing to stdout on request and returning a non-zero exit code on failure, so it fits into a CI pipeline. PDF export requires the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
-* core: reports can be exported as static documents in AsciiDoc, HTML, Markdown, PDF and reStructuredText, containing the complete run with entered values, selected options, checkbox states, skipped pages and tasks, and the overall completion status. The YAML report stays untouched ([#147](https://github.com/Linuxfabrik/checklistfabrik/issues/147))
-* dashboard: reports have an "Export" dropdown next to the "View" button that downloads the report in any of the supported formats
+* core: `clf-export` exports reports without starting a browser, so it fits into a CI pipeline. PDF export needs the optional `fpdf2` package (`pip install 'checklistfabrik[pdf]'`)
+* core: reports can be exported as static documents in AsciiDoc, HTML, Markdown, PDF and reStructuredText; the YAML report stays untouched ([#147](https://github.com/Linuxfabrik/checklistfabrik/issues/147))
+* dashboard: an "Export" button downloads a report in any of the supported formats
 
 ### Fixed
 
-* core: a checklist file that is not valid YAML, or that contains a page or task list instead of a checklist, is now reported with a clear message instead of ending in a stack trace
-* core: reports are no longer corrupted while they are being filled in. A checkbox group written in a specific way could produce a report that could no longer be opened, listed in the dashboard or exported. A report is now verified to be readable before it replaces the file on disk
+* core: a malformed checklist file is reported with a clear message instead of a stack trace
+* core: a report is no longer corrupted while it is being filled in, which could leave it impossible to open, list or export
 
 
 ## [v1.11.0] - 2026-07-12
@@ -35,27 +35,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* dashboard: templates that fail to load are logged with their path and the error, so a malformed file no longer silently disappears from the dashboard ([#103](https://github.com/Linuxfabrik/checklistfabrik/issues/103))
+* dashboard: a template that fails to load is logged with its path instead of silently disappearing from the list ([#103](https://github.com/Linuxfabrik/checklistfabrik/issues/103))
 * dashboard: the scan also picks up templates with the `.yaml` extension, not only `.yml` ([#104](https://github.com/Linuxfabrik/checklistfabrik/issues/104))
 
 
 ## [v1.10.0] - 2026-06-17
 
+**Highlights:** A sub-checklist started from a `run_template` card is ticked off on the card itself, so it no longer needs a checkbox task of its own.
+
 ### Changed
 
-* modules: `linuxfabrik.clf.run_template` cards now include a confirmation checkbox next to the Run button, so a launched sub-checklist can be ticked off in place without a separate checkbox task. The checkbox stores its state in the report and supports `required` to block the page until it is checked
+* modules: `linuxfabrik.clf.run_template` cards have a confirmation checkbox, so a launched sub-checklist can be ticked off in place; `required` blocks the page until it is checked
 
 
 ## [v1.9.0] - 2026-05-13
 
+**Highlights:** The checklist page and the dashboard were redesigned into a two-column layout with a table of contents, and the checklist title now stays visible while scrolling. Browser tab titles name the checklist, so several open runs can be told apart. A page that a condition switches off is marked as skipped before it is reached, not only afterwards.
+
 ### Changed
 
-* core: browser tab titles now read "<Checklist Title> - ChecklistFabrik" on a checklist page and "ChecklistFabrik - Dashboard" on the dashboard, so multiple ChecklistFabrik tabs can be told apart at a glance
-* core: redesigned the checklist page layout into a two-column view. The page navigation moved from a horizontal stepper at the top to a sticky vertical table-of-contents on the left, with the current page marked by a red left-border accent. Task text keeps a comfortable max-width for readability
-* core: redesigned the dashboard to match the new checklist layout. The same dark header strip is shown across pages (with "by Linuxfabrik" linking to <https://www.linuxfabrik.ch>), and the sidebar TOC now lists "Templates" and "Reports" with counts to jump to either section
-* core: the checklist title and template version sit in a dedicated full-width header strip above the page, with a dark background and a soft drop-shadow inspired by the Linuxfabrik docs sites. The header stays visible while scrolling
-* core: the page navigation now also marks upcoming pages as skipped when their condition has already been evaluated to false, not only pages that were skipped in the past. Skipped pages are visibly struck-through and no longer accept a jump-to click
-* core: the stylesheet is now reloaded on every `clf-play` start, so checklist pages always pick up the current styles even when the browser has cached an older version
+* core: browser tab titles name the checklist, so several ChecklistFabrik tabs can be told apart
+* core: checklist pages pick up the current styles even when the browser cached an older version
+* core: the checklist page and the dashboard share a two-column layout, with a table of contents on the left and a header that keeps the checklist title visible while scrolling
+* core: the navigation marks an upcoming page as skipped once its condition is false, and no longer jumps to it
 
 
 ## [v1.8.0] - 2026-05-04

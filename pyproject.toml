@@ -24,6 +24,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Office/Business",
     "Topic :: Utilities",
 ]
@@ -34,7 +38,7 @@ dynamic = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 [project.urls]
 Download = "https://github.com/linuxfabrik/checklistfabrik/releases/"
@@ -72,7 +76,7 @@ testpaths = ['tests']
 
 [tool.ruff]
 line-length = 88
-target-version = 'py39'
+target-version = 'py311' # minimum supported Python
 
 [tool.ruff.lint]
 select = [
@@ -83,7 +87,7 @@ select = [
     'I',    # isort (import sorting)
     'RUF',  # Ruff-specific rules
     'SIM',  # flake8-simplify
-    'UP',   # pyupgrade (modernize syntax for py39+)
+    'UP',   # pyupgrade (modernize syntax for py311+)
     'W',    # pycodestyle warnings
 ]
 ignore = [

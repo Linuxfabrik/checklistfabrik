@@ -30,9 +30,9 @@ jobs:
 
       # A bump against a frozen lockfile is left open for a human. Dependabot
       # does not honour `Requires-Python`, so it may propose a version that
-      # drops the interpreter the lockfile exists for (py39 -> RHEL 8, RHEL 9,
-      # Debian 11; py310 -> Ubuntu 22.04). It may equally propose a security
-      # fix that still supports it. Only a human can tell the two apart, so
+      # drops the interpreter the lockfile exists for (the oldest supported
+      # Python, py311). It may equally propose a security fix that still
+      # supports it. Only a human can tell the two apart, so
       # the pull request is neither merged nor closed. Regenerate the lockfile
       # with `pip-compile` on a matching Python host once the bump is accepted.
       - if: >-

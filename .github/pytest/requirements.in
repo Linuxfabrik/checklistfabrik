@@ -1,8 +1,6 @@
 # Everything the Test workflow installs: the runtime dependencies, the test
 # runner and the test-only dependency, compiled together so their versions
-# fit each other. Compiled with the oldest supported Python, 3.9. pytest 9 and
-# fpdf2 2.8.8 need 3.10, so the caps keep Dependabot from bumping them past
-# it; lift them together with the Python 3.9 support.
+# fit each other. Compiled with the oldest supported Python, 3.11.
 -r ../../requirements.in
-fpdf2<2.8.8
-pytest<9
+fpdf2
+pytest

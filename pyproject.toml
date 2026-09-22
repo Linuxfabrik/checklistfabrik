@@ -66,6 +66,8 @@ clf-export = "checklistfabrik.core.cli.export:main"
 clf-play = "checklistfabrik.core.cli.play:main"
 
 [tool.pytest.ini_options]
+# the tests import the package from the source tree, it is never installed for them
+pythonpath = ['src']
 testpaths = ['tests']
 
 [tool.ruff]

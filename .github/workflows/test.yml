@@ -32,8 +32,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # The runtime dependencies, pytest and fpdf2, all hash-pinned. The package
+      # itself is not installed: pytest imports it from `src` (see pyproject.toml).
       - name: Install dependencies
-        run: pip install --editable ".[test]"
+        run: pip install --require-hashes --requirement .github/pytest/requirements.txt
 
       - name: Run tests
         run: python -m pytest tests/ --verbose
@@ -57,7 +59,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install ruff
-        run: 'pip install ruff==0.15.9'
+        run: pip install --require-hashes --requirement .github/ruff/requirements.txt
 
       - name: Run ruff check
         run: ruff check src/ tests/
@@ -78,10 +80,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # `requirements.txt` is hash-pinned and generated with the oldest
-      # supported Python. Dependabot does not honour `Requires-Python`, so a
-      # bump can raise a dependency past that interpreter. The test job
-      # installs from `pyproject.toml` and would not notice.
+      # `requirements.txt` is the hash-pinned runtime lockfile that ships,
+      # generated with the oldest supported Python. Dependabot does not honour
+      # `Requires-Python`, so a bump can raise a dependency past that
+      # interpreter. The test job installs its own lock and would not notice.
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:

@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Breaking Changes
+### Changed
 
-* ChecklistFabrik needs Python 3.11 or newer, as Python 3.9 is end of life and 3.10 follows on 2026-10-31. On RHEL 8 and 9, install it with the `python3.11` or `python3.12` package
+* ChecklistFabrik needs Python 3.11 or newer, as 3.9 is end of life and 3.10 follows on 2026-10-31
 
 ### Fixed
 

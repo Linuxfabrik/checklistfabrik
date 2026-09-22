@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+tbd
+
+
+## [v1.12.1] - 2026-09-22
+
 ### Changed
 
 * ChecklistFabrik needs Python 3.11 or newer, as 3.9 is end of life and 3.10 follows on 2026-10-31
@@ -254,7 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial public release.
 
 
-[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.12.1...HEAD
+[v1.12.1]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.12.0...v1.12.1
 [v1.12.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.11.0...v1.12.0
 [v1.11.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.10.0...v1.11.0
 [v1.10.0]: https://github.com/Linuxfabrik/checklistfabrik/compare/v1.9.0...v1.10.0

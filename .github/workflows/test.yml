@@ -40,6 +40,29 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ --verbose
 
+  # One stable check for the branch ruleset. Requiring the matrix jobs
+  # directly would mean editing the ruleset every time the matrix changes,
+  # and a required check that no longer exists blocks every pull request.
+  unit-tests:
+    name: 'Unit Tests'
+    needs:
+      - 'test'
+    # Runs even when the matrix failed, so the ruleset sees a red check
+    # instead of a skipped one, which GitHub would let pass.
+    if: 'always()'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Harden the runner (Audit all outbound calls)'
+        uses: 'step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1' # v2.21.1
+        with:
+          egress-policy: 'audit'
+
+      - name: 'Fail unless every matrix job succeeded'
+        if: "needs.test.result != 'success'"
+        run: |
+          echo "test matrix result: ${{ needs.test.result }}"
+          exit 1
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

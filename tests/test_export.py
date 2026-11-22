@@ -18,7 +18,8 @@ TEXT_FORMATS = ('asciidoc', 'html', 'markdown', 'rst')
 
 def _export_kwargs(**extra):
     """Build the kwargs a task module receives while exporting."""
-    env = jinja2.Environment(autoescape=False)
+    # Autoescape off, like the environment of `export.document`; each exporter escapes.
+    env = jinja2.Environment(autoescape=False)  # nosec B701
     base = {
         'clf_jinja_env': env,
         'clf_jinja_env_plain': env,

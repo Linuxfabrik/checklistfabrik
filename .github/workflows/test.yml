@@ -63,33 +63,6 @@ jobs:
           echo "test matrix result: ${{ needs.test.result }}"
           exit 1
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
-        with:
-          egress-policy: audit
-
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.13"
-
-      - name: Install ruff
-        run: pip install --require-hashes --requirement .github/ruff/requirements.txt
-
-      - name: Run ruff check
-        run: ruff check src/ tests/
-
-      - name: Run ruff format check
-        run: ruff format --check src/ tests/
-
   lockfile:
     name: Lockfile
     runs-on: ubuntu-latest

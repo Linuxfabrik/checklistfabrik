@@ -49,7 +49,10 @@ def create_markdown():
         plugins=['strikethrough', 'table', 'speedup'],
     )
 
+    # The Markdown is template text, filled with facts the same person enters in the
+    # local dashboard, and raw HTML in it is rendered on purpose. The server listens
+    # on 127.0.0.1 only.
     def clf_markdown(text):
-        return markupsafe.Markup(render(text))
+        return markupsafe.Markup(render(text))  # nosec B704
 
     return clf_markdown
